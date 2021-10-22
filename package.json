@@ -1,0 +1,33 @@
+{
+  "name": "dylanbot2.1",
+  "version": "2.1.0",
+  "description": "A newer and more stable version of DylanBot, now in TypeScript!",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kortimu",
+  "license": "UNLICENSE",
+  "dependencies": {
+    "@discordjs/collection": "^0.2.1",
+    "@sapphire/decorators": "^3.0.0-next.ae4f5935.0",
+    "@sapphire/discord-utilities": "^2.2.0",
+    "@sapphire/discord.js-utilities": "^3.0.1-next.dbc03216.0",
+    "@sapphire/framework": "^2.1.3",
+    "@sapphire/plugin-api": "^3.0.0-next.23809.0",
+    "@sapphire/plugin-editable-commands": "^0.1.0-next.23809.0",
+    "@sapphire/plugin-logger": "^2.0.0-next.1f577088.0",
+    "@sapphire/ts-config": "^3.1.0",
+    "@sapphire/type": "^2.1.0",
+    "@sapphire/utilities": "^3.0.1-next.dbc03216.0",
+    "colorette": "^2.0.14",
+    "discord.js": "^13.1.0",
+    "dotenv-cra": "^3.0.2",
+    "mongoose": "^6.0.11",
+    "nodemon": "^2.0.13",
+    "reflect-metadata": "^0.1.13",
+    "ts-node": "^10.2.1",
+    "tsc-watch": "^4.5.0",
+    "typescript": "^4.4.3"
+  }
+}
