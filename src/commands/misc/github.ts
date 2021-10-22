@@ -21,7 +21,5 @@ export class UserCommand extends Command {
                 .setDescription('**Link:** https://github.com/Kortimu/DylanBot')
             ]
         })
-
-        console.log
     }
 }

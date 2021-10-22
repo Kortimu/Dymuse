@@ -6,7 +6,8 @@ import { sendLoadingMessage } from "../../lib/utils"
 
 @ApplyOptions<CommandOptions>({
     description: 'Lists all available commands.',
-    fullCategory: ['misc']
+    fullCategory: ['misc'],
+    aliases: ['h']
 })
 
 // Help command
@@ -18,42 +19,22 @@ export class UserCommand extends Command {
         let helpEmbed = new MessageEmbed();
 
         // Setup command name collection
-        const commandNames = new Set<string>();
-		for (const { name } of this.store.values()) commandNames.add(name);
-
-        // Testing new code
         const cmdNames = new Set<string>();
-        const userCommand = UserCommand
 
 		for (const { name } of this.store.values()) cmdNames.add(name);
 
-        console.log(this.container.stores.get('categories'))
-
-        console.log(userCommand)
-
+        // For each command, add an embed field with the necessary fields
 		for (const cmdName of cmdNames) {
-			// const command = this.store.filter((command) => command.name === cmdName);
-
-            // Old test code
-            // const test = command.values()
-            
-            // console.log(commands.get('categories'))
-
-            // console.log(what?.store.get(this.description));
+			
+            const commandDescription = this.container.stores.get('commands').get(cmdName)?.description
+            const commandAlias = this.container.stores.get('commands').get(cmdName)?.aliases
+            const commandCategory = this.container.stores.get('commands').get(cmdName)?.fullCategory
 
             helpEmbed.addField(
-                cmdName,
-                'I have no clue how to show args or descriptions aaaaaaaaa'
+                `?${cmdName}`,
+                `**Category:** ${commandCategory}\n**Description:** ${commandDescription}\n**Aliases:** ${commandAlias}`
             )
         };
-
-        // Make the embed (old code)
-        // for (let i = 0; i < nameArray.length; i++) {
-        //     helpEmbed.addField(
-        //         nameArray[i],
-        //         descriptionArray[i]
-        //     );
-        // }
 
         // Send the embed
         return send(message, {

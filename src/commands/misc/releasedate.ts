@@ -23,7 +23,5 @@ export class UserCommand extends Command {
                 .setDescription(time)
             ]
         })
-
-        console.log
     }
 }

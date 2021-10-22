@@ -7,7 +7,7 @@ import { send } from "@sapphire/plugin-editable-commands"
 @ApplyOptions<CommandOptions>({
     description: 'Supports the user.',
     fullCategory: ['misc'],
-    aliases: ['es', 'supportme'],
+    aliases: ['es', 'support'],
     cooldownDelay: 20000
 })
 
