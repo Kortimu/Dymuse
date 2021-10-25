@@ -1,6 +1,8 @@
 import type { ListenerOptions, PieceContext } from '@sapphire/framework';
 import { Listener, Store } from '@sapphire/framework';
 import { blue, gray, green, magenta, magentaBright, white, yellow } from 'colorette';
+import mongoose from 'mongoose'
+import 'dotenv/config'
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -17,6 +19,7 @@ export class UserEvent extends Listener {
 	public run() {
 		this.printBanner();
 		this.printStoreDebugInformation();
+		this.mongoConnect();
 	}
 
 	private printBanner() {
@@ -52,5 +55,16 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 
 	private styleStore(store: Store<any>, last: boolean) {
 		return gray(`${last ? '└─' : '├─'} Loaded ${this.style(store.size.toString().padEnd(3, ' '))} ${store.name}.`);
+	}
+
+	private async mongoConnect() {
+		console.log('Connecting to Mongo...')
+		mongoose.connect(process.env.MONGO_URI || '', {
+            keepAlive: true,
+        }).then(() =>{
+            console.log('Connected to the database!');
+        }).catch((err) => {
+            console.log(err);
+        });
 	}
 }

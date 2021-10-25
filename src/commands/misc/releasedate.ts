@@ -14,7 +14,7 @@ export class UserCommand extends Command {
     public async messageRun(message: Message) {
         await sendLoadingMessage(message)
 
-        let time = '<t:2128525894800:D>'
+        let time = '<t:1638309600:R>'
 
         return send(message, {
             embeds: [
