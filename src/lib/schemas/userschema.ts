@@ -9,7 +9,8 @@ interface User {
     guildId: string,
     userId: string,
     xp: number,
-    level: number
+    level: number,
+    rank: number
 }
 
 const userSchema = new Schema<User>({
@@ -22,7 +23,8 @@ const userSchema = new Schema<User>({
     level: {
         type: Number,
         default: 1
-    }
+    },
+    rank: Number
 })
 
 export const UserModel = model<User>('user-profiles', userSchema)
