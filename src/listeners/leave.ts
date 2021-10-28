@@ -2,10 +2,10 @@ import { Events, Listener, PieceContext } from '@sapphire/framework'
 import { Guild, GuildMember, MessageEmbed, TextChannel } from 'discord.js'
 import { ChannelModel } from '../lib/schemas/channelschema'
 
-export class UserEvent extends Listener<typeof Events.GuildMemberAdd> {
+export class UserEvent extends Listener<typeof Events.GuildMemberRemove> {
     public constructor(context: PieceContext) {
         super(context, {
-            event: Events.GuildMemberAdd
+            event: Events.GuildMemberRemove
         })
     }
 
@@ -26,7 +26,7 @@ const sendMessage = async (guild: Guild, member: GuildMember) => {
     // For each guild/channel combo:
     for (const result of results) {
         const { welcomeId, guildId } = result
-        // Find needed guild
+        // Find the needed guild
         if (guild.id == guildId) {
             // Find needed channel
             // If 'as TextChannel' not specified, it could be a VoiceChannel, which cannot send messages!
@@ -37,9 +37,9 @@ const sendMessage = async (guild: Guild, member: GuildMember) => {
                 channel.send({
                     embeds: [
                         new MessageEmbed()
-                        .setColor('#00FF00')
-                        .setTitle('Someone has joined!')
-                        .setDescription(`Welcome ${member} to the server!`)
+                        .setColor('#FF0000')
+                        .setTitle('Someone has left...')
+                        .setDescription(`Say goodbye to ${member}...`)
                     ]
                 })
             }

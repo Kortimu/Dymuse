@@ -12,10 +12,12 @@ import { send } from "@sapphire/plugin-editable-commands"
 
 export class UserCommand extends Command {
     public async messageRun(message: Message) {
+        // Sends loading message
         await sendLoadingMessage(message)
-
+        // UNIX time in Discord's timestamp format
         let time = '<t:1638309600:R>'
 
+        // Sends the embed
         return send(message, {
             embeds: [
                 new MessageEmbed()

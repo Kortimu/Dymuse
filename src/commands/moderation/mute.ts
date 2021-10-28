@@ -1,1 +1,1 @@
-// Mute user, coming soon!
+// Coming soon!

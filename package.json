@@ -1,13 +1,15 @@
 {
-  "name": "dylanbot2.1",
-  "version": "2.1.0",
+  "name": "dylanbot2.0",
+  "version": "2.0.0",
   "description": "A newer and more stable version of DylanBot, now in TypeScript!",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --build",
+    "dev": "node dist/index.js"
   },
   "author": "Kortimu",
-  "license": "UNLICENSE",
+  "license": "Apache-2.0",
   "dependencies": {
     "@discordjs/collection": "^0.2.1",
     "@sapphire/decorators": "^3.0.0-next.ae4f5935.0",

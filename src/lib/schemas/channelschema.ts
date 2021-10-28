@@ -6,13 +6,13 @@ const reqString = {
 }
 
 interface Channel {
-    _id: string,
+    guildId: string,
     welcomeId: string,
     leaderboardId: string
 }
 
 const channelSchema = new Schema<Channel>({
-    _id: reqString,
+    guildId: reqString,
     welcomeId: {
         type: String
     },

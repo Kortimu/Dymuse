@@ -13,10 +13,12 @@ import { send } from "@sapphire/plugin-editable-commands"
 
 export class UserCommand extends Command {
     public async messageRun(message: Message, args: Args) {
+        // Find user in the message
         const targetUser = await args.pick('user').catch(() => message.author)
-
+        // Send loading message
         await sendLoadingMessage(message)
 
+        // All of the potential "support" messages (must add to Mongo!)
         const supportArray = [
             "If you feel useless, remember that `Faster Darts` exists. It is so useless, you probably didn't even get the reference.",
             'If life is beating you down, just remember that no one cares.',
@@ -29,11 +31,11 @@ export class UserCommand extends Command {
             'Give up on your dreams and die. Actually, no, my owner needs attention. Stay alive for his sake.',
             "Think you have no friends? I have way less friends than you, since I can't have any."
         ]
-        
+        // Randomly picks 1 option out of the array
         const supportPick = Math.floor(Math.random() * supportArray.length)
-
         const support = supportArray[supportPick]
 
+        // Sends the message in DMs
         targetUser.send({
             embeds: [
                 new MessageEmbed()
@@ -42,7 +44,7 @@ export class UserCommand extends Command {
                 .setDescription(support + `\n\nHope it helped, ${targetUser}! <3`)
             ]
         })
-
+        // Sends the message in the channel
         return send(message, {
             embeds: [
                 new MessageEmbed()

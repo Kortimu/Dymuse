@@ -12,8 +12,10 @@ import { send } from "@sapphire/plugin-editable-commands"
 
 export class UserCommand extends Command {
     public async messageRun(message: Message) {
+        // Sends loading message
         await sendLoadingMessage(message)
 
+        // Returns an embed with the link
         return send(message, {
             embeds: [
                 new MessageEmbed()

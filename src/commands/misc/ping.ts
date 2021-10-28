@@ -8,10 +8,13 @@ import { sendLoadingMessage } from '../../lib/utils';
 	description: 'ping pong',
     fullCategory: ['misc']
 })
+
 export class UserCommand extends Command {
 	public async messageRun(message: Message) {
+        // Sends loading message
 		const msg = await sendLoadingMessage(message);
 
+        // Sends ping message back
 		return send(message, {
             embeds: [
                 new MessageEmbed()

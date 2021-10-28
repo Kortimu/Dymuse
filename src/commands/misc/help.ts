@@ -10,7 +10,6 @@ import { sendLoadingMessage } from "../../lib/utils"
     aliases: ['h']
 })
 
-// Help command
 export class UserCommand extends Command {
     public async messageRun(message: Message) {
         // Sends the loading message
@@ -25,18 +24,18 @@ export class UserCommand extends Command {
 
         // For each command, add an embed field with the necessary fields
 		for (const cmdName of cmdNames) {
-			
+			// Gets info from the command Piece
             const commandDescription = this.container.stores.get('commands').get(cmdName)?.description
             const commandAlias = this.container.stores.get('commands').get(cmdName)?.aliases
             const commandCategory = this.container.stores.get('commands').get(cmdName)?.fullCategory
-
+            // Adds the command info to the big embed
             helpEmbed.addField(
                 `?${cmdName}`,
                 `**Category:** ${commandCategory}\n**Description:** ${commandDescription}\n**Aliases:** ${commandAlias}`
             )
         };
 
-        // Send the embed
+        // Sends the embed
         return send(message, {
             embeds: [
                 helpEmbed

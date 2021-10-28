@@ -22,6 +22,9 @@ export class UserCommand extends Command {
         if (targetName == 'leaderboard') {
             setLeaderboardChannel(targetChannel, message)
         }
+        if (targetName == 'welcome') {
+            setWelcomeChannel(targetChannel, message)
+        }
     }
 }
 
@@ -34,10 +37,9 @@ const setLeaderboardChannel = async (channel: TextChannel, message: Message) => 
     const channelId = channel.id
 
     const result = await ChannelModel.findOneAndUpdate({
-        _id: guildId,
+        guildId: guildId,
         leaderboardId: channelId
     }, {
-        _id: guildId,
         leaderBoardId: channelId
     }, {
         upsert: true,
@@ -54,5 +56,34 @@ const setLeaderboardChannel = async (channel: TextChannel, message: Message) => 
             .setDescription(`The leaderboard channel is set as ${leaderboardId}`)
         ]
     })
+}
 
+const setWelcomeChannel = async (channel: TextChannel, message: Message) => {
+    if (!message.guild) {
+        return
+    }
+
+    const guildId = message.guild.id
+    const channelId = channel.id
+
+    const result = await ChannelModel.findOneAndUpdate({
+        guildId: guildId,
+        welcomeId: channelId,
+    }, {
+        welcomeId: channelId
+    }, {
+        upsert: true,
+        new: true
+    })
+
+    const { welcomeId } = result
+
+    return send(message, {
+        embeds: [
+            new MessageEmbed()
+            .setColor('#00FF00')
+            .setTitle('Successfully set!')
+            .setDescription(`The welcome channel is set as ${welcomeId}`)
+        ]
+    })
 }
