@@ -7,7 +7,7 @@ import { UserModel } from '../../lib/schemas/userschema'
 
 @ApplyOptions<CommandOptions>({
     description: 'Gives XP to a user.',
-    fullCategory: ['owner'],
+    fullCategory: ['Owner'],
     aliases: ['giveexp'],
     preconditions: ['OwnerOnly']
 })

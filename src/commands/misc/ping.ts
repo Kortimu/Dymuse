@@ -6,7 +6,9 @@ import { sendLoadingMessage } from '../../lib/utils';
 
 @ApplyOptions<CommandOptions>({
 	description: 'ping pong',
-    fullCategory: ['misc']
+    fullCategory: ['Misc'],
+    aliases: ['p'],
+    detailedDescription: 'A command used to see the latency of the bot, as well as being a general test command. It has basically no use besides the occasional lag check.'
 })
 
 export class UserCommand extends Command {
@@ -14,14 +16,14 @@ export class UserCommand extends Command {
         // Sends loading message
 		const msg = await sendLoadingMessage(message);
 
-        // Sends ping message back
+        // Sends a questionably rude ping message back
 		return send(message, {
             embeds: [
                 new MessageEmbed()
-                .setTitle(`Oh, you want some dumb phrase like "Pong!" back? No. All you will get is some stats back, because fuck you.`)
+                .setTitle(`Oh, you want some dumb phrase like "Pong!" back? No. Fuck you.`)
                 .addFields(
                     {
-                        name: 'The amount of time wasted on your device, waiting for this message to load (very cringe):',
+                        name: 'The amount of time wasted on your device (very cringe):',
                         value: `${Math.round(this.container.client.ws.ping)} ms`
                     }, {
                         name: 'Framework moment:',

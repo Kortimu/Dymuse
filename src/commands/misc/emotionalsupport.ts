@@ -3,11 +3,13 @@ import { Args, Command, CommandOptions } from "@sapphire/framework";
 import { Message, MessageEmbed } from "discord.js"
 import { sendLoadingMessage } from "../../lib/utils"
 import { send } from "@sapphire/plugin-editable-commands"
+import { supportArray } from '../../lib/data/support-messages'
 
 @ApplyOptions<CommandOptions>({
-    description: 'Supports the user.',
-    fullCategory: ['misc'],
+    description: '"Supports" the user.',
+    fullCategory: ['Misc'],
     aliases: ['es', 'support'],
+    detailedDescription: 'A command that sends a random "supportive" message to a user of your choosing in their PMs.\n\nIf no one is specified, the PM will be sent to the person that wrote the command.',
     cooldownDelay: 20000
 })
 
@@ -18,19 +20,6 @@ export class UserCommand extends Command {
         // Send loading message
         await sendLoadingMessage(message)
 
-        // All of the potential "support" messages (must add to Mongo!)
-        const supportArray = [
-            "If you feel useless, remember that `Faster Darts` exists. It is so useless, you probably didn't even get the reference.",
-            'If life is beating you down, just remember that no one cares.',
-            "Sometimes the solution to your problems IS violence. Don't listen to what the government says, they are LIARS",
-            'I ate a banana today, and it definitely tasted worse than your feet.',
-            'If you think your life is meaningless, remember that Aqua Man has a fucking boat.',
-            'Others think you are useless? Trust me, the Glare had it much worse.',
-            'I ran out of supporting messages, so have an insult. Fuck you.',
-            'The owner of this server hates you, why should I care?',
-            'Give up on your dreams and die. Actually, no, my owner needs attention. Stay alive for his sake.',
-            "Think you have no friends? I have way less friends than you, since I can't have any."
-        ]
         // Randomly picks 1 option out of the array
         const supportPick = Math.floor(Math.random() * supportArray.length)
         const support = supportArray[supportPick]

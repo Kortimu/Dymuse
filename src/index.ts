@@ -19,7 +19,14 @@ const client = new SapphireClient({
 		'GUILD_MESSAGE_REACTIONS',
 		'DIRECT_MESSAGES',
 		'DIRECT_MESSAGE_REACTIONS'
-	]
+	],
+	presence: {
+		status: 'idle',
+		activities: [{
+			name: 'TikTok compilations',
+			type: 'WATCHING'
+		}]
+	}
 });
 
 const main = async () => {

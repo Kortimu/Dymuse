@@ -5,9 +5,10 @@ import { sendLoadingMessage } from "../../lib/utils"
 import { send } from "@sapphire/plugin-editable-commands"
 
 @ApplyOptions<CommandOptions>({
-    description: "Sends a link to the bot's repository.",
-    fullCategory: ['misc'],
-    aliases: ['githublink', 'git']
+    description: "Sends a link of the bot's repository.",
+    fullCategory: ['Misc'],
+    aliases: ['githublink', 'git'],
+    detailedDescription: 'A command that sends the link for the DylanBot Github repository.'
 })
 
 export class UserCommand extends Command {

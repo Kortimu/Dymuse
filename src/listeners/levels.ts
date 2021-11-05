@@ -18,7 +18,6 @@ export class UserEvent extends Listener<typeof Events.MessageCreate> {
         
         // Checks if guild exists, and makes sure bots don't get XP
         if (!guild) {
-            console.log('No guild found.')
             return
         }
         if (user.bot) {

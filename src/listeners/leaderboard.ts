@@ -23,7 +23,7 @@ async function fetchTopMembers(guildId: string) {
     // Create embed, which will be the leaderboard
     let leaderEmbed = new MessageEmbed()
     .setTitle('User leaderboard:')
-    .setColor('#0000FF')
+    .setColor('#FF00FF')
 
     // Find all users from the guild, and sort them
     const results = await UserModel.find({
@@ -37,6 +37,17 @@ async function fetchTopMembers(guildId: string) {
     for (let i = 0; i < results.length; i++) {
         const { userId, level = 1, xp = 0, rank } = results[i];
         const needed = getNeededXP(level)
+        // String to show progress
+        let progress = ''
+        // For each 10%, add 1 colored block
+        for (let i = 0; i < Math.round(xp/needed * 10); i++) {
+            progress += '🟪'
+        }
+        // For each missing 10%, add 1 empty block
+        for (let i = 0; i < 10 - Math.round(xp/needed * 10); i++) {
+            progress += '⬛'
+        }
+        // x + (10-x) = x + 10 - x = 10
 
         // Update their rank (used for other commands)
         await UserModel.findOneAndUpdate({
@@ -59,13 +70,13 @@ async function fetchTopMembers(guildId: string) {
             value: `${level}`,
             inline: true
         }, {
-            name: `XP`,
-            value: `${xp}/${needed}`,
+            name: `Progress`,
+            value: `${progress} (${Math.round(xp/needed * 100)}%)`,
             inline: true
         })
     }
     // Footer moment
-    leaderEmbed.setFooter(`This leaderboard gets updated once every 10 SECONDS. Results are innacurate at the moment.`)
+    leaderEmbed.setFooter(`This leaderboard gets updated once every 10 SECONDS. Some results might be inaccurate.`)
 
     return leaderEmbed;
 }

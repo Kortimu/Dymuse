@@ -10,4 +10,4 @@ A [Discord](https://discord.com) bot created for a friend of mine.
 
 ## WARNING!
 
-If you want to copy some of the code. be vary - I have no idea what I'm doing!
+If you want to copy some of the code, be vary - I HAVE NO IDEA WHAT I'M DOING
