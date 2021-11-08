@@ -37,7 +37,7 @@ export class UserEvent extends Listener {
 
 		console.log(
 			String.raw`
-${line01} ${pad}${blc('1.0.0')}
+${line01} ${pad}${blc('2.0.0')}
 ${line02} ${pad}[${success}] Gateway
 ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MODE')}` : ''}
 		`.trim()
@@ -49,22 +49,23 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 		const stores = [...client.stores.values()];
 		const last = stores.pop()!;
 
-		for (const store of stores) logger.info(this.styleStore(store, false));
-		logger.info(this.styleStore(last, true));
+		for (const store of stores) logger.info(this.styleStore(store));
+		logger.info(this.styleStore(last));
 	}
 
-	private styleStore(store: Store<any>, last: boolean) {
-		return gray(`${last ? '└─' : '├─'} Loaded ${this.style(store.size.toString().padEnd(3, ' '))} ${store.name}.`);
+	private styleStore(store: Store<any>) {
+		return gray(`├─ Loaded ${this.style(store.size.toString().padEnd(3, ' '))} ${store.name}.`);
 	}
 
 	private async mongoConnect() {
-		console.log('Connecting to Mongo...')
+		const { logger } = this.container
+		logger.info(gray(`├─ ${yellow('Connecting')} to Mongo...`))
 		mongoose.connect(process.env.MONGO_URI || '', {
-            keepAlive: true,
+            keepAlive: true
         }).then(() =>{
-            console.log('Connected to the database!');
+            logger.info(gray((`└─ ${yellow('Connected')} to Mongo!`)));
         }).catch((err) => {
-            console.log(err);
+            logger.error(err);
         });
 	}
 }

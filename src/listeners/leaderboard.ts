@@ -1,6 +1,6 @@
 import { Listener, Events, PieceContext } from '@sapphire/framework';
 import { Client, MessageEmbed, TextChannel } from 'discord.js'
-import { ChannelModel } from '../lib/schemas/channelschema'
+import { GuildModel } from '../lib/schemas/guildschema'
 import { UserModel } from '../lib/schemas/userschema'
 import { getNeededXP } from './levels';
 
@@ -82,7 +82,7 @@ async function fetchTopMembers(guildId: string) {
 }
 
 const updateLeaderboard = async (client: Client) => {
-    const results = await ChannelModel.find({})
+    const results = await GuildModel.find({})
 
     // For each guild:
     for (const result of results) {

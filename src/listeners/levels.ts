@@ -2,6 +2,7 @@ import { Events, Listener, PieceContext } from '@sapphire/framework';
 import { send } from '@skyra/editable-commands';
 import { Message, MessageEmbed } from 'discord.js';
 import { UserModel } from '../lib/schemas/userschema'
+import { GuildModel } from '../lib/schemas/guildschema'
 
 export class UserEvent extends Listener<typeof Events.MessageCreate> {
     public constructor(context: PieceContext) {
@@ -78,5 +79,23 @@ const addXP = async (guildId: string, userId: string, xpToAdd: number, message: 
                 .setDescription(`<@${userId}> leveled up to level **${level}** with **${xp}** leftover. Congrats!`)
             ]
         })
+
+        const guildResult = await GuildModel.findOne({
+            guildId: guildId
+        })
+        if (!guildResult) return
+    
+        const { levelRoles } = guildResult
+    
+        for (let i = 0; i < levelRoles.length; i++) {
+            const levelRoleId = Object(levelRoles[i]).id
+            const levelRoleLevel = Object(levelRoles[i]).level
+    
+            if (!message.member) return
+            if (levelRoleLevel < level) {
+                message.member.roles.add(levelRoleId)
+            }
+            
+        }
     }
 }
