@@ -35,17 +35,34 @@ async function fetchTopMembers(guildId: string) {
   for (let result = 0; result < results.length; result++) {
     const { userId, level = 1, xp = 0, rank } = results[result];
     const needed = getNeededXP(level);
-    // String to show progress
     let progress = '';
-    // For each 10%, add 1 colored block
-    for (let done = 0; done < Math.round((xp / needed) * 10); done++) {
-      progress += '🟪';
+    // Make the progress bar
+    const filled = Math.round((xp / needed) * 10)
+    for (let slot = 1; slot <= 10; slot++) {
+      if (slot === 1) {
+        if (slot > filled) {
+          progress += `<:Bar1Empty:908668400488841307>`
+        } else if (slot === filled) {
+          progress += `<:Bar1Half:908669070952501268>`
+        } else {
+          progress += `<:Bar1Full:908669763675385927>`
+        }
+      } else if (slot === 10) {
+        if (slot > filled) {
+          progress += `<:Bar3Empty:908668400434294804>`
+        } else {
+          progress += `<:Bar3Half:908669070944108604>`
+        }
+      } else if (slot) {
+        if (slot > filled) {
+          progress += `<:Bar2Empty:908668400430100520>`
+        } else if (slot === filled) {
+          progress += `<:Bar2Half:908669070818295819>`
+        } else {
+          progress += `<:Bar2Full:908669763633442877>`
+        }
+      }
     }
-    // For each missing 10%, add 1 empty block
-    for (let missing = 0; missing < 10 - Math.round((xp / needed) * 10); missing++) {
-      progress += '⬛';
-    }
-    // x + (10-x) = x + 10 - x = 10
 
     // Update their rank (used for other commands)
     await UserModel.findOneAndUpdate(
