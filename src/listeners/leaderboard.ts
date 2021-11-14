@@ -11,8 +11,8 @@ export class UserEvent extends Listener<typeof Events.ClientReady> {
     });
   }
 
+  // Every 10 seconds, update the leaderboard
   public run(client: Client) {
-    // Every x 10 seconds, update the leaderboard
     setInterval(() => {
       updateLeaderboard(client);
     }, 1000 * 10);
@@ -20,9 +20,7 @@ export class UserEvent extends Listener<typeof Events.ClientReady> {
 }
 
 async function fetchTopMembers(guildId: string) {
-  // Create embed, which will be the leaderboard
   const leaderEmbed = new MessageEmbed().setTitle('User leaderboard:').setColor('#FF00FF');
-
   // Find all users from the guild, and sort them
   const results = await UserModel.find({
     guildId,
@@ -37,29 +35,29 @@ async function fetchTopMembers(guildId: string) {
     const needed = getNeededXP(level);
     let progress = '';
     // Make the progress bar
-    const filled = Math.round((xp / needed) * 10)
+    const filled = Math.round((xp / needed) * 10);
     for (let slot = 1; slot <= 10; slot++) {
       if (slot === 1) {
         if (slot > filled) {
-          progress += `<:Bar1Empty:908668400488841307>`
+          progress += `<:Bar1Empty:908668400488841307>`;
         } else if (slot === filled) {
-          progress += `<:Bar1Half:908669070952501268>`
+          progress += `<:Bar1Half:908669070952501268>`;
         } else {
-          progress += `<:Bar1Full:908669763675385927>`
+          progress += `<:Bar1Full:908669763675385927>`;
         }
       } else if (slot === 10) {
         if (slot > filled) {
-          progress += `<:Bar3Empty:908668400434294804>`
+          progress += `<:Bar3Empty:908668400434294804>`;
         } else {
-          progress += `<:Bar3Half:908669070944108604>`
+          progress += `<:Bar3Half:908669070944108604>`;
         }
       } else if (slot) {
         if (slot > filled) {
-          progress += `<:Bar2Empty:908668400430100520>`
+          progress += `<:Bar2Empty:908668400430100520>`;
         } else if (slot === filled) {
-          progress += `<:Bar2Half:908669070818295819>`
+          progress += `<:Bar2Half:908669070818295819>`;
         } else {
-          progress += `<:Bar2Full:908669763633442877>`
+          progress += `<:Bar2Full:908669763633442877>`;
         }
       }
     }
@@ -79,7 +77,7 @@ async function fetchTopMembers(guildId: string) {
       },
     );
 
-    // Displays each user's info in one embed field, using inlines
+    // Displays each user's info in one embed field
     leaderEmbed.addFields(
       {
         name: `#${rank}`,
@@ -98,7 +96,6 @@ async function fetchTopMembers(guildId: string) {
       },
     );
   }
-  // Footer moment
   leaderEmbed.setFooter(
     'This leaderboard gets updated once every 10 SECONDS. Some results might be inaccurate.',
   );
