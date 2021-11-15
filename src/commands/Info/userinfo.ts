@@ -33,42 +33,38 @@ export class UserCommand extends Command {
 
     // Show info about the user
     if (targetMember.joinedAt !== null) {
-      infoEmbed.addFields(
-        {
-          name: 'Username',
-          value: `${targetUser} - \`${targetUser.username}#${targetUser.discriminator}\``,
-        },
-        {
-          name: 'Account creation date',
-          value: `<t:${Math.floor(targetUser.createdAt.getTime() / 1000)}:f>\n(<t:${Math.floor(
-            targetUser.createdAt.getTime() / 1000,
-          )}:R>)`,
-          inline: true,
-        },
-        {
-          name: 'Join date',
-          value: `<t:${Math.floor(targetMember.joinedAt.getTime() / 1000)}:f>\n(<t:${Math.floor(
-            targetMember.joinedAt.getTime() / 1000,
-          )}:R>)`,
-          inline: true,
-        },
-        {
-          name: 'ID',
-          value: `${targetUser.id}`,
-        },
-        {
-          name: `Roles (${targetMember.roles.cache.size})`,
-          value: `${targetMember.roles.cache.map((role) => `${role}`).join('\n')}`,
-          inline: true,
-        },
-        {
-          name: 'Progress',
-          value: `Level: **${level}**\nXP: ${xp}/${getNeededXP(level)} (${Math.round(
-            (xp / getNeededXP(level)) * 100,
-          )}%)`,
-          inline: true,
-        },
-      );
+      infoEmbed
+        .addFields(
+          {
+            name: 'Username',
+            value: `${targetUser} - \`${targetUser.username}#${targetUser.discriminator}\``,
+          },
+          {
+            name: 'Progress',
+            value: `Level: **${level}**\nXP: ${xp}/${getNeededXP(level)} (${Math.round(
+              (xp / getNeededXP(level)) * 100,
+            )}%)`,
+          },
+          {
+            name: 'Account creation date',
+            value: `<t:${Math.floor(targetUser.createdAt.getTime() / 1000)}:f>\n(<t:${Math.floor(
+              targetUser.createdAt.getTime() / 1000,
+            )}:R>)`,
+            inline: true,
+          },
+          {
+            name: 'Join date',
+            value: `<t:${Math.floor(targetMember.joinedAt.getTime() / 1000)}:f>\n(<t:${Math.floor(
+              targetMember.joinedAt.getTime() / 1000,
+            )}:R>)`,
+            inline: true,
+          },
+          {
+            name: `Roles (${targetMember.roles.cache.size})`,
+            value: `${targetMember.roles.cache.map((role) => `${role}`).join('\n')}`,
+          },
+        )
+        .setFooter(`ID: ${targetUser.id}`);
       if (targetUser.avatarURL !== null) {
         infoEmbed.setThumbnail(targetMember.displayAvatarURL({ dynamic: true }) as string);
       }

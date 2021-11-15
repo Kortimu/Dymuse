@@ -21,16 +21,20 @@ export class UserCommand extends Command {
       return;
     }
     const bot = message.client.users.cache.get(botId);
+    if (!bot) {
+      return;
+    }
 
     // Returns an embed with the info
     return send(message, {
       embeds: [
         new MessageEmbed()
           .setColor('#FF00FF')
-          .setTitle('Information about the bot:')
+          .setTitle('DylanBot v2.0.1')
           .setDescription(
-            `${bot} is a bot made for the Dylan, the owner of \`The Shag Syndicate\`. It has:\n- Multiple fun and useful commands\n- Features tailored to the server\nAnd more!`,
-          ),
+            `${bot} is a bot made for Dylan, the owner of \`The Shag Syndicate\`. It has:\n- Multiple fun and useful (who am I kidding, mostly fun) commands\n- Leaderboards\n- Levels and more!\n\nGithub link: https://github.com/Kortimu/DylanBot`,
+          )
+          .setThumbnail(bot.avatarURL() || ''),
       ],
     });
   }
