@@ -12,26 +12,26 @@ import {
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import ytdl from 'ytdl-core';
+import ytsr from 'ytsr';
 
 @ApplyOptions<CommandOptions>({
   description: 'Plays audio from Youtube.',
   fullCategory: ['Music'],
-  aliases: ['p'],
+  aliases: ['pl', 'youtube'],
   detailedDescription: 'A command that plays a user-requested Youtube video in audio form.',
 })
 export class UserCommand extends Command {
   public async messageRun(message: Message, args: Args) {
     // Sends loading message
     await sendLoadingMessage(message);
-
-    const url = await args.pick('string');
-    console.log(url);
-
-    play(message, url);
+    if (!args) {
+      return;
+    }
+    play(message, args);
   }
 }
 
-const play = async (message: Message, url: string) => {
+const play = async (message: Message, args: Args) => {
   if (!message.member) {
     return;
   }
@@ -41,41 +41,82 @@ const play = async (message: Message, url: string) => {
         new MessageEmbed()
           .setColor('#FF0000')
           .setTitle('Error')
-          .setDescription('You need to be in a voice channel to use this lmao'),
+          .setDescription('You need to be in a voice channel to use this, duh'),
       ],
     });
   }
-  if (ytdl.validateURL(url)) {
-    const rawData = await ytdl.getBasicInfo(url, { lang: 'en' });
-    const duration = parseInt(rawData.videoDetails.lengthSeconds, 10);
-    const info = {
-      info: rawData,
-      url: rawData.videoDetails.video_url,
-      title: rawData.videoDetails.title,
-      duration,
-      bestThumbnail: rawData.videoDetails.thumbnails[0],
-    };
 
-    playSong(message.member.voice.channel as VoiceChannel, info);
-
-    // URL specified
+  let songInfo = null;
+  try {
+    songInfo = await getSongInfo(args);
+  } catch (error) {
+    console.log(error);
+  }
+  if (songInfo === null) {
     return send(message, {
       embeds: [
         new MessageEmbed()
-          .setColor('#FF00FF')
-          .setTitle('Song added!')
-          .setDescription(
-            `**Title:** ${info.title}\n**Length:** ${info.duration} seconds (will look better later, shut up)`,
-          ),
+          .setColor('#FF0000')
+          .setTitle('Error')
+          .setDescription('Song not found, dumbass'),
       ],
     });
   }
-  // No URL specified
+
+  const rawData = await ytdl.getBasicInfo(songInfo.videoDetails.video_url, { lang: 'en' });
+  const duration = parseInt(rawData.videoDetails.lengthSeconds, 10);
+  const info = {
+    info: rawData,
+    url: rawData.videoDetails.video_url,
+    title: rawData.videoDetails.title,
+    duration,
+    bestThumbnail: rawData.videoDetails.thumbnails[0],
+  };
+
+  playSong(message.member.voice.channel as VoiceChannel, info);
+
   return send(message, {
     embeds: [
-      new MessageEmbed().setColor('#FF0000').setTitle('yikes').setDescription('das not url'),
+      new MessageEmbed()
+        .setColor('#FF00FF')
+        .setTitle('Song added to queue!')
+        .setDescription(
+          `**Title:** ${info.title}\n**Length:** ${info.duration} seconds (shut up, showing time in a fancy way is hard)`,
+        ),
     ],
   });
+};
+
+const getSongInfo = async (args: Args) => {
+  let songInfo = null;
+  let songUrl = await args.pick('string');
+
+  if (!ytdl.validateURL(songUrl)) {
+    const result = `${songUrl} ${await args.rest('string').catch(() => '')}`;
+    try {
+      const results: any = await ytsr(result, {
+        limit: 1,
+      });
+      songUrl = results.items[0].url;
+    } catch (error) {
+      console.log(error);
+      throw 'Error searching for song';
+    }
+
+    if (!ytdl.validateURL(songUrl)) {
+      throw 'Song not found... for some reason';
+    }
+
+    console.log(result);
+  }
+
+  try {
+    songInfo = await ytdl.getInfo(songUrl);
+  } catch (error) {
+    console.log(error);
+    throw 'Error getting the video from the URL.';
+  }
+  return songInfo;
 };
 
 const getSongPlayer = async (song: any) => {
@@ -88,11 +129,11 @@ const getSongPlayer = async (song: any) => {
     inputType: StreamType.Arbitrary,
   });
   player.play(resource);
-  return entersState(player, AudioPlayerStatus.Playing, 5 * 1000);
+  return entersState(player, AudioPlayerStatus.Playing, 10 * 1000);
 };
 
 const playSong = async (voiceChannel: VoiceChannel, songInfo: any) => {
-  const connection = await connect(voiceChannel);
+  const connection = connect(voiceChannel);
   const audioPlayer = await getSongPlayer(songInfo);
   connection.subscribe(audioPlayer);
 };

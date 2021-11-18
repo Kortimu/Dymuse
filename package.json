@@ -34,7 +34,8 @@
     "reflect-metadata": "^0.1.13",
     "ts-node": "^10.2.1",
     "tsc-watch": "^4.5.0",
-    "ytdl-core": "^4.9.1"
+    "ytdl-core": "^4.9.1",
+    "ytsr": "^3.5.3"
   },
   "devDependencies": {
     "@sapphire/eslint-config": "^4.0.4",
