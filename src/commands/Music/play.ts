@@ -1,20 +1,21 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Args, Command, CommandOptions } from '@sapphire/framework';
-import { Message, MessageEmbed, VoiceChannel } from 'discord.js';
+import { Guild, Message, MessageEmbed, TextChannel, VoiceChannel } from 'discord.js';
 import {
   AudioPlayerStatus,
   createAudioPlayer,
   createAudioResource,
   entersState,
+  getVoiceConnection,
   joinVoiceChannel,
   StreamType,
 } from '@discordjs/voice';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
-import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot'
+import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
 import ytdl from 'ytdl-core';
 import ytsr from 'ytsr';
-const queues = new Map()
+const queues = new Map();
 
 @ApplyOptions<CommandOptions>({
   description: 'Plays audio from Youtube.',
@@ -27,15 +28,17 @@ export class UserCommand extends Command {
     // Sends loading message
     await sendLoadingMessage(message);
     if (!args) {
-      send (message, {
+      send(message, {
         embeds: [
           new MessageEmbed()
             .setColor('#FF0000')
             .setTitle('Error')
-            .setDescription('How do you think I can find something with no link or search term? Reading your mind?!')
-        ]
-      })
-      return
+            .setDescription(
+              'How do you think I can find something with no link or search term? Reading your mind?!',
+            ),
+        ],
+      });
+      return;
     }
     play(message, args);
   }
@@ -60,7 +63,7 @@ const play = async (message: Message, args: Args) => {
   try {
     songInfo = await getSongInfo(message, args);
   } catch (error) {
-    throw 'Error getting song info'
+    throw 'Error getting song info';
   }
   if (songInfo === null) {
     return send(message, {
@@ -83,7 +86,9 @@ const play = async (message: Message, args: Args) => {
     formattedDuration: formatSeconds(duration),
     bestThumbnail: rawData.videoDetails.thumbnails[3],
     channelName: rawData.videoDetails.author.name,
-    channelLogo: rawData.videoDetails.author.thumbnails?.[0].url ?? 'https://yt3.ggpht.com/a-/AAuE7mDaHtAVove7M4KGX3OGtmBjsfpBGCbIPNrwAA=s900-mo-c-c0xffffffff-rj-k-no'
+    channelLogo:
+      rawData.videoDetails.author.thumbnails?.[0].url ??
+      'https://yt3.ggpht.com/a-/AAuE7mDaHtAVove7M4KGX3OGtmBjsfpBGCbIPNrwAA=s900-mo-c-c0xffffffff-rj-k-no',
   };
   // Found! (Embed)
   send(message, {
@@ -91,48 +96,50 @@ const play = async (message: Message, args: Args) => {
       new MessageEmbed()
         .setColor('#FF00FF')
         .setTitle('Song found!')
-        .setDescription(`\`${info.title}\` is about to play...`)
-    ]
-  })
+        .setDescription(`\`${info.title}\` is about to play...`),
+    ],
+  });
   if (!message.guild) {
-    throw 'Guild not found (why in DMs)'
+    throw 'Guild not found (why in DMs)';
   }
-  const voiceChannel = message.member.voice.channel as VoiceChannel
+  const voiceChannel = message.member.voice.channel as VoiceChannel;
 
-  let musicQueue = queues.get(message.guild.id)
+  let musicQueue = queues.get(message.guild.id);
   if (!musicQueue) {
     musicQueue = {
       voiceChannel,
       songs: [],
       audioPlayer: null,
       isPlaying: false,
-      isRepeat: false
-    }
-    queues.set(message.guild.id, musicQueue)
+      isRepeat: false,
+    };
+    queues.set(message.guild.id, musicQueue);
   }
 
-  const serverQueue = addSongToQueue(musicQueue, info)
+  const serverQueue = addSongToQueue(musicQueue, info);
 
   if (!serverQueue.isPlaying) {
-    playSong(serverQueue);
+    playSong(message.member.guild, message.channel as TextChannel, serverQueue, queues);
   }
-  message.delete()
+  message.delete();
   return send(message, {
     embeds: [
       new MessageEmbed()
         .setColor('#FF00FF')
         .setTitle('Song added to queue!')
         .setDescription(
-          `**Title:** ${info.title}\n**Length:** ${formatSeconds(info.duration)}\n**Channel:** ${info.channelName}`,
+          `**Title:** ${info.title}\n**Length:** ${formatSeconds(info.duration)}\n**Channel:** ${
+            info.channelName
+          }`,
         )
         .setImage(info.bestThumbnail.url)
         .setThumbnail(info.channelLogo),
     ],
   }).then((msg) => {
     setTimeout(() => {
-      msg.delete()
-    }, 5 * 1000)
-  })
+      msg.delete();
+    }, 10 * 1000);
+  });
 };
 
 const getSongInfo = async (message: Message, args: Args) => {
@@ -146,12 +153,12 @@ const getSongInfo = async (message: Message, args: Args) => {
         new MessageEmbed()
           .setColor('#FFFF00')
           .setTitle('Searching...')
-          .setDescription(`Searching \`${result}\` on Youtube...`)
-      ]
-    })
+          .setDescription(`Searching \`${result}\` on Youtube...`),
+      ],
+    });
 
-    const filters = await ytsr.getFilters(result)
-    const filter = filters.get('Type')?.get('Video')?.url ?? result
+    const filters = await ytsr.getFilters(result);
+    const filter = filters.get('Type')?.get('Video')?.url ?? result;
 
     try {
       const results: any = await ytsr(filter, {
@@ -189,35 +196,86 @@ const getSongPlayer = async (song: ISong) => {
   return entersState(player, AudioPlayerStatus.Playing, 10 * 1000);
 };
 
-const playSong = async (queue: IServerMusicQueue) => {
+const playSong = async (
+  guild: Guild,
+  channel: TextChannel,
+  queue: IServerMusicQueue,
+  musicQueue: Map<string, IServerMusicQueue>,
+) => {
+  if (!queue) {
+    return;
+  }
+  if (queue.songs.length === 0) {
+    return emptyQueue(guild.id, channel, queue, musicQueue);
+  }
   const connection = connect(queue.voiceChannel);
-  const song = queue.songs[0]
+  const song = queue.songs[0];
   queue.audioPlayer = await getSongPlayer(song);
   connection.subscribe(queue.audioPlayer);
-  queue.isPlaying = true
+  queue.isPlaying = true;
 
   queue.audioPlayer.on(AudioPlayerStatus.Idle, () => {
-    queue.isPlaying = false
-    songFinish(queue)
-  })
+    queue.isPlaying = false;
+    songFinish(guild, channel, queue, musicQueue);
+  });
 };
 
 const addSongToQueue = (musicQueue: IServerMusicQueue, song: ISong) => {
-  musicQueue.songs.push(song)
-  console.log(musicQueue.songs)
-  return musicQueue
-}
+  musicQueue.songs.push(song);
+  return musicQueue;
+};
 
-const songFinish = (serverQueue: IServerMusicQueue) => {
+const songFinish = (
+  guild: Guild,
+  channel: TextChannel,
+  serverQueue: IServerMusicQueue,
+  musicQueue: Map<string, IServerMusicQueue>,
+) => {
   if (serverQueue !== null) {
-    const song = serverQueue.songs[0]
+    const song = serverQueue.songs[0];
     if (serverQueue.isRepeat) {
-      serverQueue.songs.push(song)
+      serverQueue.songs.push(song);
     }
-    serverQueue.songs.shift()
-    playSong(serverQueue)
+    serverQueue.songs.shift();
+    playSong(guild, channel, serverQueue, musicQueue);
   }
-}
+};
+
+const emptyQueue = (
+  guildId: string,
+  channel: TextChannel,
+  serverQueue: IServerMusicQueue,
+  musicQueue: Map<string, IServerMusicQueue>,
+) => {
+  const connection = getVoiceConnection(guildId);
+  if (serverQueue.voiceChannel.members.size === 1) {
+    connection?.destroy();
+    musicQueue.delete(guildId);
+    channel.send({
+      embeds: [
+        new MessageEmbed()
+          .setColor('#FF0000')
+          .setTitle('Music Stopped')
+          .setDescription('Everyone left, not playing music alone'),
+      ],
+    });
+    return;
+  }
+  setTimeout(() => {
+    if (serverQueue.songs.length === 0) {
+      connection?.destroy();
+      musicQueue.delete(guildId);
+      channel.send({
+        embeds: [
+          new MessageEmbed()
+            .setColor('#FF0000')
+            .setTitle('bye')
+            .setDescription('aight imma head out'),
+        ],
+      });
+    }
+  }, 60 * 1000);
+};
 
 const connect = (channel: VoiceChannel) => {
   const connection = joinVoiceChannel({
@@ -229,13 +287,13 @@ const connect = (channel: VoiceChannel) => {
 };
 
 const formatSeconds = (duration: number) => {
-  const seconds = Math.floor(duration % 60)
-  const minutes = Math.floor((duration / 60) % 60)
-  const hours = Math.floor((duration / (60 * 60)) % 60)
+  const seconds = Math.floor(duration % 60);
+  const minutes = Math.floor((duration / 60) % 60);
+  const hours = Math.floor((duration / (60 * 60)) % 60);
 
-  const displayHours = (hours > 0) ? `${hours}:` : '';
-  const displayMinutes = (minutes < 10) ? `0${minutes}` : minutes;
-  const displaySeconds = (seconds < 10) ? `0${seconds}` : seconds;
+  const displayHours = hours > 0 ? `${hours}:` : '';
+  const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  const displaySeconds = seconds < 10 ? `0${seconds}` : seconds;
 
   return `\`${displayHours}${displayMinutes}:${displaySeconds}\``;
-}
+};
