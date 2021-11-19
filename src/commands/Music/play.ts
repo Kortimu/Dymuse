@@ -25,7 +25,15 @@ export class UserCommand extends Command {
     // Sends loading message
     await sendLoadingMessage(message);
     if (!args) {
-      return;
+      send (message, {
+        embeds: [
+          new MessageEmbed()
+            .setColor('#FF0000')
+            .setTitle('Error')
+            .setDescription('How do you think I can find something with no link or search term? Reading your mind?!')
+        ]
+      })
+      return
     }
     play(message, args);
   }
@@ -48,9 +56,9 @@ const play = async (message: Message, args: Args) => {
 
   let songInfo = null;
   try {
-    songInfo = await getSongInfo(args);
+    songInfo = await getSongInfo(message, args);
   } catch (error) {
-    console.log(error);
+    throw 'Error getting song info'
   }
   if (songInfo === null) {
     return send(message, {
@@ -58,7 +66,7 @@ const play = async (message: Message, args: Args) => {
         new MessageEmbed()
           .setColor('#FF0000')
           .setTitle('Error')
-          .setDescription('Song not found, dumbass'),
+          .setDescription('Am I expected to find something that does not exist?!'),
       ],
     });
   }
@@ -70,8 +78,19 @@ const play = async (message: Message, args: Args) => {
     url: rawData.videoDetails.video_url,
     title: rawData.videoDetails.title,
     duration,
-    bestThumbnail: rawData.videoDetails.thumbnails[0],
+    bestThumbnail: rawData.videoDetails.thumbnails[3],
+    channelName: rawData.videoDetails.author.name,
+    channelLogo: rawData.videoDetails.author.thumbnails?.[0].url ?? 'https://yt3.ggpht.com/a-/AAuE7mDaHtAVove7M4KGX3OGtmBjsfpBGCbIPNrwAA=s900-mo-c-c0xffffffff-rj-k-no'
   };
+  // Found! (Embed)
+  send(message, {
+    embeds: [
+      new MessageEmbed()
+        .setColor('#FF00FF')
+        .setTitle('Song found!')
+        .setDescription(`\`${info.title}\` is about to play...`)
+    ]
+  })
 
   playSong(message.member.voice.channel as VoiceChannel, info);
 
@@ -81,20 +100,34 @@ const play = async (message: Message, args: Args) => {
         .setColor('#FF00FF')
         .setTitle('Song added to queue!')
         .setDescription(
-          `**Title:** ${info.title}\n**Length:** ${info.duration} seconds (shut up, showing time in a fancy way is hard)`,
-        ),
+          `**Title:** ${info.title}\n**Length:** ${formatSeconds(info.duration)}\n**Channel:** ${info.channelName}`,
+        )
+        .setImage(info.bestThumbnail.url)
+        .setThumbnail(info.channelLogo),
     ],
   });
 };
 
-const getSongInfo = async (args: Args) => {
+const getSongInfo = async (message: Message, args: Args) => {
   let songInfo = null;
   let songUrl = await args.pick('string');
 
   if (!ytdl.validateURL(songUrl)) {
     const result = `${songUrl} ${await args.rest('string').catch(() => '')}`;
+    send(message, {
+      embeds: [
+        new MessageEmbed()
+          .setColor('#FFFF00')
+          .setTitle('Searching...')
+          .setDescription(`Searching \`${result}\` on Youtube...`)
+      ]
+    })
+
+    const filters = await ytsr.getFilters(result)
+    const filter = filters.get('Type')?.get('Video')?.url ?? result
+
     try {
-      const results: any = await ytsr(result, {
+      const results: any = await ytsr(filter, {
         limit: 1,
       });
       songUrl = results.items[0].url;
@@ -102,12 +135,9 @@ const getSongInfo = async (args: Args) => {
       console.log(error);
       throw 'Error searching for song';
     }
-
     if (!ytdl.validateURL(songUrl)) {
       throw 'Song not found... for some reason';
     }
-
-    console.log(result);
   }
 
   try {
@@ -146,3 +176,15 @@ const connect = (channel: VoiceChannel) => {
   });
   return connection;
 };
+
+const formatSeconds = (duration: number) => {
+  const seconds = Math.floor(duration % 60)
+  const minutes = Math.floor((duration / 60) % 60)
+  const hours = Math.floor((duration / (60 * 60)) % 60)
+
+  const displayHours = (hours > 0) ? `${hours}:` : '';
+  const displayMinutes = (minutes < 10) ? `0${minutes}` : minutes;
+  const displaySeconds = (seconds < 10) ? `0${seconds}` : seconds;
+
+  return `\`${displayHours}${displayMinutes}:${displaySeconds}\``;
+}
