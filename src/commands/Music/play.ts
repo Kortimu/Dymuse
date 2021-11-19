@@ -11,8 +11,10 @@ import {
 } from '@discordjs/voice';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
+import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot'
 import ytdl from 'ytdl-core';
 import ytsr from 'ytsr';
+const queues = new Map()
 
 @ApplyOptions<CommandOptions>({
   description: 'Plays audio from Youtube.',
@@ -73,11 +75,12 @@ const play = async (message: Message, args: Args) => {
 
   const rawData = await ytdl.getBasicInfo(songInfo.videoDetails.video_url, { lang: 'en' });
   const duration = parseInt(rawData.videoDetails.lengthSeconds, 10);
-  const info = {
+  const info: ISong = {
     info: rawData,
     url: rawData.videoDetails.video_url,
     title: rawData.videoDetails.title,
     duration,
+    formattedDuration: formatSeconds(duration),
     bestThumbnail: rawData.videoDetails.thumbnails[3],
     channelName: rawData.videoDetails.author.name,
     channelLogo: rawData.videoDetails.author.thumbnails?.[0].url ?? 'https://yt3.ggpht.com/a-/AAuE7mDaHtAVove7M4KGX3OGtmBjsfpBGCbIPNrwAA=s900-mo-c-c0xffffffff-rj-k-no'
@@ -91,9 +94,29 @@ const play = async (message: Message, args: Args) => {
         .setDescription(`\`${info.title}\` is about to play...`)
     ]
   })
+  if (!message.guild) {
+    throw 'Guild not found (why in DMs)'
+  }
+  const voiceChannel = message.member.voice.channel as VoiceChannel
 
-  playSong(message.member.voice.channel as VoiceChannel, info);
+  let musicQueue = queues.get(message.guild.id)
+  if (!musicQueue) {
+    musicQueue = {
+      voiceChannel,
+      songs: [],
+      audioPlayer: null,
+      isPlaying: false,
+      isRepeat: false
+    }
+    queues.set(message.guild.id, musicQueue)
+  }
 
+  const serverQueue = addSongToQueue(musicQueue, info)
+
+  if (!serverQueue.isPlaying) {
+    playSong(serverQueue);
+  }
+  message.delete()
   return send(message, {
     embeds: [
       new MessageEmbed()
@@ -105,7 +128,11 @@ const play = async (message: Message, args: Args) => {
         .setImage(info.bestThumbnail.url)
         .setThumbnail(info.channelLogo),
     ],
-  });
+  }).then((msg) => {
+    setTimeout(() => {
+      msg.delete()
+    }, 5 * 1000)
+  })
 };
 
 const getSongInfo = async (message: Message, args: Args) => {
@@ -149,7 +176,7 @@ const getSongInfo = async (message: Message, args: Args) => {
   return songInfo;
 };
 
-const getSongPlayer = async (song: any) => {
+const getSongPlayer = async (song: ISong) => {
   const player = createAudioPlayer();
   const stream = ytdl(song.url, {
     filter: 'audioonly',
@@ -162,11 +189,35 @@ const getSongPlayer = async (song: any) => {
   return entersState(player, AudioPlayerStatus.Playing, 10 * 1000);
 };
 
-const playSong = async (voiceChannel: VoiceChannel, songInfo: any) => {
-  const connection = connect(voiceChannel);
-  const audioPlayer = await getSongPlayer(songInfo);
-  connection.subscribe(audioPlayer);
+const playSong = async (queue: IServerMusicQueue) => {
+  const connection = connect(queue.voiceChannel);
+  const song = queue.songs[0]
+  queue.audioPlayer = await getSongPlayer(song);
+  connection.subscribe(queue.audioPlayer);
+  queue.isPlaying = true
+
+  queue.audioPlayer.on(AudioPlayerStatus.Idle, () => {
+    queue.isPlaying = false
+    songFinish(queue)
+  })
 };
+
+const addSongToQueue = (musicQueue: IServerMusicQueue, song: ISong) => {
+  musicQueue.songs.push(song)
+  console.log(musicQueue.songs)
+  return musicQueue
+}
+
+const songFinish = (serverQueue: IServerMusicQueue) => {
+  if (serverQueue !== null) {
+    const song = serverQueue.songs[0]
+    if (serverQueue.isRepeat) {
+      serverQueue.songs.push(song)
+    }
+    serverQueue.songs.shift()
+    playSong(serverQueue)
+  }
+}
 
 const connect = (channel: VoiceChannel) => {
   const connection = joinVoiceChannel({
