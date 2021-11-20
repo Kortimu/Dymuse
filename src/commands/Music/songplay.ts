@@ -15,12 +15,12 @@ import { send } from '@sapphire/plugin-editable-commands';
 import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
 import ytdl from 'ytdl-core';
 import ytsr from 'ytsr';
-const queues = new Map();
+export const queues = new Map();
 
 @ApplyOptions<CommandOptions>({
   description: 'Plays audio from Youtube.',
   fullCategory: ['Music'],
-  aliases: ['pl', 'youtube'],
+  aliases: ['play', 'pl', 'youtube'],
   detailedDescription: 'A command that plays a user-requested Youtube video in audio form.',
 })
 export class UserCommand extends Command {
@@ -40,7 +40,7 @@ export class UserCommand extends Command {
       });
       return;
     }
-    play(message, args);
+    await play(message, args);
   }
 }
 
@@ -157,7 +157,17 @@ const getSongInfo = async (message: Message, args: Args) => {
       ],
     });
 
-    const filters = await ytsr.getFilters(result);
+    let filters = null
+    try {
+      filters = await ytsr.getFilters(result);
+    } catch (error) {
+      console.log(error);
+      console.log('Error getting filters')
+    }
+    if (filters === null) {
+      throw 'Why are gilters null?!'
+    }
+
     const filter = filters.get('Type')?.get('Video')?.url ?? result;
 
     try {
@@ -193,7 +203,7 @@ const getSongPlayer = async (song: ISong) => {
     inputType: StreamType.Arbitrary,
   });
   player.play(resource);
-  return entersState(player, AudioPlayerStatus.Playing, 10 * 1000);
+  return entersState(player, AudioPlayerStatus.Playing, 15 * 1000);
 };
 
 const playSong = async (
@@ -225,7 +235,7 @@ const addSongToQueue = (musicQueue: IServerMusicQueue, song: ISong) => {
   return musicQueue;
 };
 
-const songFinish = (
+export const songFinish = (
   guild: Guild,
   channel: TextChannel,
   serverQueue: IServerMusicQueue,
