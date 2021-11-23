@@ -122,9 +122,10 @@ const play = async (message: Message, args: Args) => {
     playSong(message.member.guild, message.channel as TextChannel, serverQueue, queues);
   }
   message.delete();
+  const songEmbed = new MessageEmbed()
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      songEmbed
         .setColor('#FF00FF')
         .setTitle('Song added to queue!')
         .setDescription(
@@ -219,10 +220,17 @@ const playSong = async (
     return emptyQueue(guild.id, channel, queue, musicQueue);
   }
   const connection = connect(queue.voiceChannel);
-  const song = queue.songs[0];
-  queue.audioPlayer = await getSongPlayer(song);
+  const { songs } = queue;
+  queue.audioPlayer = await getSongPlayer(songs[0]);
   connection.subscribe(queue.audioPlayer);
   queue.isPlaying = true;
+
+  setTimeout(() => {
+    if (queue.songs.length === 1) {
+      return
+    }
+    nextPreview(songs[1], channel)
+  }, (songs[0].duration - 10) * 1000);
 
   queue.audioPlayer.on(AudioPlayerStatus.Idle, () => {
     queue.isPlaying = false;
@@ -242,14 +250,73 @@ export const songFinish = (
   musicQueue: Map<string, IServerMusicQueue>,
 ) => {
   if (serverQueue !== null) {
-    const song = serverQueue.songs[0];
+    const { songs } = serverQueue;
     if (serverQueue.isRepeat) {
-      serverQueue.songs.push(song);
+      serverQueue.songs.push(songs[0]);
     }
     serverQueue.songs.shift();
     playSong(guild, channel, serverQueue, musicQueue);
+    songPreview(songs[0], channel)
   }
 };
+
+const nextPreview = (song: ISong, channel: TextChannel) => {
+  // Preview song 10 seconds before playing it
+  if (!song) {
+    return
+  }
+  channel.send({
+    embeds: [
+      new MessageEmbed()
+        .setColor('#FFFF00')
+        .setTitle('Coming up...')
+        .setDescription(
+          `**Title:** ${
+            song.title
+          }\n**Length:** ${
+            formatSeconds(song.duration)
+          }\n**Channel:** ${
+            song.channelName
+          }`,
+        )
+        .setImage(song.bestThumbnail.url)
+        .setThumbnail(song.channelLogo),
+    ]
+  }).then((msg) => {
+    setTimeout(() => {
+      msg.delete()
+    }, 9 * 1000);
+  })
+}
+
+const songPreview = (song: ISong, channel: TextChannel) => {
+  // Shows currently playing song for 5 seconds
+  if (!song) {
+    return
+  }
+  channel.send({
+    embeds: [
+      new MessageEmbed()
+        .setColor('#FF00FF')
+        .setTitle('Playing...')
+        .setDescription(
+          `**Title:** ${
+            song.title
+          }\n**Length:** ${
+            formatSeconds(song.duration)
+          }\n**Channel:** ${
+            song.channelName
+          }`,
+        )
+        .setImage(song.bestThumbnail.url)
+        .setThumbnail(song.channelLogo),
+    ]
+  }).then((msg) => {
+    setTimeout(() => {
+      msg.delete()
+    }, 10 * 1000);
+  })
+}
 
 const emptyQueue = (
   guildId: string,
