@@ -111,7 +111,7 @@ const play = async (message: Message, args: Args) => {
       songs: [],
       audioPlayer: null,
       isPlaying: false,
-      isRepeat: false,
+      repeatMode: 'off',
     };
     queues.set(message.guild.id, musicQueue);
   }
@@ -251,10 +251,12 @@ export const songFinish = (
 ) => {
   if (serverQueue !== null) {
     const { songs } = serverQueue;
-    if (serverQueue.isRepeat) {
+    if (serverQueue.repeatMode === 'all') {
       serverQueue.songs.push(songs[0]);
     }
-    serverQueue.songs.shift();
+    if (serverQueue.repeatMode === 'all' || serverQueue.repeatMode === 'off') {
+      serverQueue.songs.shift()
+    }
     playSong(guild, channel, serverQueue, musicQueue);
     songPreview(songs[0], channel)
   }

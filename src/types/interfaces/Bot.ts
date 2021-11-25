@@ -18,5 +18,5 @@ export interface IServerMusicQueue {
   songs: Array<ISong>;
   audioPlayer: AudioPlayer;
   isPlaying: boolean;
-  isRepeat: boolean;
+  repeatMode: string;
 }

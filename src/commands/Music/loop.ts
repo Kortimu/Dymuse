@@ -37,10 +37,12 @@ const loop = async (message: Message) => {
       }, 10 * 1000)
     })
   }
-  if (serverQueue.isRepeat) {
-    serverQueue.isRepeat = false
-  } else {
-    serverQueue.isRepeat = true
+  if (serverQueue.repeatMode === 'off') {
+    serverQueue.repeatMode = 'single'
+  } else if (serverQueue.repeatMode === 'single') {
+    serverQueue.repeatMode = 'all'
+  } else if (serverQueue.repeatMode === 'all') {
+    serverQueue.repeatMode = 'off'
   }
 
   return send(message, {
@@ -48,7 +50,7 @@ const loop = async (message: Message) => {
       new MessageEmbed()
         .setColor('#FF00FF')
         .setTitle('Command successful successful successful successful')
-        .setDescription(`Looping is set to \`${serverQueue.isRepeat}\`.`)
+        .setDescription(`Looping is set to \`${serverQueue.repeatMode}\`.`)
     ]
   }).then((msg) => {
     message.delete()
