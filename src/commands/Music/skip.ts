@@ -3,65 +3,72 @@ import { Command, CommandOptions } from '@sapphire/framework';
 import { Message, MessageEmbed, TextChannel } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
-import { queues, songFinish } from './songplay'
+import { queues, songFinish } from './songplay';
 import type { IServerMusicQueue } from '../../types/interfaces/Bot';
-let skipVoters = 0
+let skipVoters = 0;
 
 @ApplyOptions<CommandOptions>({
   description: 'Skips to the next song.',
   fullCategory: ['Music'],
   aliases: ['sk', 'ihatethisone'],
-  detailedDescription: 'A command that skips the currently playing Youtube video. Looping rules apply.',
+  detailedDescription:
+    'A command that skips the currently playing Youtube video. Looping rules apply.',
 })
 export class UserCommand extends Command {
   public async messageRun(message: Message) {
     // Sends loading message
     await sendLoadingMessage(message);
-    await skip(message)
+    await skip(message);
   }
 }
 
 const skip = async (message: Message) => {
-  const serverQueue: IServerMusicQueue = await queues.get(message.guildId)
+  const serverQueue: IServerMusicQueue = await queues.get(message.guildId);
   if (!serverQueue) {
-    return send (message, {
+    return send(message, {
       embeds: [
         new MessageEmbed()
           .setColor('#FF0000')
           .setTitle('Error')
-          .setDescription('What am I supposed to skip, my empty soul? That would kinda useful, unlike your request.')
-      ]
+          .setDescription(
+            'What am I supposed to skip, my empty soul? That would kinda useful, unlike your request.',
+          ),
+      ],
     }).then((msg) => {
       setTimeout(() => {
-        msg.delete()
+        msg.delete();
       }, 10 * 1000);
-    })
+    });
   }
   // Voting system
-  skipVote(serverQueue, message)
-  console.log(skipVoters)
-  message.delete()
-  return skipVoters = 0
-}
+  skipVote(serverQueue, message);
+  console.log(skipVoters);
+  message.delete();
+  return (skipVoters = 0);
+};
 
 const skipVote = async (serverQueue: IServerMusicQueue, message: Message) => {
-  skipVoters += 1
+  skipVoters += 1;
   if (skipVoters < Math.floor(0.5 * (serverQueue.voiceChannel.members.size - 1))) {
     return send(message, {
       embeds: [
         new MessageEmbed()
           .setColor('#FFFF00')
           .setTitle('Vote to skip?')
-          .setDescription(`\`${skipVoters}/${serverQueue.voiceChannel.members.size - 1}\` people want to skip this song. If others agree, do \`?skip\` as well.`)
-      ]
+          .setDescription(
+            `\`${skipVoters}/${
+              serverQueue.voiceChannel.members.size - 1
+            }\` people want to skip this song. If others agree, do \`?skip\` as well.`,
+          ),
+      ],
     }).then((msg) => {
       setTimeout(() => {
-        msg.delete()
+        msg.delete();
       }, 30 * 1000);
-    })
+    });
   }
-  skipSong(message, serverQueue)
-}
+  skipSong(message, serverQueue);
+};
 
 const skipSong = async (message: Message, serverQueue: IServerMusicQueue) => {
   if (!message.guild) {
@@ -70,21 +77,21 @@ const skipSong = async (message: Message, serverQueue: IServerMusicQueue) => {
         new MessageEmbed()
           .setColor('#FF0000')
           .setTitle('Error')
-          .setDescription('Buddy, this command is not in DMs')
-      ]
-    })
+          .setDescription('Buddy, this command is not in DMs'),
+      ],
+    });
   }
-  songFinish(message.guild, message.channel as TextChannel, serverQueue, queues)
+  songFinish(message.guild, message.channel as TextChannel, serverQueue, queues);
   return send(message, {
     embeds: [
       new MessageEmbed()
         .setColor('#FF00FF')
         .setTitle('Song skipped')
-        .setDescription('Democracy wins again, I guess')
-    ]
+        .setDescription('Democracy wins again, I guess'),
+    ],
   }).then((msg) => {
     setTimeout(() => {
-      msg.delete()
+      msg.delete();
     }, 10 * 1000);
-  })
-}
+  });
+};

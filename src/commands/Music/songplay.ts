@@ -12,6 +12,7 @@ import {
 } from '@discordjs/voice';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
+import { formatSeconds } from '../../lib/constants';
 import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
 import ytdl from 'ytdl-core';
 import ytsr from 'ytsr';
@@ -122,16 +123,13 @@ const play = async (message: Message, args: Args) => {
     playSong(message.member.guild, message.channel as TextChannel, serverQueue, queues);
   }
   message.delete();
-  const songEmbed = new MessageEmbed()
   return send(message, {
     embeds: [
-      songEmbed
+      new MessageEmbed()
         .setColor('#FF00FF')
         .setTitle('Song added to queue!')
         .setDescription(
-          `**Title:** ${info.title}\n**Length:** ${formatSeconds(info.duration)}\n**Channel:** ${
-            info.channelName
-          }`,
+          `**Title:** ${info.title}\n**Length:** ${info.formattedDuration}\n**Channel:** ${info.channelName}`,
         )
         .setImage(info.bestThumbnail.url)
         .setThumbnail(info.channelLogo),
@@ -158,15 +156,15 @@ const getSongInfo = async (message: Message, args: Args) => {
       ],
     });
 
-    let filters = null
+    let filters = null;
     try {
       filters = await ytsr.getFilters(result);
     } catch (error) {
       console.log(error);
-      console.log('Error getting filters')
+      console.log('Error getting filters');
     }
     if (filters === null) {
-      throw 'Why are gilters null?!'
+      throw 'Why are filters null?!';
     }
 
     const filter = filters.get('Type')?.get('Video')?.url ?? result;
@@ -189,7 +187,7 @@ const getSongInfo = async (message: Message, args: Args) => {
     songInfo = await ytdl.getInfo(songUrl);
   } catch (error) {
     console.log(error);
-    throw 'Error getting the video from the URL.';
+    throw 'Error getting the video from the URL';
   }
   return songInfo;
 };
@@ -227,9 +225,13 @@ const playSong = async (
 
   setTimeout(() => {
     if (queue.songs.length === 1) {
-      return
+      return;
     }
-    nextPreview(songs[1], channel)
+    let nextSong = songs[1];
+    if (queue.repeatMode === 'single') {
+      [nextSong] = songs;
+    }
+    nextPreview(nextSong, channel);
   }, (songs[0].duration - 10) * 1000);
 
   queue.audioPlayer.on(AudioPlayerStatus.Idle, () => {
@@ -255,70 +257,62 @@ export const songFinish = (
       serverQueue.songs.push(songs[0]);
     }
     if (serverQueue.repeatMode === 'all' || serverQueue.repeatMode === 'off') {
-      serverQueue.songs.shift()
+      serverQueue.songs.shift();
     }
     playSong(guild, channel, serverQueue, musicQueue);
-    songPreview(songs[0], channel)
+    songPreview(songs[0], channel);
   }
 };
 
 const nextPreview = (song: ISong, channel: TextChannel) => {
   // Preview song 10 seconds before playing it
   if (!song) {
-    return
+    return;
   }
-  channel.send({
-    embeds: [
-      new MessageEmbed()
-        .setColor('#FFFF00')
-        .setTitle('Coming up...')
-        .setDescription(
-          `**Title:** ${
-            song.title
-          }\n**Length:** ${
-            formatSeconds(song.duration)
-          }\n**Channel:** ${
-            song.channelName
-          }`,
-        )
-        .setImage(song.bestThumbnail.url)
-        .setThumbnail(song.channelLogo),
-    ]
-  }).then((msg) => {
-    setTimeout(() => {
-      msg.delete()
-    }, 9 * 1000);
-  })
-}
+  channel
+    .send({
+      embeds: [
+        new MessageEmbed()
+          .setColor('#FFFF00')
+          .setTitle('Coming up...')
+          .setDescription(
+            `**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Channel:** ${song.channelName}`,
+          )
+          .setImage(song.bestThumbnail.url)
+          .setThumbnail(song.channelLogo),
+      ],
+    })
+    .then((msg) => {
+      setTimeout(() => {
+        msg.delete();
+      }, 9 * 1000);
+    });
+};
 
 const songPreview = (song: ISong, channel: TextChannel) => {
   // Shows currently playing song for 5 seconds
   if (!song) {
-    return
+    return;
   }
-  channel.send({
-    embeds: [
-      new MessageEmbed()
-        .setColor('#FF00FF')
-        .setTitle('Playing...')
-        .setDescription(
-          `**Title:** ${
-            song.title
-          }\n**Length:** ${
-            formatSeconds(song.duration)
-          }\n**Channel:** ${
-            song.channelName
-          }`,
-        )
-        .setImage(song.bestThumbnail.url)
-        .setThumbnail(song.channelLogo),
-    ]
-  }).then((msg) => {
-    setTimeout(() => {
-      msg.delete()
-    }, 10 * 1000);
-  })
-}
+  channel
+    .send({
+      embeds: [
+        new MessageEmbed()
+          .setColor('#FF00FF')
+          .setTitle('Playing...')
+          .setDescription(
+            `**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Channel:** ${song.channelName}`,
+          )
+          .setImage(song.bestThumbnail.url)
+          .setThumbnail(song.channelLogo),
+      ],
+    })
+    .then((msg) => {
+      setTimeout(() => {
+        msg.delete();
+      }, 10 * 1000);
+    });
+};
 
 const emptyQueue = (
   guildId: string,
@@ -363,16 +357,4 @@ const connect = (channel: VoiceChannel) => {
     adapterCreator: channel.guild.voiceAdapterCreator,
   });
   return connection;
-};
-
-const formatSeconds = (duration: number) => {
-  const seconds = Math.floor(duration % 60);
-  const minutes = Math.floor((duration / 60) % 60);
-  const hours = Math.floor((duration / (60 * 60)) % 60);
-
-  const displayHours = hours > 0 ? `${hours}:` : '';
-  const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  const displaySeconds = seconds < 10 ? `0${seconds}` : seconds;
-
-  return `\`${displayHours}${displayMinutes}:${displaySeconds}\``;
 };
