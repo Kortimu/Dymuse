@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Command, CommandOptions } from '@sapphire/framework';
+import type { CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -11,8 +12,9 @@ import { getVoiceConnection } from '@discordjs/voice';
   fullCategory: ['Music'],
   aliases: ['disconnect', 'dcon', 'plsleavenow', 'bye'],
   detailedDescription: 'A command that disconnects the bot from the voice channel.',
+  notes: ['When the bot leaves, the queue gets deleted as well.'],
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message) {
     // Sends loading message
     await sendLoadingMessage(message);

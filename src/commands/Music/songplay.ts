@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Args, Command, CommandOptions } from '@sapphire/framework';
+import type { Args, CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { Guild, Message, MessageEmbed, TextChannel, VoiceChannel } from 'discord.js';
 import {
   AudioPlayerStatus,
@@ -19,12 +20,18 @@ import ytsr from 'ytsr';
 export const queues = new Map();
 
 @ApplyOptions<CommandOptions>({
+  name: 'play',
   description: 'Plays audio from Youtube.',
   fullCategory: ['Music'],
-  aliases: ['play', 'pl', 'youtube'],
+  aliases: ['pl', 'youtube'],
   detailedDescription: 'A command that plays a user-requested Youtube video in audio form.',
+  syntax: '<url/search term>',
+  examples: ['pl https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'youtube party rock apple'],
+  notes: [
+    "This command is very unstable at the moment. If there are problems, don't be surprised.",
+  ],
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message, args: Args) {
     // Sends loading message
     await sendLoadingMessage(message);

@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Command, CommandOptions } from '@sapphire/framework';
+import type { CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { Message, MessageEmbed, TextChannel } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -11,10 +12,12 @@ let skipVoters = 0;
   description: 'Skips to the next song.',
   fullCategory: ['Music'],
   aliases: ['sk', 'ihatethisone'],
-  detailedDescription:
-    'A command that skips the currently playing Youtube video. Looping rules apply.',
+  detailedDescription: 'A command that skips the currently playing Youtube video.',
+  notes: [
+    'This command DOES NOT ignore loop order. To remove a song ignoring the loop order, use `remove`.',
+  ],
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message) {
     // Sends loading message
     await sendLoadingMessage(message);

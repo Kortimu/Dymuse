@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Command, CommandOptions } from '@sapphire/framework';
+import type { CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { send } from '@sapphire/plugin-editable-commands';
 import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
@@ -8,26 +9,25 @@ import { sendLoadingMessage } from '../../lib/utils';
   description: 'ping pong',
   fullCategory: ['Misc'],
   aliases: ['p'],
-  detailedDescription:
-    'A command used to see the latency of the bot, as well as being a general test command. It has basically no use besides the occasional lag check.',
+  detailedDescription: 'A simple ping command with a small twist.',
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message) {
     // Sends loading message
     const msg = await sendLoadingMessage(message);
 
-    // Sends a questionably rude ping message back
+    // Sends a ping message back
     return send(message, {
       embeds: [
         new MessageEmbed()
-          .setTitle('Oh, you want some dumb phrase like "Pong!" back? No. Fuck you.')
+          .setTitle('Do I really have to say it?')
           .addFields(
             {
-              name: 'The amount of time wasted on your device (very cringe):',
+              name: 'Bot latency (very cringe):',
               value: `${Math.round(this.container.client.ws.ping)} ms`,
             },
             {
-              name: 'Framework moment:',
+              name: 'Framework latency (equally boring):',
               value: `${
                 (msg.editedTimestamp || msg.createdTimestamp) -
                 (message.editedTimestamp || message.createdTimestamp)

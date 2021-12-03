@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Command, CommandOptions } from '@sapphire/framework';
+import type { CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -11,8 +12,9 @@ import { send } from '@sapphire/plugin-editable-commands';
   preconditions: ['OwnerOnly'],
   detailedDescription:
     'Users that are considered "owners" by the bot can use this command to make a simple embed with a title and description.',
+  notes: ['If needed, field functionality can be added. Not yet, though.'],
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message) {
     // Sends loading message
     await sendLoadingMessage(message);

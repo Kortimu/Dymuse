@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Args, Command, CommandOptions } from '@sapphire/framework';
+import type { Args, CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -10,8 +11,11 @@ import { UserModel } from '../../lib/schemas/userschema';
   fullCategory: ['Owner'],
   aliases: ['giveexp'],
   preconditions: ['OwnerOnly'],
+  syntax: '[user]',
+  examples: ['giveexp @Kortimu', 'givexp'],
+  notes: ['This should be used mostly for punishment. Abuse of this power will make you PAY!'],
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message, args: Args) {
     // Finds all the info in the command message
     const targetUser = await args.pick('user').catch(() => message.author);

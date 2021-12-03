@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Args, Command, CommandOptions } from '@sapphire/framework';
+import type { Args, CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { Message, MessageEmbed, Role } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -12,8 +13,14 @@ import { GuildModel } from '../../lib/schemas/guildschema';
   preconditions: ['OwnerOnly'],
   detailedDescription:
     'Users that are considered owners by the bot can add, remove and view level roles for the server.',
+  syntax: '[role] [level] [add/remove]',
+  examples: ['?lr', 'levelr @Level 10 add 10', 'levelrole @Level 69 remove'],
+  notes: [
+    'Some arguments can be a bit buggy, if done out of order.',
+    'If no argument specified, all level roles are shown.',
+  ],
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message, args: Args) {
     // Sends a loading message
     await sendLoadingMessage(message);

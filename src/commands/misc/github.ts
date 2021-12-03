@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Command, CommandOptions } from '@sapphire/framework';
+import type { CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -10,7 +11,7 @@ import { send } from '@sapphire/plugin-editable-commands';
   aliases: ['githublink', 'git'],
   detailedDescription: 'A command that sends the link for the DylanBot Github repository.',
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message) {
     // Sends loading message
     await sendLoadingMessage(message);

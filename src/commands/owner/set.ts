@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Args, Command, CommandOptions } from '@sapphire/framework';
+import type { Args, CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { Message, MessageEmbed, TextChannel } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -12,8 +13,14 @@ import { GuildModel } from '../../lib/schemas/guildschema';
   preconditions: ['OwnerOnly'],
   detailedDescription:
     'Users that are considered owners by the bot can set the settings and values used by the bot to, for example, displaying leaderboards or welcoming new users in a specific channel.',
+  syntax: '<setting> [value]',
+  examples: ['?set <channel/role> <leaderboard/welcome/mute>'],
+  notes: [
+    'This will probably get rewamped later.',
+    'There are 3 settings at the moment: where to send welcome and leave messages, where to show leaderboard, and what role functions as the muted role (used by mute command)',
+  ],
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message, args: Args) {
     // Sends a loading message
     await sendLoadingMessage(message);

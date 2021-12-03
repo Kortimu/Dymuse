@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Command, CommandOptions } from '@sapphire/framework';
+import type { Args, CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -11,16 +12,19 @@ import type { IServerMusicQueue } from '../../types/interfaces/Bot';
   fullCategory: ['Music'],
   aliases: ['looping', 'repeat'],
   detailedDescription: 'A command that loops the currently playing Youtube video.',
+  syntax: '[all/single/off]',
+  examples: ['loop all', 'looping single', 'repeat off', 'loop'],
 })
-export class UserCommand extends Command {
-  public async messageRun(message: Message) {
+export class UserCommand extends BotCommand {
+  public async messageRun(message: Message, args: Args) {
     // Sends loading message
     await sendLoadingMessage(message);
-    loop(message);
+    const option = await args.pick('string').catch(null);
+    loop(message, option);
   }
 }
 
-const loop = async (message: Message) => {
+const loop = async (message: Message, option: string) => {
   const serverQueue: IServerMusicQueue = queues.get(message.guildId);
   if (!serverQueue) {
     return send(message, {
@@ -39,14 +43,17 @@ const loop = async (message: Message) => {
       }, 10 * 1000);
     });
   }
-  if (serverQueue.repeatMode === 'off') {
-    serverQueue.repeatMode = 'single';
-  } else if (serverQueue.repeatMode === 'single') {
-    serverQueue.repeatMode = 'all';
-  } else if (serverQueue.repeatMode === 'all') {
-    serverQueue.repeatMode = 'off';
+  if (option === 'off' || option === 'single' || option === 'all') {
+    serverQueue.repeatMode = option;
+  } else if (option) {
+    if (serverQueue.repeatMode === 'off') {
+      serverQueue.repeatMode = 'single';
+    } else if (serverQueue.repeatMode === 'single') {
+      serverQueue.repeatMode = 'all';
+    } else if (serverQueue.repeatMode === 'all') {
+      serverQueue.repeatMode = 'off';
+    }
   }
-
   return send(message, {
     embeds: [
       new MessageEmbed()

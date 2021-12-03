@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Args, Command, CommandOptions } from '@sapphire/framework';
+import type { Args, CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -12,8 +13,11 @@ import { getNeededXP } from '../../listeners/levels';
   aliases: ['i', 'useri', 'uinfo'],
   detailedDescription:
     'A command that provides the user with additional information about a specific user, such as the creation date, join date and more.',
+  syntax: '[user]',
+  examples: ['i @Kortimu', 'useri', 'uinfo @DylanBot'],
+  notes: ['If no user is specified, information shown will be about the message author.'],
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message, args: Args) {
     // Sends loading message
     await sendLoadingMessage(message);

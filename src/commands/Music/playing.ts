@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Command, CommandOptions } from '@sapphire/framework';
+import type { CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -12,8 +13,11 @@ import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
   aliases: ['np', 'nowplaying'],
   detailedDescription:
     'A command that displays additional information about the currently playing Youtube video.',
+  notes: [
+    'This command displays more information than the "Coming up..." or "Playing..." embed does.',
+  ],
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message) {
     // Sends loading message
     await sendLoadingMessage(message);

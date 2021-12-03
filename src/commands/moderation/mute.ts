@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Args, Command, CommandOptions } from '@sapphire/framework';
+import type { Args, CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
 import { GuildMember, Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -12,8 +13,11 @@ import { GuildModel } from '../../lib/schemas/guildschema';
   detailedDescription:
     'A user with the Moderator role can apply the `Muted` role to a user. If you want auto-mod, my brain is too small to have something so important be handled by it.',
   preconditions: ['OwnerOnly'],
+  syntax: '<user>',
+  examples: ['m @Kortimu'],
+  notes: ['Unlike most other commands, this one NEEDS to specify a user.'],
 })
-export class UserCommand extends Command {
+export class UserCommand extends BotCommand {
   public async messageRun(message: Message, args: Args) {
     // Sends loading message
     await sendLoadingMessage(message);

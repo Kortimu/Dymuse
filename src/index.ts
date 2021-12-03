@@ -1,7 +1,7 @@
 import './lib/setup';
 import { LogLevel, SapphireClient } from '@sapphire/framework';
 
-const client = new SapphireClient({
+export const client = new SapphireClient({
   defaultPrefix: '?',
   regexPrefix: /^(hey +)?bot[,! ]/i,
   caseInsensitiveCommands: true,
