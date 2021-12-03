@@ -13,6 +13,7 @@ let skipVoters = 0;
   fullCategory: ['Music'],
   aliases: ['sk', 'ihatethisone'],
   detailedDescription: 'A command that skips the currently playing Youtube video.',
+  preconditions: ['TestOnly'],
   notes: [
     'This command DOES NOT ignore loop order. To remove a song ignoring the loop order, use `remove`.',
   ],

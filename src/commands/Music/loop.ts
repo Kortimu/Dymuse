@@ -12,6 +12,7 @@ import type { IServerMusicQueue } from '../../types/interfaces/Bot';
   fullCategory: ['Music'],
   aliases: ['looping', 'repeat'],
   detailedDescription: 'A command that loops the currently playing Youtube video.',
+  preconditions: ['TestOnly'],
   syntax: '[all/single/off]',
   examples: ['loop all', 'looping single', 'repeat off', 'loop'],
 })

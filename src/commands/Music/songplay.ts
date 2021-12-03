@@ -25,6 +25,7 @@ export const queues = new Map();
   fullCategory: ['Music'],
   aliases: ['pl', 'youtube'],
   detailedDescription: 'A command that plays a user-requested Youtube video in audio form.',
+  preconditions: ['TestOnly'],
   syntax: '<url/search term>',
   examples: ['pl https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'youtube party rock apple'],
   notes: [

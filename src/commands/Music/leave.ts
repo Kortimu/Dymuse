@@ -12,6 +12,7 @@ import { getVoiceConnection } from '@discordjs/voice';
   fullCategory: ['Music'],
   aliases: ['disconnect', 'dcon', 'plsleavenow', 'bye'],
   detailedDescription: 'A command that disconnects the bot from the voice channel.',
+  preconditions: ['TestOnly'],
   notes: ['When the bot leaves, the queue gets deleted as well.'],
 })
 export class UserCommand extends BotCommand {

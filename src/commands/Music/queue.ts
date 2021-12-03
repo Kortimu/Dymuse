@@ -13,6 +13,7 @@ import type { IServerMusicQueue } from '../../types/interfaces/Bot';
   aliases: ['videoqueue', 'q'],
   detailedDescription:
     'A command that displays additional information about the Youtube video queue.',
+  preconditions: ['TestOnly'],
 })
 export class UserCommand extends BotCommand {
   public async messageRun(message: Message) {

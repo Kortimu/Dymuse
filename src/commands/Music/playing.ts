@@ -13,6 +13,7 @@ import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
   aliases: ['np', 'nowplaying'],
   detailedDescription:
     'A command that displays additional information about the currently playing Youtube video.',
+  preconditions: ['TestOnly'],
   notes: [
     'This command displays more information than the "Coming up..." or "Playing..." embed does.',
   ],
