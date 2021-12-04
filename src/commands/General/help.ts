@@ -107,10 +107,16 @@ export class UserCommand extends BotCommand {
         });
         // Show an error (I know, a rarity for this bot, shut up)
       } else {
-        helpEmbed.addField(
-          'Error',
-          `There is no command or category with the name **${targetCommand}**. Below are all of the supported commands.`,
-        );
+        return send(message, {
+          embeds: [
+            helpEmbed
+              .setColor('#FF0000')
+              .addField(
+                'Error',
+                `There is no command or category with the name **${targetCommand}**. To view all commands, type the help command with no additional words.`,
+              )
+          ]
+        })
       }
     }
 
@@ -130,9 +136,18 @@ export class UserCommand extends BotCommand {
       helpEmbed.addField(cat, text);
     });
 
+    message.author.send({
+      embeds: [helpEmbed.setTitle('All available commands:').setColor('#FF00FF')],
+    })
+
     // Sends the embed of all commands
     return send(message, {
-      embeds: [helpEmbed.setTitle('All available commands:').setColor('#FF00FF')],
+      embeds: [
+        new MessageEmbed()
+          .setColor('#FF00FF')
+          .setTitle('All commands sent')
+          .setDescription('...to PMs. No need to clutter the chat.')
+      ],
     });
   }
 }
