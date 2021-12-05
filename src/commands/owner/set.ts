@@ -13,8 +13,8 @@ import { GuildModel } from '../../lib/schemas/guildschema';
   preconditions: ['OwnerOnly'],
   detailedDescription:
     'Users that are considered owners by the bot can set the settings and values used by the bot to, for example, displaying leaderboards or welcoming new users in a specific channel.',
-  syntax: '<setting> [value]',
-  examples: ['?set <channel/role> <leaderboard/welcome/mute>'],
+  syntax: '<setting> <value>',
+  examples: ['set #welcome welcome', 'settting @Based mute'],
   notes: [
     'This will probably get rewamped later.',
     'There are 3 settings at the moment: where to send welcome and leave messages, where to show leaderboard, and what role functions as the muted role (used by mute command)',
