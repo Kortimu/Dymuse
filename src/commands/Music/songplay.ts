@@ -93,6 +93,8 @@ const play = async (message: Message, args: Args) => {
     title: rawData.videoDetails.title,
     duration,
     formattedDuration: formatSeconds(duration),
+    likes: rawData.videoDetails.likes?.toString() ?? 'Not shown',
+    subscribers: rawData.videoDetails.author.subscriber_count?.toString() ?? 'Not shown',
     bestThumbnail: rawData.videoDetails.thumbnails[3],
     channelName: rawData.videoDetails.author.name,
     channelLogo:
@@ -284,7 +286,7 @@ const nextPreview = (song: ISong, channel: TextChannel) => {
           .setColor('#FFFF00')
           .setTitle('Coming up...')
           .setDescription(
-            `**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Channel:** ${song.channelName}`,
+            `**URL:** ${song.url}\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Channel:** ${song.channelName}`,
           )
           .setImage(song.bestThumbnail.url)
           .setThumbnail(song.channelLogo),
@@ -309,7 +311,7 @@ const songPreview = (song: ISong, channel: TextChannel) => {
           .setColor('#FF00FF')
           .setTitle('Playing...')
           .setDescription(
-            `**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Channel:** ${song.channelName}`,
+            `**URL:** ${song.url}\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Channel:** ${song.channelName}`,
           )
           .setImage(song.bestThumbnail.url)
           .setThumbnail(song.channelLogo),

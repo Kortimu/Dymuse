@@ -48,17 +48,17 @@ export class UserCommand extends BotCommand {
   }
 }
 
-const sendQueue = async (message: Message, songInfo: ISong) => {
+const sendQueue = async (message: Message, song: ISong) => {
   return send(message, {
     embeds: [
       new MessageEmbed()
         .setColor('#FF00FF')
         .setTitle('Currently playing song:')
         .setDescription(
-          `**Title:** ${songInfo.title}\n**Length:** ${songInfo.formattedDuration}\n**Channel:** ${songInfo.channelName}`,
+          `**URL:** ${song.url}\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Likes:** ${song.likes}\n**Channel:** ${song.channelName}\n**Subsribers:** ${song.subscribers}`,
         )
-        .setImage(songInfo.bestThumbnail.url)
-        .setThumbnail(songInfo.channelLogo),
+        .setImage(song.bestThumbnail.url)
+        .setThumbnail(song.channelLogo),
     ],
   }).then((msg) => {
     message.delete();
