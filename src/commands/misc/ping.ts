@@ -20,7 +20,7 @@ export class UserCommand extends BotCommand {
     return send(message, {
       embeds: [
         new MessageEmbed()
-          .setTitle('Do I really have to say it?')
+          .setTitle("Do I really have to say it? Can't you say it?")
           .addFields(
             {
               name: 'Bot latency (very cringe):',
