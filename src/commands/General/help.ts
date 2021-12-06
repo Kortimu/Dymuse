@@ -45,7 +45,7 @@ export class UserCommand extends BotCommand {
       // Check if the specified command/category exists
       const lowCommand = targetCommand.toLowerCase();
       const categoryCheck = lowCommand[0].toUpperCase() + lowCommand.slice(1);
-      const singleCategory = categories.get(categoryCheck)
+      const singleCategory = categories.get(categoryCheck);
       // If a command exists
       if (commandNames.includes(lowCommand)) {
         // If a command exists, show extended info about it
@@ -108,7 +108,7 @@ export class UserCommand extends BotCommand {
         });
 
         Array.from(categories.keys()).forEach((cat) => {
-          let text = ''
+          let text = '';
           commandNames
             .filter((command) => commands.get(command)?.category === cat)
             .forEach((cmd) => {
@@ -116,19 +116,15 @@ export class UserCommand extends BotCommand {
               const aliases = commands.get(cmd)?.aliases.map((alias) => `\`${alias}\``);
 
               text += `**?${cmd}** [${aliases}] **→** ${description}\n`;
-            })
+            });
 
-          helpEmbed.addField(cat, text)
-        })
+          helpEmbed.addField(cat, text);
+        });
 
         return send(message, {
-          embeds: [
-            helpEmbed
-              .setColor('#FF00FF')
-              .setTitle('Commands in the category:')
-          ]
-        })
-      // Show an error (I know, a rarity for this bot, shut up)
+          embeds: [helpEmbed.setColor('#FF00FF').setTitle('Commands in the category:')],
+        });
+        // Show an error (I know, a rarity for this bot, shut up)
       }
       return send(message, {
         embeds: [
@@ -137,9 +133,9 @@ export class UserCommand extends BotCommand {
             .addField(
               'Error',
               `There is no command or category with the name **${targetCommand}**. To view all commands, type the help command with no additional words.`,
-            )
-        ]
-      })
+            ),
+        ],
+      });
     }
 
     // If nothing specified, get all commands, and show them in a simple list
@@ -160,7 +156,7 @@ export class UserCommand extends BotCommand {
 
     message.author.send({
       embeds: [helpEmbed.setTitle('All available commands:').setColor('#FF00FF')],
-    })
+    });
 
     // Sends the embed of all commands
     return send(message, {
@@ -168,7 +164,7 @@ export class UserCommand extends BotCommand {
         new MessageEmbed()
           .setColor('#FF00FF')
           .setTitle('All commands sent')
-          .setDescription('...to PMs. No need to clutter the chat.')
+          .setDescription('...to PMs. No need to clutter the chat.'),
       ],
     });
   }

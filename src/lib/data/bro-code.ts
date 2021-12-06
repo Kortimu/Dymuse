@@ -25,5 +25,5 @@ export const broCode = [
   "Doesn't exist... for some reason",
   'A Bro will, in a timely manner, alert his Bro to the existence of a girl fight',
   'All Bros like steak',
-  'A Bro must do his best to find out if a Bros love interest feels the same way.'
-]
+  'A Bro must do his best to find out if a Bros love interest feels the same way.',
+];

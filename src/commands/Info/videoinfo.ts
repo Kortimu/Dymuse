@@ -5,41 +5,44 @@ import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { formatSeconds } from '../../lib/constants';
 import { send } from '@sapphire/plugin-editable-commands';
-import type { ISong } from '../../types/interfaces/Bot'
-import ytdl from 'ytdl-core'
+import type { ISong } from '../../types/interfaces/Bot';
+import ytdl from 'ytdl-core';
 
 @ApplyOptions<CommandOptions>({
   description: 'Shows info about a Youtube video.',
   fullCategory: ['Info'],
   aliases: ['youtubeinfo', 'vidi'],
   syntax: '<url>',
-  examples: ['videoinfo https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'vidi https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
+  examples: [
+    'videoinfo https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    'vidi https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+  ],
   detailedDescription: 'A command that gives information about a Youtube video.',
 })
 export class UserCommand extends BotCommand {
   public async messageRun(message: Message, args: Args) {
     // Sends loading message
     await sendLoadingMessage(message);
-    showInfo(message, args)
-    message.delete()
+    showInfo(message, args);
+    message.delete();
   }
 }
 
 const showInfo = async (message: Message, args: Args) => {
-  let songUrl = await args.pick('string').catch(() => '');
+  const songUrl = await args.pick('string').catch(() => '');
   if (songUrl === '') {
     return send(message, {
       embeds: [
         new MessageEmbed()
           .setColor('#FF0000')
           .setTitle('Error')
-          .setDescription('What should I look for? EMPTY AIR?!')
-      ]
+          .setDescription('What should I look for? EMPTY AIR?!'),
+      ],
     }).then((msg) => {
       setTimeout(() => {
-        msg.delete()
+        msg.delete();
       }, 10 * 1000);
-    })
+    });
   }
   let songInfo = null;
   try {
@@ -57,7 +60,7 @@ const showInfo = async (message: Message, args: Args) => {
       ],
     }).then((msg) => {
       setTimeout(() => {
-        msg.delete()
+        msg.delete();
       }, 10 * 1000);
     });
   }
@@ -78,18 +81,20 @@ const showInfo = async (message: Message, args: Args) => {
       rawData.videoDetails.author.thumbnails?.[0].url ??
       'https://yt3.ggpht.com/a-/AAuE7mDaHtAVove7M4KGX3OGtmBjsfpBGCbIPNrwAA=s900-mo-c-c0xffffffff-rj-k-no',
   };
-  
+
   return send(message, {
     embeds: [
       new MessageEmbed()
         .setColor('#FF00FF')
         .setTitle('Information about the video:')
-        .setDescription(`**URL:** ${song.url}\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Likes:** ${song.likes}\n**Channel:** ${song.channelName}\n**Subsribers:** ${song.subscribers}`)
+        .setDescription(
+          `**URL:** ${song.url}\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Likes:** ${song.likes}\n**Channel:** ${song.channelName}\n**Subsribers:** ${song.subscribers}`,
+        )
         .setImage(song.bestThumbnail.url)
         .setThumbnail(song.channelLogo),
-    ]
-  })
-}
+    ],
+  });
+};
 
 const getSongInfo = async (message: Message, songUrl: string) => {
   let songInfo = null;
@@ -100,14 +105,14 @@ const getSongInfo = async (message: Message, songUrl: string) => {
         new MessageEmbed()
           .setColor('#FF0000')
           .setTitle('Error')
-          .setDescription('Please specify a valid URL.')
-      ]
+          .setDescription('Please specify a valid URL.'),
+      ],
     }).then((msg) => {
       setTimeout(() => {
-        msg.delete()
+        msg.delete();
       }, 10 * 1000);
-    })
-    return songInfo
+    });
+    return songInfo;
   }
 
   try {
@@ -116,5 +121,5 @@ const getSongInfo = async (message: Message, songUrl: string) => {
     console.log(error);
     throw 'Error getting the video from the URL';
   }
-  return songInfo
+  return songInfo;
 };
