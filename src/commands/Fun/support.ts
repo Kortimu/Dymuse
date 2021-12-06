@@ -9,7 +9,7 @@ import { supportArray } from '../../lib/data/support-messages';
 @ApplyOptions<CommandOptions>({
   description: '"Supports" the user emotionally.',
   fullCategory: ['Fun'],
-  aliases: ['es', 'support'],
+  aliases: ['es', 'emotionalsupport'],
   detailedDescription:
     'A command that sends a random "supportive" message to a user of your choosing in their PMs.',
   cooldownDelay: 20000,

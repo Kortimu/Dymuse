@@ -19,4 +19,9 @@ export const supportArray = [
   "You are beautiful. Just... don't look at anyone. They might get so... amazed, they might faint!",
   'Are you planning to jump off a building? Take a parachute to slow your descent. Safety first!',
   "Are you going to commit the big die? Don't, that sounds very based.",
+  "I like how you smell when you don't shower. Reminds me of my dead granny. :)",
+  'hello this is very original easter egg shut up',
+  'If you see this, you are legally obligated to ping me for whatever reason.',
+  'Violence is DEFINITELY the answer.',
+  "Are you depressed? Don't."
 ];
