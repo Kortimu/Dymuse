@@ -45,8 +45,9 @@ export class UserCommand extends BotCommand {
       // Check if the specified command/category exists
       const lowCommand = targetCommand.toLowerCase();
       const categoryCheck = lowCommand[0].toUpperCase() + lowCommand.slice(1);
+      const singleCategory = categories.get(categoryCheck)
       // If a command exists
-      if (commandNames.includes(targetCommand.toLowerCase())) {
+      if (commandNames.includes(lowCommand)) {
         // If a command exists, show extended info about it
         const cmdName = commandNames
           .filter((command) => commands.get(command)?.name === targetCommand.toLowerCase())
@@ -96,7 +97,7 @@ export class UserCommand extends BotCommand {
           embeds: [helpEmbed.setColor('#FF00FF').setTitle(`Information about ${targetCommand}:`)],
         });
         // If a category exists
-      } else if (categories.get(categoryCheck)) {
+      } else if (singleCategory) {
         // Remove all keys and values from map not related to the chosen category
         commands.forEach((cmd) => {
           cmd.fullCategory.forEach((cat) => {
@@ -105,19 +106,40 @@ export class UserCommand extends BotCommand {
             }
           });
         });
-        // Show an error (I know, a rarity for this bot, shut up)
-      } else {
+
+        Array.from(categories.keys()).forEach((cat) => {
+          let text = ''
+          commandNames
+            .filter((command) => commands.get(command)?.category === cat)
+            .forEach((cmd) => {
+              const description = commands.get(cmd)?.description;
+              const aliases = commands.get(cmd)?.aliases.map((alias) => `\`${alias}\``);
+
+              text += `**?${cmd}** [${aliases}] **→** ${description}\n`;
+            })
+
+          helpEmbed.addField(cat, text)
+        })
+
         return send(message, {
           embeds: [
             helpEmbed
-              .setColor('#FF0000')
-              .addField(
-                'Error',
-                `There is no command or category with the name **${targetCommand}**. To view all commands, type the help command with no additional words.`,
-              )
+              .setColor('#FF00FF')
+              .setTitle('Commands in the category:')
           ]
         })
+      // Show an error (I know, a rarity for this bot, shut up)
       }
+      return send(message, {
+        embeds: [
+          helpEmbed
+            .setColor('#FF0000')
+            .addField(
+              'Error',
+              `There is no command or category with the name **${targetCommand}**. To view all commands, type the help command with no additional words.`,
+            )
+        ]
+      })
     }
 
     // If nothing specified, get all commands, and show them in a simple list
