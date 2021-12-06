@@ -213,7 +213,7 @@ const getSongPlayer = async (song: ISong) => {
   return entersState(player, AudioPlayerStatus.Playing, 15 * 1000);
 };
 
-const playSong = async (
+export const playSong = async (
   guild: Guild,
   channel: TextChannel,
   queue: IServerMusicQueue,
