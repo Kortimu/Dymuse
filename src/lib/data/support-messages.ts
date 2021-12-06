@@ -23,5 +23,5 @@ export const supportArray = [
   'hello this is very original easter egg shut up',
   'If you see this, you are legally obligated to ping me for whatever reason.',
   'Violence is DEFINITELY the answer.',
-  "Are you depressed? Don't."
+  "Are you depressed? Don't.",
 ];

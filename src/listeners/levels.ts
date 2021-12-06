@@ -15,7 +15,7 @@ export class UserEvent extends Listener<typeof Events.MessageCreate> {
     // All needed variables from message
     const { guild } = message;
     const user = message.author;
-    const xp = message.content.length;
+    const xp = Math.ceil(Math.sqrt(message.content.length) * 15);
 
     // Checks if guild exists, and makes sure bots don't get XP
     if (!guild) {
@@ -80,10 +80,10 @@ const addXP = async (guildId: string, userId: string, xpToAdd: number, message: 
     send(message, {
       embeds: [
         new MessageEmbed()
-          .setColor('#00FF00')
-          .setTitle('Someone leveled up!')
+          .setColor('#FF00FF')
+          .setTitle('someone leveled up ayyyyyyy')
           .setDescription(
-            `<@${userId}> leveled up to level **${level}** with **${xp}** leftover. Congrats!`,
+            `<@${userId}> leveled up to level **${level}** with **${xp}** XP leftover. nice`,
           ),
       ],
     });
