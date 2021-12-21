@@ -48,12 +48,12 @@ const skip = async (message: Message) => {
   skipVote(serverQueue, message);
   console.log(skipVoters);
   message.delete();
-  return (skipVoters = 0);
+  return skipVoters;
 };
 
 const skipVote = async (serverQueue: IServerMusicQueue, message: Message) => {
   skipVoters += 1;
-  if (skipVoters < Math.floor(0.5 * (serverQueue.voiceChannel.members.size - 1))) {
+  if (skipVoters < Math.ceil(0.5 * (serverQueue.voiceChannel.members.size - 1))) {
     return send(message, {
       embeds: [
         new MessageEmbed()
@@ -86,6 +86,7 @@ const skipSong = async (message: Message, serverQueue: IServerMusicQueue) => {
     });
   }
   songFinish(message.guild, message.channel as TextChannel, serverQueue, queues);
+  skipVoters = 0;
   return send(message, {
     embeds: [
       new MessageEmbed()
