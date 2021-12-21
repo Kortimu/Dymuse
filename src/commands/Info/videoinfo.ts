@@ -73,6 +73,8 @@ const showInfo = async (message: Message, args: Args) => {
     title: rawData.videoDetails.title,
     duration,
     formattedDuration: formatSeconds(duration),
+    creationDate: rawData.videoDetails.publishDate,
+    views: rawData.videoDetails.viewCount,
     likes: rawData.videoDetails.likes?.toString() ?? 'Not shown',
     subscribers: rawData.videoDetails.author.subscriber_count?.toString() ?? 'Not shown',
     bestThumbnail: rawData.videoDetails.thumbnails[3],
@@ -88,7 +90,7 @@ const showInfo = async (message: Message, args: Args) => {
         .setColor('#FF00FF')
         .setTitle('Information about the video:')
         .setDescription(
-          `**URL:** ${song.url}\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Likes:** ${song.likes}\n**Channel:** ${song.channelName}\n**Subsribers:** ${song.subscribers}`,
+          `**URL:** ${song.url}\n\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Published:** ${song.creationDate}\n\n**Views:** ${song.views}\n**Likes:** ${song.likes}\n\n**Channel:** ${song.channelName}\n**Subsribers:** ${song.subscribers}`,
         )
         .setImage(song.bestThumbnail.url)
         .setThumbnail(song.channelLogo),
@@ -105,7 +107,7 @@ const getSongInfo = async (message: Message, songUrl: string) => {
         new MessageEmbed()
           .setColor('#FF0000')
           .setTitle('Error')
-          .setDescription('Please specify a valid URL.'),
+          .setDescription('bro that URL is wack'),
       ],
     }).then((msg) => {
       setTimeout(() => {

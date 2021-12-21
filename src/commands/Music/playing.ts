@@ -55,7 +55,7 @@ const sendQueue = async (message: Message, song: ISong) => {
         .setColor('#FF00FF')
         .setTitle('Currently playing song:')
         .setDescription(
-          `**URL:** ${song.url}\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Likes:** ${song.likes}\n**Channel:** ${song.channelName}\n**Subsribers:** ${song.subscribers}`,
+          `**URL:** ${song.url}\n\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Published:** ${song.creationDate}\n\n**Views:** ${song.views}\n**Likes:** ${song.likes}\n\n**Channel:** ${song.channelName}\n**Subsribers:** ${song.subscribers}`,
         )
         .setImage(song.bestThumbnail.url)
         .setThumbnail(song.channelLogo),

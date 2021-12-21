@@ -8,6 +8,8 @@ export interface ISong {
   title: string;
   duration: number;
   formattedDuration: string;
+  creationDate: string;
+  views: string;
   likes: string;
   subscribers: string;
   bestThumbnail: ytdl.thumbnail;

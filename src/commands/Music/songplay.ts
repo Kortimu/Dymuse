@@ -93,6 +93,8 @@ const play = async (message: Message, args: Args) => {
     title: rawData.videoDetails.title,
     duration,
     formattedDuration: formatSeconds(duration),
+    creationDate: rawData.videoDetails.publishDate,
+    views: rawData.videoDetails.viewCount,
     likes: rawData.videoDetails.likes?.toString() ?? 'Not shown',
     subscribers: rawData.videoDetails.author.subscriber_count?.toString() ?? 'Not shown',
     bestThumbnail: rawData.videoDetails.thumbnails[3],

@@ -11,7 +11,7 @@ import type { IServerMusicQueue } from '../../types/interfaces/Bot';
   description: 'Removes a video from the queue.',
   fullCategory: ['Music'],
   aliases: ['rfq', 'removefromq'],
-  detailedDescription: 'A command that skips the currently playing Youtube video.',
+  detailedDescription: 'A command that removes a specified video from the queue.',
   preconditions: ['TestOnly'],
   syntax: '[order in queue (can see in ?queue)]',
   examples: ['remove 2', 'rfq 5', 'removefromq 1'],
