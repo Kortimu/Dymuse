@@ -23,7 +23,7 @@ export class UserCommand extends BotCommand {
       return;
     }
     const serverQueue: IServerMusicQueue = queues.get(message.guildId);
-    if (!serverQueue) {
+    if (!serverQueue || serverQueue.songs.length < 1) {
       return send(message, {
         embeds: [
           new MessageEmbed()
