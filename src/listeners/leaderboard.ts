@@ -13,8 +13,8 @@ export class UserEvent extends Listener<typeof Events.ClientReady> {
 
   // Every 10 seconds, update the leaderboard
   public run(client: Client) {
-    setInterval(() => {
-      updateLeaderboard(client);
+    setInterval(async () => {
+      await updateLeaderboard(client);
     }, 1000 * 10);
   }
 }
