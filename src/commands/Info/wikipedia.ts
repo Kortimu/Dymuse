@@ -1,0 +1,74 @@
+import { ApplyOptions } from '@sapphire/decorators';
+import type { Args, CommandOptions } from '@sapphire/framework';
+import BotCommand from '../../types/BotCommand';
+import { Message, MessageEmbed } from 'discord.js';
+import { sendLoadingMessage } from '../../lib/utils';
+import { send } from '@sapphire/plugin-editable-commands';
+import wikipedia from 'wikipedia';
+
+@ApplyOptions<CommandOptions>({
+  description: 'Show a Wikipedia page.',
+  fullCategory: ['Info'],
+  aliases: ['wiki'],
+  detailedDescription: 'A command that shows a summary of the first Wikipedia result.',
+  syntax: '<search term>',
+  examples: ['wikipedia feet', 'wiki the dunning-kruger effect'],
+})
+export class UserCommand extends BotCommand {
+  public async messageRun(message: Message, args: Args) {
+    // Sends loading message
+    await sendLoadingMessage(message);
+
+    const searchTerm = await args.rest('string').catch(() => undefined);
+    if (!searchTerm) {
+      return send(message, {
+        embeds: [
+          new MessageEmbed()
+            .setColor('#FF0000')
+            .setTitle('Error')
+            .setDescription('Very funny. If you want results, enter in an actual result.'),
+        ],
+      });
+    }
+    return searchWiki(message, searchTerm);
+  }
+}
+
+async function searchWiki(message: Message, searchTerm: string) {
+  send(message, {
+    embeds: [
+      new MessageEmbed()
+        .setColor('#FFFF00')
+        .setTitle('Searching...')
+        .setDescription('Looking for results...'),
+    ],
+  });
+  const wikiSearch = await wikipedia.search(searchTerm, { limit: 1, suggestion: false });
+
+  if (!wikiSearch.results) {
+    return send(message, {
+      embeds: [
+        new MessageEmbed()
+          .setColor('#FF0000')
+          .setTitle('Error')
+          .setDescription(`there is no result about \`${searchTerm}\` lol`),
+      ],
+    });
+  }
+
+  const page = await wikipedia.page(wikiSearch.results[0].title);
+  const summary = await page.summary();
+
+  return send(message, {
+    embeds: [
+      new MessageEmbed()
+        .setColor('#FF00FF')
+        .setTitle(summary.title)
+        .setDescription(`${summary.extract}\n\n**Continue reading [here](${page.fullurl})**`)
+        .setThumbnail(
+          summary.thumbnail?.source ??
+            'https://en.wikipedia.org/static/images/project-logos/enwiki.png',
+        ),
+    ],
+  });
+}
