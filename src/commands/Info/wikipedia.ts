@@ -64,7 +64,11 @@ async function searchWiki(message: Message, searchTerm: string) {
       new MessageEmbed()
         .setColor('#FF00FF')
         .setTitle(summary.title)
-        .setDescription(`${summary.extract.replace(/^(.{300}[^\s]*).*/, "$1")}...\n\n**Continue reading [here](${page.fullurl})**`)
+        .setDescription(
+          `${summary.extract.replace(/^(.{300}[^\s]*).*/, '$1')}...\n\n**Continue reading [here](${
+            page.fullurl
+          })**`,
+        )
         .setThumbnail(
           summary.thumbnail?.source ??
             'https://en.wikipedia.org/static/images/project-logos/enwiki.png',
