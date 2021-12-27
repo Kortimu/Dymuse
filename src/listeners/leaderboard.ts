@@ -122,10 +122,14 @@ const updateLeaderboard = async (client: Client) => {
         const topMembers = await fetchTopMembers(guildId);
 
         // Edit existing message. If there is none, send one.
-        if (firstMessage) {
-          firstMessage.edit({ embeds: [topMembers] });
-        } else {
-          channel.send({ embeds: [topMembers] });
+        try {
+          if (firstMessage) {
+            firstMessage.edit({ embeds: [topMembers] });
+          } else {
+            channel.send({ embeds: [topMembers] });
+          }
+        } catch {
+          console.log('Embed update failed :(');
         }
       }
     }
