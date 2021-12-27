@@ -1,6 +1,6 @@
 {
   "name": "dylanbot2.0",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A newer and more stable version of DylanBot, now in TypeScript!",
   "main": "dist/index.js",
   "scripts": {
