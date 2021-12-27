@@ -4,8 +4,9 @@ import BotCommand from '../../types/BotCommand';
 import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
-import { queues } from './songplay';
+import { curDur, queues } from './songplay';
 import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
+import { formatSeconds } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Shows info about the currently playing video.',
@@ -55,7 +56,11 @@ const sendQueue = async (message: Message, song: ISong) => {
         .setColor('#FF00FF')
         .setTitle('Currently playing song:')
         .setDescription(
-          `**URL:** ${song.url}\n\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Published:** ${song.creationDate}\n\n**Views:** ${song.views}\n**Likes:** ${song.likes}\n\n**Channel:** ${song.channelName}\n**Subsribers:** ${song.subscribers}`,
+          `**URL:** ${song.url}\n**Title:** ${song.title}\n**Views:** ${song.views}\n**Channel:** ${
+            song.channelName
+          }\n\n**Length:** ${formatSeconds(curDur)} ${progressBar(song.duration)} ${
+            song.formattedDuration
+          }`,
         )
         .setImage(song.bestThumbnail.url)
         .setThumbnail(song.channelLogo),
@@ -66,4 +71,11 @@ const sendQueue = async (message: Message, song: ISong) => {
       msg.delete();
     }, 20 * 1000);
   });
+};
+
+const progressBar = (duration: number) => {
+  let progress = '---------';
+  const percentage = Math.round(10 * (curDur / duration));
+  progress = `${progress.slice(0, percentage)}O${progress.slice(percentage)}`;
+  return progress;
 };

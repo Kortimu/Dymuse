@@ -19,6 +19,8 @@ import ytdl from 'ytdl-core';
 import ytsr from 'ytsr';
 export const queues = new Map();
 
+export let curDur = 0;
+
 @ApplyOptions<CommandOptions>({
   name: 'play',
   description: 'Plays audio from Youtube.',
@@ -223,9 +225,6 @@ export const playSong = async (
   queue: IServerMusicQueue,
   musicQueue: Map<string, IServerMusicQueue>,
 ) => {
-  if (!queue) {
-    return;
-  }
   if (queue.songs.length === 0) {
     return emptyQueue(guild.id, channel, queue, musicQueue);
   }
@@ -235,19 +234,31 @@ export const playSong = async (
   connection.subscribe(queue.audioPlayer);
   queue.isPlaying = true;
 
-  setTimeout(() => {
+  let preview = false;
+  const timer = setInterval(() => {
+    if (curDur < queue.songs[0].duration - 10) {
+      return curDur++;
+    }
+    curDur++;
     if (queue.songs.length === 1) {
       return;
     }
-    let nextSong = songs[1];
+    let upcomingSong = songs[1];
     if (queue.repeatMode === 'single') {
-      [nextSong] = songs;
+      [upcomingSong] = songs;
     }
-    nextPreview(nextSong, channel);
-  }, (songs[0].duration - 10) * 1000);
+
+    if (!preview) {
+      nextPreview(upcomingSong, channel);
+      preview = true;
+    }
+    clearInterval(timer);
+    return curDur;
+  }, 1 * 1000);
 
   queue.audioPlayer.on(AudioPlayerStatus.Idle, () => {
     queue.isPlaying = false;
+    clearTimeout(timer);
     songFinish(guild, channel, queue, musicQueue);
   });
 };
@@ -263,6 +274,7 @@ export const songFinish = (
   serverQueue: IServerMusicQueue,
   musicQueue: Map<string, IServerMusicQueue>,
 ) => {
+  curDur = 0;
   if (serverQueue !== null) {
     const { songs } = serverQueue;
     if (serverQueue.repeatMode === 'all') {
@@ -270,6 +282,9 @@ export const songFinish = (
     }
     if (serverQueue.repeatMode === 'all' || serverQueue.repeatMode === 'off') {
       serverQueue.songs.shift();
+    }
+    if (serverQueue.songs === [] || !serverQueue.songs) {
+      console.log('uh oh');
     }
     playSong(guild, channel, serverQueue, musicQueue);
     songPreview(songs[0], channel);
@@ -332,9 +347,11 @@ const emptyQueue = (
   serverQueue: IServerMusicQueue,
   musicQueue: Map<string, IServerMusicQueue>,
 ) => {
+  serverQueue.audioPlayer.stop();
   const connection = getVoiceConnection(guildId);
-  if (serverQueue.voiceChannel.members.size === 1) {
-    connection?.destroy();
+  if (serverQueue.voiceChannel.members.size === 1 && connection) {
+    console.log('everybody left lmao');
+    connection.destroy();
     musicQueue.delete(guildId);
     channel.send({
       embeds: [
@@ -347,8 +364,9 @@ const emptyQueue = (
     return;
   }
   setTimeout(() => {
-    if (serverQueue.songs.length === 0) {
-      connection?.destroy();
+    if (serverQueue.songs.length === 0 && connection) {
+      console.log('no more songs lol');
+      connection.destroy();
       musicQueue.delete(guildId);
       channel.send({
         embeds: [

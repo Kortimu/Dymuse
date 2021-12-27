@@ -1,10 +1,10 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed, TextChannel } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
-import { queues, songFinish } from './songplay';
+import { queues } from './songplay';
 import type { IServerMusicQueue } from '../../types/interfaces/Bot';
 let skipVoters = 0;
 
@@ -46,7 +46,6 @@ const skip = async (message: Message) => {
   }
   // Voting system
   skipVote(serverQueue, message);
-  console.log(skipVoters);
   message.delete();
   return skipVoters;
 };
@@ -62,7 +61,7 @@ const skipVote = async (serverQueue: IServerMusicQueue, message: Message) => {
           .setDescription(
             `\`${skipVoters}/${
               serverQueue.voiceChannel.members.size - 1
-            }\` people want to skip this song. If others agree, do \`?skip\` as well.`,
+            }\` people think this song sucks. If you agree, do \`?skip\` as well.`,
           ),
       ],
     }).then((msg) => {
@@ -85,7 +84,7 @@ const skipSong = async (message: Message, serverQueue: IServerMusicQueue) => {
       ],
     });
   }
-  songFinish(message.guild, message.channel as TextChannel, serverQueue, queues);
+  serverQueue.audioPlayer.stop(true);
   skipVoters = 0;
   return send(message, {
     embeds: [
