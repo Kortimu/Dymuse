@@ -16,6 +16,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@discordjs/collection": "^0.2.1",
+    "@discordjs/opus": "^0.5.3",
     "@discordjs/voice": "^0.7.5",
     "@sapphire/decorators": "^3.0.0-next.ae4f5935.0",
     "@sapphire/discord-utilities": "^2.2.0",
@@ -34,7 +35,8 @@
     "reflect-metadata": "^0.1.13",
     "ts-node": "^10.2.1",
     "tsc-watch": "^4.5.0",
-    "ytdl-core": "^4.9.1",
+    "wikipedia": "^1.1.6",
+    "ytdl-core": "^4.9.2",
     "ytsr": "^3.5.3"
   },
   "devDependencies": {
