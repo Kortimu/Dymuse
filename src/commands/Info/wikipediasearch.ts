@@ -46,6 +46,7 @@ async function searchWiki(message: Message, searchTerm: string) {
         .setDescription('Looking for results...'),
     ],
   });
+  // Find first 10 titles
   const wikiSearch = await wikipedia.search(searchTerm, { limit: 10, suggestion: false });
 
   if (!wikiSearch.results) {
@@ -60,6 +61,7 @@ async function searchWiki(message: Message, searchTerm: string) {
   }
   let text = '';
   let index = 0;
+  // When a title is found, edit embed to show result
   wikiSearch.results.forEach((result) => {
     index++;
     text += `#${index} **${result.title}**\n`;
@@ -74,12 +76,14 @@ async function searchWiki(message: Message, searchTerm: string) {
   return collectResponse(message, wikiSearch.results);
 }
 
+// Let the user pick an option
 function collectResponse(message: Message, options: any) {
   const collector = message.channel.createMessageCollector({
     max: 1,
     time: 20 * 1000,
   });
 
+  // If a user sends something, show result number if possible
   collector.on('collect', async (msg) => {
     const resultPick = parseInt(msg.content, 10);
     if (!resultPick || resultPick > options.length || resultPick < 1) {
@@ -93,6 +97,7 @@ function collectResponse(message: Message, options: any) {
       });
     }
     const resultTitle = options[resultPick - 1].title;
+    // Turns Wikipedia title into page (for embed)
     const page = await wikipedia.page(resultTitle);
     const summary = await page.summary();
     send(msg, {
@@ -102,12 +107,14 @@ function collectResponse(message: Message, options: any) {
           .setTitle(`Info about "${summary.title}"`)
           .setDescription(
             `${summary.extract.replace(
+              // Regex selects the first 300 characters. Cuts off words for now
               /^(.{300}[^\s]*).*/,
               '$1',
             )}...\n\n**Continue reading [here](${page.fullurl})**`,
           )
           .setThumbnail(
             summary.thumbnail?.source ??
+              // Wikipedia logo
               'https://en.wikipedia.org/static/images/project-logos/enwiki.png',
           ),
       ],
@@ -115,6 +122,7 @@ function collectResponse(message: Message, options: any) {
       msg.delete();
     });
   });
+  // When timer ends, stop collecting response
   collector.on('end', () => {
     send(message, {
       embeds: [

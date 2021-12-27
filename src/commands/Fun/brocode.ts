@@ -13,7 +13,7 @@ import { broCode } from '../../lib/data/bro-code';
   detailedDescription:
     'A command that sends either a specific Bro Code rule, a random one, or all of the rules.',
   preconditions: ['TestOnly'],
-  syntax: '[1-26/all]',
+  syntax: '[1-27/all]',
   examples: ['brocode 21', 'bcode all', 'thecode'],
   notes: [
     'If no argument is specified, a random rule will be sent.',
@@ -33,15 +33,18 @@ export class UserCommand extends BotCommand {
 async function sendRule(option: string, message: Message) {
   const ruleEmbed = new MessageEmbed().setColor('#FF00FF');
   let text = '';
+  // Turns the argument into a number
   const selectedOption = Number(option);
   const parsedOption = selectedOption - 1;
-  if (parsedOption <= broCode.length && parsedOption >= 0) {
+  // Check if argument is between the first and last rule
+  if (parsedOption < broCode.length && parsedOption >= 0) {
     return send(message, {
       embeds: [
         ruleEmbed.setTitle(`Rule #${selectedOption}`).setDescription(`${broCode[parsedOption]}`),
       ],
     });
   }
+  // If specified, send all rules in PMs (less clutter)
   if (option === 'all') {
     let counter = 1;
     broCode.forEach((rule) => {
@@ -60,7 +63,7 @@ async function sendRule(option: string, message: Message) {
       embeds: [ruleEmbed.setTitle('The Bro Code').setDescription(text)],
     });
   }
-  // Pick random
+  // Pick a random rule otherwise
   const randomRule = pickRandom(broCode);
   return send(message, {
     embeds: [

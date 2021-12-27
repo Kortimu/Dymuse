@@ -21,6 +21,7 @@ export class UserCommand extends BotCommand {
 }
 
 function flipCoin(message: Message) {
+  // Flipping animation (aesthetic only)
   send(message, {
     embeds: [
       new MessageEmbed()
@@ -37,6 +38,7 @@ function flipCoin(message: Message) {
   });
 }
 
+// Send either of the results, based on pickRandom()
 function sendResult(msg: Message) {
   const results = ['heads', 'tails'];
   const result = pickRandom(results);

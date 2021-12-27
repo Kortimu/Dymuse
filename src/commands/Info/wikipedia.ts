@@ -40,9 +40,10 @@ async function searchWiki(message: Message, searchTerm: string) {
       new MessageEmbed()
         .setColor('#FFFF00')
         .setTitle('Searching...')
-        .setDescription('Looking for results...'),
+        .setDescription('Looking for the result...'),
     ],
   });
+  // Find first result
   const wikiSearch = await wikipedia.search(searchTerm, { limit: 1, suggestion: false });
 
   if (!wikiSearch.results) {
@@ -56,6 +57,7 @@ async function searchWiki(message: Message, searchTerm: string) {
     });
   }
 
+  // Transform the found data into more useful data (for embed)
   const page = await wikipedia.page(wikiSearch.results[0].title);
   const summary = await page.summary();
 
@@ -65,12 +67,14 @@ async function searchWiki(message: Message, searchTerm: string) {
         .setColor('#FF00FF')
         .setTitle(summary.title)
         .setDescription(
+          // Regex selects the first 300 characters. For now cuts off words
           `${summary.extract.replace(/^(.{300}[^\s]*).*/, '$1')}...\n\n**Continue reading [here](${
             page.fullurl
           })**`,
         )
         .setThumbnail(
           summary.thumbnail?.source ??
+            // Wikipedia logo
             'https://en.wikipedia.org/static/images/project-logos/enwiki.png',
         ),
     ],

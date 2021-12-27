@@ -30,6 +30,7 @@ export class UserCommand extends BotCommand {
 
 const showInfo = async (message: Message, args: Args) => {
   const songUrl = await args.pick('string').catch(() => '');
+  // If no URL specified
   if (songUrl === '') {
     return send(message, {
       embeds: [
@@ -44,6 +45,7 @@ const showInfo = async (message: Message, args: Args) => {
       }, 10 * 1000);
     });
   }
+  // Get info about the URL
   let songInfo = null;
   try {
     songInfo = await getSongInfo(message, songUrl);
@@ -65,6 +67,7 @@ const showInfo = async (message: Message, args: Args) => {
     });
   }
 
+  // The data gained gets stored in interface for ease of use
   const rawData = await ytdl.getBasicInfo(songInfo.videoDetails.video_url, { lang: 'en' });
   const duration = parseInt(rawData.videoDetails.lengthSeconds, 10);
   const song: ISong = {
@@ -81,6 +84,7 @@ const showInfo = async (message: Message, args: Args) => {
     channelName: rawData.videoDetails.author.name,
     channelLogo:
       rawData.videoDetails.author.thumbnails?.[0].url ??
+      // Typical user profile picture
       'https://yt3.ggpht.com/a-/AAuE7mDaHtAVove7M4KGX3OGtmBjsfpBGCbIPNrwAA=s900-mo-c-c0xffffffff-rj-k-no',
   };
 
@@ -101,6 +105,7 @@ const showInfo = async (message: Message, args: Args) => {
 const getSongInfo = async (message: Message, songUrl: string) => {
   let songInfo = null;
 
+  // If URL is not valid
   if (!ytdl.validateURL(songUrl)) {
     send(message, {
       embeds: [

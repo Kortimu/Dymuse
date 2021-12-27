@@ -13,7 +13,6 @@ let skipVoters = 0;
   fullCategory: ['Music'],
   aliases: ['sk', 'ihatethisone'],
   detailedDescription: 'A command that skips the currently playing Youtube video.',
-  preconditions: ['TestOnly'],
   notes: [
     'This command DOES NOT ignore loop order. To remove a song ignoring the loop order, use `remove`.',
   ],
@@ -52,6 +51,7 @@ const skip = async (message: Message) => {
 
 const skipVote = async (serverQueue: IServerMusicQueue, message: Message) => {
   skipVoters += 1;
+  // If less than half has not voted, request for others to do so
   if (skipVoters < Math.ceil(0.5 * (serverQueue.voiceChannel.members.size - 1))) {
     return send(message, {
       embeds: [
@@ -74,6 +74,7 @@ const skipVote = async (serverQueue: IServerMusicQueue, message: Message) => {
 };
 
 const skipSong = async (message: Message, serverQueue: IServerMusicQueue) => {
+  // "Skipping" here really means just stopping the bot. The ?play command checks when bot has gone idle in VC
   if (!message.guild) {
     return send(message, {
       embeds: [

@@ -17,8 +17,9 @@ import { formatSeconds } from '../../lib/constants';
 import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
 import ytdl from 'ytdl-core';
 import ytsr from 'ytsr';
-export const queues = new Map();
 
+// Define variables for use in other files
+export const queues = new Map();
 export let curDur = 0;
 
 @ApplyOptions<CommandOptions>({
@@ -27,7 +28,6 @@ export let curDur = 0;
   fullCategory: ['Music'],
   aliases: ['pl', 'youtube'],
   detailedDescription: 'A command that plays a user-requested Youtube video in audio form.',
-  preconditions: ['TestOnly'],
   syntax: '<url/search term>',
   examples: ['pl https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'youtube party rock apple'],
   notes: [
@@ -70,6 +70,7 @@ const play = async (message: Message, args: Args) => {
     });
   }
 
+  // Find info about the song
   let songInfo = null;
   try {
     songInfo = await getSongInfo(message, args);
@@ -87,6 +88,7 @@ const play = async (message: Message, args: Args) => {
     });
   }
 
+  // Get info from the URL, add data to an interface for ease of use
   const rawData = await ytdl.getBasicInfo(songInfo.videoDetails.video_url, { lang: 'en' });
   const duration = parseInt(rawData.videoDetails.lengthSeconds, 10);
   const info: ISong = {
@@ -119,8 +121,10 @@ const play = async (message: Message, args: Args) => {
   }
   const voiceChannel = message.member.voice.channel as VoiceChannel;
 
+  // Each guild has their own queue
   let musicQueue = queues.get(message.guild.id);
   if (!musicQueue) {
+    // Default settings for a queue
     musicQueue = {
       voiceChannel,
       songs: [],
@@ -159,6 +163,7 @@ const getSongInfo = async (message: Message, args: Args) => {
   let songInfo = null;
   let songUrl = await args.pick('string');
 
+  // If URL is not valid, check if result can be found by searching on Youtube
   if (!ytdl.validateURL(songUrl)) {
     const result = `${songUrl} ${await args.rest('string').catch(() => '')}`;
     send(message, {
@@ -170,6 +175,7 @@ const getSongInfo = async (message: Message, args: Args) => {
       ],
     });
 
+    // Make sure the Youtube URL is a video
     let filters = null;
     try {
       filters = await ytsr.getFilters(result);
@@ -183,6 +189,7 @@ const getSongInfo = async (message: Message, args: Args) => {
 
     const filter = filters.get('Type')?.get('Video')?.url ?? result;
 
+    // Try looking up on Youtube
     try {
       const results: any = await ytsr(filter, {
         limit: 1,
@@ -197,6 +204,7 @@ const getSongInfo = async (message: Message, args: Args) => {
     }
   }
 
+  // Return the info the function that called it
   try {
     songInfo = await ytdl.getInfo(songUrl);
   } catch (error) {
@@ -206,6 +214,7 @@ const getSongInfo = async (message: Message, args: Args) => {
   return songInfo;
 };
 
+// Create an audio player to play videos on VC
 const getSongPlayer = async (song: ISong) => {
   const player = createAudioPlayer();
   const stream = ytdl(song.url, {
@@ -225,15 +234,18 @@ export const playSong = async (
   queue: IServerMusicQueue,
   musicQueue: Map<string, IServerMusicQueue>,
 ) => {
+  // If queue is empty, do the needed actions
   if (queue.songs.length === 0) {
     return emptyQueue(guild.id, channel, queue, musicQueue);
   }
+  // Connect to VC, play next video in queue
   const connection = connect(queue.voiceChannel);
   const { songs } = queue;
   queue.audioPlayer = await getSongPlayer(songs[0]);
   connection.subscribe(queue.audioPlayer);
   queue.isPlaying = true;
 
+  // Start a timer, to track the current play time. There might be a built-in variable for this, could not find one
   let preview = false;
   const timer = setInterval(() => {
     if (curDur < queue.songs[0].duration - 10) {
@@ -248,6 +260,7 @@ export const playSong = async (
       [upcomingSong] = songs;
     }
 
+    // 10 seconds before the end, show preview ONCE
     if (!preview) {
       nextPreview(upcomingSong, channel);
       preview = true;
@@ -256,6 +269,7 @@ export const playSong = async (
     return curDur;
   }, 1 * 1000);
 
+  // If bot is not playing music, do the needed actions
   queue.audioPlayer.on(AudioPlayerStatus.Idle, () => {
     queue.isPlaying = false;
     clearTimeout(timer);
@@ -264,6 +278,7 @@ export const playSong = async (
 };
 
 const addSongToQueue = (musicQueue: IServerMusicQueue, song: ISong) => {
+  // Adds song to the end of array
   musicQueue.songs.push(song);
   return musicQueue;
 };
@@ -275,6 +290,7 @@ export const songFinish = (
   musicQueue: Map<string, IServerMusicQueue>,
 ) => {
   curDur = 0;
+  // If queue is still active, remove the first element of array, and maybe put it back in
   if (serverQueue !== null) {
     const { songs } = serverQueue;
     if (serverQueue.repeatMode === 'all') {
@@ -292,7 +308,7 @@ export const songFinish = (
 };
 
 const nextPreview = (song: ISong, channel: TextChannel) => {
-  // Preview song 10 seconds before playing it
+  // Preview video 10 seconds before it plays
   if (!song) {
     return;
   }
@@ -347,6 +363,7 @@ const emptyQueue = (
   serverQueue: IServerMusicQueue,
   musicQueue: Map<string, IServerMusicQueue>,
 ) => {
+  // If queue empty, leave after 60 seconds or when everyone leaves
   serverQueue.audioPlayer.stop();
   const connection = getVoiceConnection(guildId);
   if (serverQueue.voiceChannel.members.size === 1 && connection) {

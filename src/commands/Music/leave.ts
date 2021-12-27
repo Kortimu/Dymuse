@@ -12,7 +12,6 @@ import { getVoiceConnection } from '@discordjs/voice';
   fullCategory: ['Music'],
   aliases: ['disconnect', 'dcon', 'plsleavenow', 'bye'],
   detailedDescription: 'A command that disconnects the bot from the voice channel.',
-  preconditions: ['TestOnly'],
   notes: ['When the bot leaves, the queue gets deleted as well.'],
 })
 export class UserCommand extends BotCommand {
@@ -60,6 +59,7 @@ const leave = async (message: Message) => {
       }, 10 * 1000);
     });
   }
+  // Clear queue and leave, so next time the queue is not clogged
   connection.destroy();
   musicQueue.delete(message.guildId);
   return send(message, {

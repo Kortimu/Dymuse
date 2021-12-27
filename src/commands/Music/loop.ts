@@ -12,7 +12,6 @@ import type { IServerMusicQueue } from '../../types/interfaces/Bot';
   fullCategory: ['Music'],
   aliases: ['looping', 'repeat'],
   detailedDescription: 'A command that loops the currently playing Youtube video.',
-  preconditions: ['TestOnly'],
   syntax: '[all/single/off]',
   examples: ['loop all', 'looping single', 'repeat off', 'loop'],
 })
@@ -44,6 +43,7 @@ const loop = async (message: Message, option: string) => {
       }, 10 * 1000);
     });
   }
+  // If no argument specified, cycle between the options. off -> single -> all -> off etc
   if (option === 'off' || option === 'single' || option === 'all') {
     serverQueue.repeatMode = option;
   } else if (option) {

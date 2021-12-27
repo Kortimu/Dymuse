@@ -18,6 +18,7 @@ export class UserCommand extends BotCommand {
   public async messageRun(message: Message, args: Args) {
     // Sends loading message
     await sendLoadingMessage(message);
+    // By default, dice is with 6 sides
     const size = await args.pick('number').catch(() => 6);
     rollDice(message, size);
   }
@@ -25,6 +26,7 @@ export class UserCommand extends BotCommand {
 
 async function rollDice(message: Message, size: number) {
   const result = Math.ceil(Math.random() * size);
+  // Checks for non-existant dice
   if (size <= 0) {
     return send(message, {
       embeds: [

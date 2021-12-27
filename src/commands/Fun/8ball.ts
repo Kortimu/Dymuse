@@ -28,6 +28,7 @@ export class UserCommand extends BotCommand {
   }
 }
 
+// Picks a random response from 8-ball.ts. If nothing is specified, change text accordingly.
 async function answerQuestion(message: Message, question: string) {
   const answerEmbed = new MessageEmbed()
     .setColor('#FF00FF')

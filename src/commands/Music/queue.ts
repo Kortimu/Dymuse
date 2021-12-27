@@ -13,7 +13,6 @@ import type { IServerMusicQueue } from '../../types/interfaces/Bot';
   aliases: ['videoqueue', 'q'],
   detailedDescription:
     'A command that displays additional information about the Youtube video queue.',
-  preconditions: ['TestOnly'],
 })
 export class UserCommand extends BotCommand {
   public async messageRun(message: Message) {
@@ -47,6 +46,7 @@ export class UserCommand extends BotCommand {
 const showQueue = async (message: Message, queueInfo: IServerMusicQueue) => {
   const queueEmbed = new MessageEmbed();
   let songNumber = 0;
+  // For each song in guild queue, get simple info
   queueInfo.songs.forEach((song) => {
     songNumber += 1;
     queueEmbed.addField(

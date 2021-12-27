@@ -14,7 +14,6 @@ import { formatSeconds } from '../../lib/constants';
   aliases: ['np', 'nowplaying'],
   detailedDescription:
     'A command that displays additional information about the currently playing Youtube video.',
-  preconditions: ['TestOnly'],
   notes: [
     'This command displays more information than the "Coming up..." or "Playing..." embed does.',
   ],
@@ -50,6 +49,7 @@ export class UserCommand extends BotCommand {
 }
 
 const sendQueue = async (message: Message, song: ISong) => {
+  // Returns additional information, previously stored when song was requested
   return send(message, {
     embeds: [
       new MessageEmbed()
@@ -74,6 +74,7 @@ const sendQueue = async (message: Message, song: ISong) => {
 };
 
 const progressBar = (duration: number) => {
+  // Puts the O in the place it needs to, depending on how far the video is
   let progress = '---------';
   const percentage = Math.round(10 * (curDur / duration));
   progress = `${progress.slice(0, percentage)}O${progress.slice(percentage)}`;

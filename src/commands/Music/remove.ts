@@ -12,7 +12,6 @@ import type { IServerMusicQueue } from '../../types/interfaces/Bot';
   fullCategory: ['Music'],
   aliases: ['rfq', 'removefromq'],
   detailedDescription: 'A command that removes a specified video from the queue.',
-  preconditions: ['TestOnly'],
   syntax: '[order in queue (can see in ?queue)]',
   examples: ['remove 2', 'rfq 5', 'removefromq 1'],
   notes: [
@@ -45,6 +44,7 @@ const remove = async (message: Message, number: number) => {
       }, 10 * 1000);
     });
   }
+  // Check if number is usable
   if (number < 1 || number > serverQueue.songs.length) {
     return send(message, {
       embeds: [
