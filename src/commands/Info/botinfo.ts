@@ -34,7 +34,7 @@ export class UserCommand extends BotCommand {
       embeds: [
         new MessageEmbed()
           .setColor('#FF00FF')
-          .setTitle('DylanBot v2.1.0')
+          .setTitle('DylanBot v2.1.1')
           .setDescription(
             `${bot} is a bot made for Dylan, the owner of \`The Shag Syndicate\`. This bot is still in development, and a lot might (and will) change.\n\n**Bot uptime:** ${uptime}\n\n If you want to contribute for some reason, here is the link to the [Github repository.](https://github.com/Kortimu/DylanBot)`,
           )

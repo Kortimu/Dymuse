@@ -1,10 +1,3 @@
-// Extend the default Command class to include:
-// testOnly (only works in servers listed in the .env, otherwise sends an error saying that the feature is not yet finished)
-// syntax '${prefix}${command} <mandatory> [optional]'
-// examples [each. example]
-// usage 'usage'
-// additonalnotes [each, point]
-
 import { Command, CommandOptions } from '@sapphire/framework';
 import { client } from '../index';
 import type { PieceContext } from '@sapphire/pieces';
