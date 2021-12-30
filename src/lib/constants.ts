@@ -14,7 +14,7 @@ export const RandomLoadingMessage = [
 export const formatSeconds = (duration: number) => {
   const seconds = Math.floor(duration % 60);
   const minutes = Math.floor((duration / 60) % 60);
-  const hours = Math.floor((duration / (60 * 60)) % 60);
+  const hours = Math.floor(duration / (60 * 60));
 
   const displayHours = hours > 0 ? `${hours}:` : '';
   const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
