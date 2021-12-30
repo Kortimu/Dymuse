@@ -12,7 +12,6 @@ import { broCode } from '../../lib/data/bro-code';
   aliases: ['bcode', 'bro', 'thecode'],
   detailedDescription:
     'A command that sends either a specific Bro Code rule, a random one, or all of the rules.',
-  preconditions: ['TestOnly'],
   syntax: '[1-27/all]',
   examples: ['brocode 21', 'bcode all', 'thecode'],
   notes: [
