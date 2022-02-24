@@ -85,5 +85,9 @@ const removeSong = async (serverQueue: IServerMusicQueue, message: Message, inde
         .setTitle('Song removed')
         .setDescription(`Song **#${index + 1}** removed from queue.`),
     ],
+  }).then((msg) => {
+    setTimeout(() => {
+      msg.delete();
+    }, 15 * 1000);
   });
 };
