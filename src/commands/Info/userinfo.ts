@@ -32,8 +32,13 @@ export class UserCommand extends BotCommand {
       guildId: targetMember.guild.id,
       userId: targetUser.id,
     });
-    if (!result) return;
-    const { xp, level } = result;
+    let xp = 0;
+    let level = 0;
+
+    if (result) {
+      xp = result.xp;
+      level = result.level;
+    }
 
     // Show info about the user
     if (targetMember.joinedAt !== null) {
