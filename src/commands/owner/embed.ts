@@ -39,11 +39,9 @@ export class UserCommand extends BotCommand {
     });
 
     // If something is found, continue
-    titleCollector.on('collect', (msg) => {
-      embed.setTitle(msg.content);
-      if (!msg.guild) {
-        msg.delete();
-      }
+    titleCollector.on('collect', (msgTitle) => {
+      embed.setTitle(msgTitle.content);
+      msgTitle.delete();
       // Line 21 explains this
       stage = 1;
       send(message, {
@@ -60,11 +58,9 @@ export class UserCommand extends BotCommand {
         max: 1,
         time: 120 * 1000,
       });
-      descriptionCollector.on('collect', () => {
-        embed.setDescription(msg.content);
-        if (!msg.guild) {
-          msg.delete();
-        }
+      descriptionCollector.on('collect', (msgDesc) => {
+        embed.setDescription(msgDesc.content);
+        msgDesc.delete();
         // Line 9 + 10 explains this
         stage = 2;
         // Send the abomination of a result
