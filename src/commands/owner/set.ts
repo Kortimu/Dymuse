@@ -1,23 +1,24 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed, TextChannel } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { GuildModel } from '../../lib/schemas/guildschema';
+// import { guildSchema } from '../../lib/schemas/guildschema'
 
 @ApplyOptions<CommandOptions>({
   description: 'Sets a setting for the database to read it.',
   fullCategory: ['Owner'],
-  aliases: ['setsetting', 'setting', 'settingset'],
+  aliases: ['settings'],
   preconditions: ['OwnerOnly'],
   detailedDescription:
-    'Users that are considered owners by the bot can set the settings and values used by the bot to, for example, displaying leaderboards or welcoming new users in a specific channel.',
-  syntax: '<setting> <value>',
-  examples: ['set #welcome welcome', 'settting @Based mute'],
+    'Users that are considered owners by the bot can set the settings and values used by the bot to, for example, display leaderboards or welcome new users in a channel.',
+  syntax: '<setting> [add/remove] <value>',
+  examples: ['set xpMultiplier 2.4', 'settings', 'settings botPrefix //'],
   notes: [
-    'This will probably get rewamped later.',
-    'There are 3 settings at the moment: where to send welcome and leave messages, where to show leaderboard, and what role functions as the muted role (used by mute command)',
+    'This is getting rewamped. Many features are clunky or are not implemented yet',
+    'I am bad at making competent things really fast.',
   ],
 })
 export class UserCommand extends BotCommand {
@@ -26,79 +27,177 @@ export class UserCommand extends BotCommand {
     await sendLoadingMessage(message);
 
     // Finds args from sent command - a text channel and the name of the database
-    const targetChannel = (await args.pick('channel').catch(() => message.channel)) as TextChannel;
-    const targetRole = await args.pick('role').catch(() => undefined);
-    let targetVar = undefined;
-    if (targetRole) targetVar = targetRole;
-    else targetVar = targetChannel;
+    const property = await args.pick('string').catch(() => null)
+    let mode = await args.pick('string').catch(() => null)
+    let value = await args.rest('string').catch(() => null)
 
-    const targetName = await args.pick('string');
-
-    // Checks what the name of the database was called
-    if (targetName === 'leaderboard' || 'welcome' || 'mute') {
-      setChannel(targetVar, message, targetName);
+    // In the case that mode is not inputted (it's optional)
+    if (mode && mode !== 'add' && mode !== 'remove' && mode !== 'reset') {
+      value = `${mode}${value ? ` ${value}` : ''}`
+      mode = null
     }
-  }
-}
 
-const setChannel = async (variable: any, message: Message, targetName: string) => {
-  // In case guild doesn't exist
+    // With no additional arguments, view all settings
+    if (!property) {
+      await showSettings(message);
+      return;
+    }
+    if (!value) {
+      settingInfo(property, message);
+      return;
+    }
+
+    if (!message.guild) {
+      return send(message, {
+        embeds: [
+          new MessageEmbed()
+            .setColor('#FF0000')
+            .setTitle('Error')
+            .setDescription('Stop being annoying and doing this in PMs.')
+        ]
+      })
+    }
+
+    // Adds the value to the setting, if possible
+    return applySetting(message, property, mode, value);
+  }
+};
+
+const applySetting = async (message: Message, property: string, mode: string | null, value: string | null) => {
   if (!message.guild) {
-    return;
+    return send(message, {
+      embeds: [
+        new MessageEmbed()
+          .setColor('#FF0000')
+          .setTitle('Error')
+          .setDescription('Stop being annoying and doing this in PMs.')
+      ]
+    })
   }
 
-  const guildId = message.guild.id;
-  const variableId = variable.id;
-
-  // Add the new channel ID to the database
-  if (targetName === 'leaderboard') {
-    await GuildModel.findOneAndUpdate(
-      {
-        guildId,
-      },
-      {
-        leaderboardId: variableId,
-      },
-      {
-        upsert: true,
-        new: true,
-      },
-    );
-  } else if (targetName === 'welcome') {
-    await GuildModel.findOneAndUpdate(
-      {
-        guildId,
-      },
-      {
-        welcomeId: variableId,
-      },
-      {
-        upsert: true,
-        new: true,
-      },
-    );
-  } else if (targetName === 'mute') {
-    await GuildModel.findOneAndUpdate(
-      {
-        guildId,
-      },
-      {
-        muteRole: variableId,
-      },
-      {
-        upsert: true,
-        new: true,
-      },
-    );
+  const result = await GuildModel.findOne({
+    guildId: message.guild.id
+  })
+  if (!result) {
+    return send(message, {
+      embeds: [
+        new MessageEmbed()
+          .setColor('#FFFF00')
+          .setTitle('Error fixed!')
+          .setDescription('Your server info is not in the database. Default settings applied. Please repeat the command to change the setting you desire.')
+      ]
+    })
   }
 
-  // Confirm that the action has been done
+  const settings = result.toObject()
+  const setting = Object.keys(settings).filter(key => { return key.toLowerCase() === property.toLowerCase() }).toString()
+
+  if (!setting) {
+    return send(message, {
+      embeds: [
+        new MessageEmbed()
+          .setColor('#FF0000')
+          .setTitle('Error')
+          .setDescription(`No setting with the name \`${property}\` was found. Did you type it in correctly?`)
+      ]
+    })
+  }
+
+  // TODO: make arrays work with this
+  console.log(mode)
+
+  try {
+    await GuildModel.findOneAndUpdate({
+      guildId: message.guild.id,
+    }, {
+      $set: {
+        [setting]: value
+      }
+    }, {
+      new: true,
+    })
+  } catch {
+    return send(message, {
+      embeds: [
+        new MessageEmbed()
+          .setColor('#FF0000')
+          .setTitle('Error')
+          .setDescription(`Value \`${value}\` is not a value for the setting.`)
+      ]
+    })
+  }
+
   return send(message, {
     embeds: [
       new MessageEmbed()
-        .setColor('#00FF00')
-        .setTitle('Successfully set!')
-        .setDescription(`The ${targetName} channel is set as <#${variableId}>`),
-    ],
-  });
-};
+        .setColor('#FF00FF')
+        .setTitle('Setting changed!')
+        .setDescription(`Setting "${setting}" now has the value \`${value}\`.`)
+    ]
+  })
+}
+
+const settingInfo = (property: string, message: Message) => {
+  return send(message, {
+    embeds: [
+      new MessageEmbed()
+        .setColor('#FF00FF')
+        .setTitle(`Info about ${property}`)
+        .setDescription('info or something')
+    ]
+  })
+}
+
+// TOOD: make the final embed look better
+const showSettings = async (message: Message) => {
+  const result = await GuildModel.findOne({
+    guildId: message.guildId
+  })
+  if (!result) {
+
+    // Add settings to database (default values stored somewhere)
+
+    // send(message, {
+    //   embeds: [
+    //     new MessageEmbed()
+    //       .setColor('#FFFF00')
+    //       .setTitle('Error')
+    //       .setDescription('This server seems to have no settings. Default have been added to the database.')
+    //   ]
+    // })
+
+    return
+  }
+  const settings = result.toObject()
+  let text = ''
+
+  Object.keys(settings).forEach(key => {
+    if (key === '_id' || key === '__v' || key === 'guildId') {
+      return
+    }
+
+    let value = Object(settings)[key] ?? 'none'
+
+    // TODO: make this somehow dynamically detect array of objects
+    if (key === 'levelRoles' && result.levelRoles) {
+      value = ''
+      result.levelRoles.forEach(role => {
+        const { id } = Object(role)
+        const { level } = Object(role)
+
+        value += `Required level for <@&${id}>: **${level}**\n`
+      })
+    }
+
+    text += `**${key}** -> \`${value}\`\n`
+  })
+
+  return send(message, {
+    embeds: [
+      new MessageEmbed()
+        .setColor('#FF00FF')
+        .setTitle('All Settings')
+        .setDescription(text)
+    ]
+  })
+}
