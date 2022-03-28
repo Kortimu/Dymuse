@@ -14,7 +14,6 @@ interface Setting {
   leaderboardId: string;
   levelRoles: Array<object>;
   xpMultiplier: number;
-  muteRole: string;
 }
 
 export const guildSchema = new Schema<Setting>({
@@ -39,9 +38,6 @@ export const guildSchema = new Schema<Setting>({
   xpMultiplier: {
     type: Number,
     default: 1,
-  },
-  muteRole: {
-    type: String,
   },
 });
 
