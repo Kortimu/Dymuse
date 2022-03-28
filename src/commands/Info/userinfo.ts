@@ -73,7 +73,9 @@ export class UserCommand extends BotCommand {
             value: `${targetMember.roles.cache.map((role) => `${role}`).join('\n')}`,
           },
         )
-        .setFooter(`ID: ${targetUser.id}`);
+        .setFooter({
+          text: `ID: ${targetUser.id}`
+        });
       if (targetUser.avatarURL !== null) {
         infoEmbed.setThumbnail(targetMember.displayAvatarURL({ dynamic: true }) as string);
       }

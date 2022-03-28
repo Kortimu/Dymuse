@@ -96,9 +96,9 @@ async function fetchTopMembers(guildId: string) {
       },
     );
   }
-  leaderEmbed.setFooter(
-    'This leaderboard gets updated once every 10 SECONDS. Some results might be inaccurate.',
-  );
+  leaderEmbed.setFooter({
+    text: 'This leaderboard gets updated once every 10 SECONDS. Some results might be inaccurate.',
+  });
 
   return leaderEmbed;
 }

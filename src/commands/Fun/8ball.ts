@@ -34,11 +34,15 @@ async function answerQuestion(message: Message, question: string) {
     .setColor('#FF00FF')
     .setTitle(`My answer to "${question}" is...`)
     .setDescription(`**${pickRandom(answers)}**`)
-    .setFooter('Even if you entered gibberish, I can still read your mind.');
+    .setFooter({
+      text: 'Even if you entered gibberish, I can still read your mind.'
+    });
   if (question === '') {
     answerEmbed
       .setTitle('Reading your mind, my answer is...')
-      .setFooter('No need to hide the question - I read your mind to answer.');
+      .setFooter({
+        text: 'No need to hide the question - I read your mind to answer.'
+      });
   }
   await send(message, {
     embeds: [answerEmbed],

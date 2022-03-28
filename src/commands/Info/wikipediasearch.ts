@@ -37,7 +37,9 @@ export class UserCommand extends BotCommand {
 async function searchWiki(message: Message, searchTerm: string) {
   const resultEmbed = new MessageEmbed()
     .setColor('#FF00FF')
-    .setFooter('It may take a while to load all results.');
+    .setFooter({
+      text: 'It may take a while to load all results.'
+    });
   send(message, {
     embeds: [
       new MessageEmbed()
