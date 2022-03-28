@@ -53,7 +53,8 @@ export class UserCommand extends BotCommand {
           .filter((command) => commands.get(command)?.name === targetCommand.toLowerCase())
           .toString();
         const detailedDescription =
-          commands.get(cmdName)?.detailedDescription || 'No description has been previded.';
+          commands.get(cmdName)?.detailedDescription.toString() ||
+          'No description has been previded.';
         const aliases = commands.get(cmdName)?.aliases.map((alias) => `\`${alias}\``);
         const category = commands.get(cmdName)?.category;
         const syntax = commands.get(cmdName)?.syntax;

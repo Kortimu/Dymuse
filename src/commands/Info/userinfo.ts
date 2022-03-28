@@ -74,7 +74,7 @@ export class UserCommand extends BotCommand {
           },
         )
         .setFooter({
-          text: `ID: ${targetUser.id}`
+          text: `ID: ${targetUser.id}`,
         });
       if (targetUser.avatarURL !== null) {
         infoEmbed.setThumbnail(targetMember.displayAvatarURL({ dynamic: true }) as string);

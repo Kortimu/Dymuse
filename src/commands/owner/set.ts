@@ -27,14 +27,14 @@ export class UserCommand extends BotCommand {
     await sendLoadingMessage(message);
 
     // Finds args from sent command - a text channel and the name of the database
-    const property = await args.pick('string').catch(() => null)
-    let mode = await args.pick('string').catch(() => null)
-    let value = await args.rest('string').catch(() => null)
+    const property = await args.pick('string').catch(() => null);
+    let mode = await args.pick('string').catch(() => null);
+    let value = await args.rest('string').catch(() => null);
 
     // In the case that mode is not inputted (it's optional)
     if (mode && mode !== 'add' && mode !== 'remove' && mode !== 'reset') {
-      value = `${mode}${value ? ` ${value}` : ''}`
-      mode = null
+      value = `${mode}${value ? ` ${value}` : ''}`;
+      mode = null;
     }
 
     // With no additional arguments, view all settings
@@ -53,44 +53,55 @@ export class UserCommand extends BotCommand {
           new MessageEmbed()
             .setColor('#FF0000')
             .setTitle('Error')
-            .setDescription('Stop being annoying and doing this in PMs.')
-        ]
-      })
+            .setDescription('Stop being annoying and doing this in PMs.'),
+        ],
+      });
     }
 
     // Adds the value to the setting, if possible
     return applySetting(message, property, mode, value);
   }
-};
+}
 
-const applySetting = async (message: Message, property: string, mode: string | null, value: string | null) => {
+const applySetting = async (
+  message: Message,
+  property: string,
+  mode: string | null,
+  value: string | null,
+) => {
   if (!message.guild) {
     return send(message, {
       embeds: [
         new MessageEmbed()
           .setColor('#FF0000')
           .setTitle('Error')
-          .setDescription('Stop being annoying and doing this in PMs.')
-      ]
-    })
+          .setDescription('Stop being annoying and doing this in PMs.'),
+      ],
+    });
   }
 
   const result = await GuildModel.findOne({
-    guildId: message.guild.id
-  })
+    guildId: message.guild.id,
+  });
   if (!result) {
     return send(message, {
       embeds: [
         new MessageEmbed()
           .setColor('#FFFF00')
           .setTitle('Error fixed!')
-          .setDescription('Your server info is not in the database. Default settings applied. Please repeat the command to change the setting you desire.')
-      ]
-    })
+          .setDescription(
+            'Your server info is not in the database. Default settings applied. Please repeat the command to change the setting you desire.',
+          ),
+      ],
+    });
   }
 
-  const settings = result.toObject()
-  const setting = Object.keys(settings).filter(key => { return key.toLowerCase() === property.toLowerCase() }).toString()
+  const settings = result.toObject();
+  const setting = Object.keys(settings)
+    .filter((key) => {
+      return key.toLowerCase() === property.toLowerCase();
+    })
+    .toString();
 
   if (!setting) {
     return send(message, {
@@ -98,33 +109,39 @@ const applySetting = async (message: Message, property: string, mode: string | n
         new MessageEmbed()
           .setColor('#FF0000')
           .setTitle('Error')
-          .setDescription(`No setting with the name \`${property}\` was found. Did you type it in correctly?`)
-      ]
-    })
+          .setDescription(
+            `No setting with the name \`${property}\` was found. Did you type it in correctly?`,
+          ),
+      ],
+    });
   }
 
   // TODO: make arrays work with this
-  console.log(mode)
+  console.log(mode);
 
   try {
-    await GuildModel.findOneAndUpdate({
-      guildId: message.guild.id,
-    }, {
-      $set: {
-        [setting]: value
-      }
-    }, {
-      new: true,
-    })
+    await GuildModel.findOneAndUpdate(
+      {
+        guildId: message.guild.id,
+      },
+      {
+        $set: {
+          [setting]: value,
+        },
+      },
+      {
+        new: true,
+      },
+    );
   } catch {
     return send(message, {
       embeds: [
         new MessageEmbed()
           .setColor('#FF0000')
           .setTitle('Error')
-          .setDescription(`Value \`${value}\` is not a value for the setting.`)
-      ]
-    })
+          .setDescription(`Value \`${value}\` is not a value for the setting.`),
+      ],
+    });
   }
 
   return send(message, {
@@ -132,10 +149,10 @@ const applySetting = async (message: Message, property: string, mode: string | n
       new MessageEmbed()
         .setColor('#FF00FF')
         .setTitle('Setting changed!')
-        .setDescription(`Setting "${setting}" now has the value \`${value}\`.`)
-    ]
-  })
-}
+        .setDescription(`Setting "${setting}" now has the value \`${value}\`.`),
+    ],
+  });
+};
 
 const settingInfo = (property: string, message: Message) => {
   return send(message, {
@@ -143,18 +160,17 @@ const settingInfo = (property: string, message: Message) => {
       new MessageEmbed()
         .setColor('#FF00FF')
         .setTitle(`Info about ${property}`)
-        .setDescription('info or something')
-    ]
-  })
-}
+        .setDescription('info or something'),
+    ],
+  });
+};
 
 // TOOD: make the final embed look better
 const showSettings = async (message: Message) => {
   const result = await GuildModel.findOne({
-    guildId: message.guildId
-  })
+    guildId: message.guildId,
+  });
   if (!result) {
-
     // Add settings to database (default values stored somewhere)
 
     // send(message, {
@@ -166,38 +182,33 @@ const showSettings = async (message: Message) => {
     //   ]
     // })
 
-    return
+    return;
   }
-  const settings = result.toObject()
-  let text = ''
+  const settings = result.toObject();
+  let text = '';
 
-  Object.keys(settings).forEach(key => {
+  Object.keys(settings).forEach((key) => {
     if (key === '_id' || key === '__v' || key === 'guildId') {
-      return
+      return;
     }
 
-    let value = Object(settings)[key] ?? 'none'
+    let value = Object(settings)[key] ?? 'none';
 
     // TODO: make this somehow dynamically detect array of objects
     if (key === 'levelRoles' && result.levelRoles) {
-      value = ''
-      result.levelRoles.forEach(role => {
-        const { id } = Object(role)
-        const { level } = Object(role)
+      value = '';
+      result.levelRoles.forEach((role) => {
+        const { id } = Object(role);
+        const { level } = Object(role);
 
-        value += `Required level for <@&${id}>: **${level}**\n`
-      })
+        value += `Required level for <@&${id}>: **${level}**\n`;
+      });
     }
 
-    text += `**${key}** -> \`${value}\`\n`
-  })
+    text += `**${key}** -> \`${value}\`\n`;
+  });
 
   return send(message, {
-    embeds: [
-      new MessageEmbed()
-        .setColor('#FF00FF')
-        .setTitle('All Settings')
-        .setDescription(text)
-    ]
-  })
-}
+    embeds: [new MessageEmbed().setColor('#FF00FF').setTitle('All Settings').setDescription(text)],
+  });
+};

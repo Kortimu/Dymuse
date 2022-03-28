@@ -13,7 +13,7 @@ interface Setting {
   welcomeId: string;
   leaderboardId: string;
   levelRoles: Array<object>;
-  xpMultiplier: number
+  xpMultiplier: number;
   muteRole: string;
 }
 
@@ -21,7 +21,7 @@ export const guildSchema = new Schema<Setting>({
   guildId: reqString,
   botPrefix: {
     type: String,
-    default: '?'
+    default: '?',
   },
   welcomeId: {
     type: String,
@@ -38,7 +38,7 @@ export const guildSchema = new Schema<Setting>({
   },
   xpMultiplier: {
     type: Number,
-    default: 1
+    default: 1,
   },
   muteRole: {
     type: String,
