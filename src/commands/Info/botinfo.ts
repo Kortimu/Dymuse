@@ -19,7 +19,10 @@ export class UserCommand extends BotCommand {
     // Sends loading message
     await sendLoadingMessage(message);
     // Gets bot's info
-    const botId = '864115909513969675';
+    const botId = client.id;
+    if (!botId) {
+      return;
+    }
     if (!message.client || !client.uptime) {
       return;
     }
@@ -34,9 +37,9 @@ export class UserCommand extends BotCommand {
       embeds: [
         new MessageEmbed()
           .setColor('#FF00FF')
-          .setTitle('DylanBot v2.1.1')
+          .setTitle('Dymuse v3.0.0')
           .setDescription(
-            `${bot} is a bot made for Dylan, the owner of \`The Shag Syndicate\`. This bot is still in development, and a lot might (and will) change.\n\n**Bot uptime:** ${uptime}\n\n If you want to contribute for some reason, here is the link to the [Github repository.](https://github.com/Kortimu/DylanBot)`,
+            `${bot} is an entertainment/utility bot made by Kortimu with some slight tweaks from the usual Discord bot.\n\n**Bot uptime:** ${uptime}\n**Last update:** \`30 Dec 2021\` \n\nIf you want to contribute or just see the source code, [here is the link](https://github.com/Kortimu/DylanBot) to the Github repository.`,
           )
           .setThumbnail(bot.avatarURL() || ''),
       ],
