@@ -16,9 +16,9 @@ export const formatSeconds = (duration: number) => {
   const minutes = Math.floor((duration / 60) % 60);
   const hours = Math.floor(duration / (60 * 60));
 
-  const displayHours = hours > 0 ? `${hours}:` : '';
-  const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  const displaySeconds = seconds < 10 ? `0${seconds}` : seconds;
+  const displayHours = hours > 0 ? `${hours}h ` : '';
+  const displayMinutes = minutes < 10 ? `${minutes}` : minutes;
+  const displaySeconds = seconds < 10 ? `${seconds}` : seconds;
 
-  return `\`${displayHours}${displayMinutes}:${displaySeconds}\``;
+  return `\`${displayHours}${displayMinutes}m ${displaySeconds}s\``;
 };
