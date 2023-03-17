@@ -1,7 +1,7 @@
 {
-  "name": "dylanbot",
-  "version": "2.1.1",
-  "description": "A newer and more stable version of DylanBot, now in TypeScript!",
+  "name": "dymuse",
+  "version": "3.0.0-dev",
+  "description": "A customizable Discord bot",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

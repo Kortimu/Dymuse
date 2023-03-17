@@ -9,7 +9,7 @@ import { send } from '@sapphire/plugin-editable-commands';
   description: "Sends a link of the bot's repository.",
   fullCategory: ['Misc'],
   aliases: ['githublink', 'git'],
-  detailedDescription: 'A command that sends the link for the DylanBot Github repository.',
+  detailedDescription: 'A command that sends the link for the Dymuse Github repository.',
 })
 export class UserCommand extends BotCommand {
   public async messageRun(message: Message) {

@@ -14,7 +14,7 @@ import { getNeededXP } from '../../listeners/levels';
   detailedDescription:
     'A command that provides the user with additional information about a specific user, such as the creation date, join date and more.',
   syntax: '[user]',
-  examples: ['i @Kortimu', 'useri', 'uinfo @DylanBot'],
+  examples: ['i @Kortimu', 'useri', 'uinfo @Dymuse'],
   notes: ['If no user is specified, information shown will be about the message author.'],
 })
 export class UserCommand extends BotCommand {
