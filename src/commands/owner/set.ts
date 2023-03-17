@@ -116,8 +116,37 @@ const applySetting = async (
     });
   }
 
-  // TODO: make arrays work with this
-  console.log(mode);
+  if (mode == 'add') {
+    const arrayValues = value?.split(' ');
+    console.log(arrayValues);
+    try {
+      await GuildModel.findOneAndUpdate(
+        {
+          guildId: message.guild.id,
+        },
+        {
+          $addToSet: {
+            [setting]: {
+              $each: [arrayValues],
+            },
+          },
+        },
+        {
+          new: true,
+        },
+      );
+    } catch (error) {
+      console.log(error);
+      return send(message, {
+        embeds: [
+          new MessageEmbed()
+            .setColor('#FF0000')
+            .setTitle('Error')
+            .setDescription(`Setting \`${setting}\` is not an array.`),
+        ],
+      });
+    }
+  }
 
   try {
     await GuildModel.findOneAndUpdate(
@@ -165,23 +194,12 @@ const settingInfo = (property: string, message: Message) => {
   });
 };
 
-// TOOD: make the final embed look better
+// TODO: make the final embed look better
 const showSettings = async (message: Message) => {
   const result = await GuildModel.findOne({
     guildId: message.guildId,
   });
   if (!result) {
-    // Add settings to database (default values stored somewhere)
-
-    // send(message, {
-    //   embeds: [
-    //     new MessageEmbed()
-    //       .setColor('#FFFF00')
-    //       .setTitle('Error')
-    //       .setDescription('This server seems to have no settings. Default have been added to the database.')
-    //   ]
-    // })
-
     return;
   }
   const settings = result.toObject();

@@ -8,8 +8,9 @@ const reqString = {
 interface Setting {
   guildId: string;
   botPrefix: string;
-  // friendlyMode: boolean;
-  // ignoredPrefixes: Array<string>;
+  // language: Array<string>;
+  kindness: boolean;
+  ignoredPrefixes: Array<string>;
   welcomeId: string;
   leaderboardId: string;
   levelRoles: Array<object>;
@@ -22,13 +23,23 @@ export const guildSchema = new Schema<Setting>({
     type: String,
     default: '?',
   },
+  // language: {
+  //   type: Array({})
+  // },
+  kindness: {
+    type: Boolean,
+  },
   welcomeId: {
     type: String,
   },
   leaderboardId: {
     type: String,
   },
-  // TODO: make this into a key-value pair (type: number)
+  ignoredPrefixes: {
+    type: Array({
+      type: String,
+    }),
+  },
   levelRoles: {
     type: Array({
       id: String,
