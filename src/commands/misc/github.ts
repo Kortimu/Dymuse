@@ -21,7 +21,7 @@ export class UserCommand extends BotCommand {
       embeds: [
         new MessageEmbed()
           .setTitle('This bot has a Github page!')
-          .setDescription('**Link:** https://github.com/Kortimu/DylanBot'),
+          .setDescription('**Link:** https://github.com/Kortimu/Dymuse'),
       ],
     });
   }

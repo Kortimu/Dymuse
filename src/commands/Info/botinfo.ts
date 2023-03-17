@@ -39,7 +39,7 @@ export class UserCommand extends BotCommand {
           .setColor('#FF00FF')
           .setTitle('Dymuse v3.0.0')
           .setDescription(
-            `${bot} is an entertainment/utility bot made by Kortimu with some slight tweaks from the usual Discord bot.\n\n**Bot uptime:** ${uptime}\n**Last update:** \`30 Dec 2021\` \n\nIf you want to contribute or just see the source code, [here is the link](https://github.com/Kortimu/DylanBot) to the Github repository.`,
+            `${bot} is an entertainment/utility bot made by Kortimu with some slight tweaks from the usual Discord bot.\n\n**Bot uptime:** ${uptime}\n**Last update:** \`30 Dec 2021\` \n\nIf you want to contribute or just see the source code, [here is the link](https://github.com/Kortimu/Dymuse) to the Github repository.`,
           )
           .setThumbnail(bot.avatarURL() || ''),
       ],
