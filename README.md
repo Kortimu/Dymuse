@@ -42,5 +42,6 @@ If you have found an issue or you want to improve the project with your contribu
 
 ## Special Thanks
 
-- [**Bean**](https://twitch.tv/beandhd) helped with playtesting and some visuals, as well as moral support ❤
+- **Dylan** for being literally the whole reason this project exists. That counts for something, right? *Right?*
+- [**Bean**](https://twitch.tv/beandhd) for helping with playtesting and some visuals, as well as moral support ❤
 - [**Gensokyo Radio**](https://gensokyoradio.net) for helping me not die from boredom. The station's awesome. 👍
