@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Guild, Message, MessageEmbed, TextChannel, VoiceChannel } from 'discord.js';
+import { Guild, Message, EmbedBuilder, TextChannel, VoiceChannel } from 'discord.js';
 import {
   AudioPlayerStatus,
   createAudioPlayer,
@@ -41,7 +41,7 @@ export class UserCommand extends BotCommand {
     if (!args) {
       send(message, {
         embeds: [
-          new MessageEmbed()
+          new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('Error')
             .setDescription(
@@ -62,7 +62,7 @@ const play = async (message: Message, args: Args) => {
   if (!message.member.voice.channel) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('You need to be in a voice channel to use this, duh'),
@@ -80,7 +80,7 @@ const play = async (message: Message, args: Args) => {
   if (songInfo === null) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('Am I expected to find something that does not exist?!'),
@@ -110,7 +110,7 @@ const play = async (message: Message, args: Args) => {
   // Found! (Embed)
   send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle('Song found!')
         .setDescription(`\`${info.title}\` is about to play...`),
@@ -143,7 +143,7 @@ const play = async (message: Message, args: Args) => {
   message.delete();
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle('Song added to queue!')
         .setDescription(
@@ -168,7 +168,7 @@ const getSongInfo = async (message: Message, args: Args) => {
     const result = `${songUrl} ${await args.rest('string').catch(() => '')}`;
     send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FFFF00')
           .setTitle('Searching...')
           .setDescription(`Searching \`${result}\` on Youtube...`),
@@ -299,7 +299,7 @@ export const songFinish = (
     if (serverQueue.repeatMode === 'all' || serverQueue.repeatMode === 'off') {
       serverQueue.songs.shift();
     }
-    if (serverQueue.songs === [] || !serverQueue.songs) {
+    if (!serverQueue.songs) {
       console.log('uh oh');
     }
     playSong(guild, channel, serverQueue, musicQueue);
@@ -315,7 +315,7 @@ const nextPreview = (song: ISong, channel: TextChannel) => {
   channel
     .send({
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FFFF00')
           .setTitle('Coming up...')
           .setDescription(
@@ -340,7 +340,7 @@ const songPreview = (song: ISong, channel: TextChannel) => {
   channel
     .send({
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF00FF')
           .setTitle('Playing...')
           .setDescription(
@@ -372,7 +372,7 @@ const emptyQueue = (
     musicQueue.delete(guildId);
     channel.send({
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Music Stopped')
           .setDescription('Everyone left, not playing music alone'),
@@ -387,7 +387,7 @@ const emptyQueue = (
       musicQueue.delete(guildId);
       channel.send({
         embeds: [
-          new MessageEmbed()
+          new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('bye')
             .setDescription('aight imma head out'),

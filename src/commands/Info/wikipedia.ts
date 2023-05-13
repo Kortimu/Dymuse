@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import wikipedia from 'wikipedia';
@@ -23,7 +23,7 @@ export class UserCommand extends BotCommand {
     if (!searchTerm) {
       return send(message, {
         embeds: [
-          new MessageEmbed()
+          new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('Error')
             .setDescription('Very funny. If you want results, enter in an actual result.'),
@@ -37,7 +37,7 @@ export class UserCommand extends BotCommand {
 async function searchWiki(message: Message, searchTerm: string) {
   send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FFFF00')
         .setTitle('Searching...')
         .setDescription('Looking for the result...'),
@@ -49,7 +49,7 @@ async function searchWiki(message: Message, searchTerm: string) {
   if (!wikiSearch.results) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription(`there is no result about \`${searchTerm}\` lol`),
@@ -63,7 +63,7 @@ async function searchWiki(message: Message, searchTerm: string) {
 
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle(summary.title)
         .setDescription(

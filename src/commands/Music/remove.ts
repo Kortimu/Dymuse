@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed, TextChannel } from 'discord.js';
+import { Message, EmbedBuilder, TextChannel } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { queues, playSong } from './songplay';
@@ -33,7 +33,7 @@ const remove = async (message: Message, number: number) => {
   if (!serverQueue) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('I am not good enough to remove something non-existant.'),
@@ -48,7 +48,7 @@ const remove = async (message: Message, number: number) => {
   if (number < 1 || number > serverQueue.songs.length) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription(
@@ -63,7 +63,7 @@ const remove = async (message: Message, number: number) => {
   if (!message.guild) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('This does not work in PMs, stop doing this!'),
@@ -80,7 +80,7 @@ const removeSong = async (serverQueue: IServerMusicQueue, message: Message, inde
   serverQueue.songs.splice(index, 1);
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle('Song removed')
         .setDescription(`Song **#${index + 1}** removed from queue.`),

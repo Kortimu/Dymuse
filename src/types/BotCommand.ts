@@ -1,4 +1,4 @@
-import { Command, CommandOptions } from '@sapphire/framework';
+import { Command, type CommandOptions } from '@sapphire/framework';
 import { client } from '../index';
 import type { PieceContext } from '@sapphire/pieces';
 

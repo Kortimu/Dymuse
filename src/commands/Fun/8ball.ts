@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { pickRandom, sendLoadingMessage } from '../../lib/utils';
 import { answers } from '../../lib/data/8-ball';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -30,7 +30,7 @@ export class UserCommand extends BotCommand {
 
 // Picks a random response from 8-ball.ts. If nothing is specified, change text accordingly.
 async function answerQuestion(message: Message, question: string) {
-  const answerEmbed = new MessageEmbed()
+  const answerEmbed = new EmbedBuilder()
     .setColor('#FF00FF')
     .setTitle(`My answer to "${question}" is...`)
     .setDescription(`**${pickRandom(answers)}**`)

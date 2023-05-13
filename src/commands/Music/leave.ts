@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { queues } from './songplay';
@@ -30,7 +30,7 @@ const leave = async (message: Message) => {
   if (!connection) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('THE BOT IS NOT EVEN IN THE VC, WHY ARE YOU DOING THIS'),
@@ -47,7 +47,7 @@ const leave = async (message: Message) => {
   if (message.member.voice.channel !== serverQueue.voiceChannel) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('Nice try buddy, you need to join VC to do that.'),
@@ -64,7 +64,7 @@ const leave = async (message: Message) => {
   musicQueue.delete(message.guildId);
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle('Yeet')
         .setDescription("Fine, guess I'll go. Not like I wanted to stay!"),

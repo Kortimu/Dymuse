@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { GuildModel } from '../../lib/schemas/guildschema';
@@ -50,7 +50,7 @@ export class UserCommand extends BotCommand {
     if (!message.guild) {
       return send(message, {
         embeds: [
-          new MessageEmbed()
+          new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('Error')
             .setDescription('Stop being annoying and doing this in PMs.'),
@@ -72,7 +72,7 @@ const applySetting = async (
   if (!message.guild) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('Stop being annoying and doing this in PMs.'),
@@ -86,7 +86,7 @@ const applySetting = async (
   if (!result) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FFFF00')
           .setTitle('Error fixed!')
           .setDescription(
@@ -106,7 +106,7 @@ const applySetting = async (
   if (!setting) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription(
@@ -116,7 +116,7 @@ const applySetting = async (
     });
   }
 
-  if (mode == 'add') {
+  if (mode === 'add') {
     const arrayValues = value?.split(' ');
     console.log(arrayValues);
     try {
@@ -139,7 +139,7 @@ const applySetting = async (
       console.log(error);
       return send(message, {
         embeds: [
-          new MessageEmbed()
+          new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('Error')
             .setDescription(`Setting \`${setting}\` is not an array.`),
@@ -165,7 +165,7 @@ const applySetting = async (
   } catch {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription(`Value \`${value}\` is not a value for the setting.`),
@@ -175,7 +175,7 @@ const applySetting = async (
 
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle('Setting changed!')
         .setDescription(`Setting "${setting}" now has the value \`${value}\`.`),
@@ -186,7 +186,7 @@ const applySetting = async (
 const settingInfo = (property: string, message: Message) => {
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle(`Info about ${property}`)
         .setDescription('info or something'),
@@ -227,6 +227,6 @@ const showSettings = async (message: Message) => {
   });
 
   return send(message, {
-    embeds: [new MessageEmbed().setColor('#FF00FF').setTitle('All Settings').setDescription(text)],
+    embeds: [new EmbedBuilder().setColor('#FF00FF').setTitle('All Settings').setDescription(text)],
   });
 };

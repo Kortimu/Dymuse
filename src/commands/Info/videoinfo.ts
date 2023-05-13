@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions, Args } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { formatSeconds } from '../../lib/constants';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -34,7 +34,7 @@ const showInfo = async (message: Message, args: Args) => {
   if (songUrl === '') {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('What should I look for? EMPTY AIR?!'),
@@ -55,7 +55,7 @@ const showInfo = async (message: Message, args: Args) => {
   if (songInfo === null) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('Am I expected to find something that does not exist?!'),
@@ -90,7 +90,7 @@ const showInfo = async (message: Message, args: Args) => {
 
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle('Information about the video:')
         .setDescription(
@@ -109,7 +109,7 @@ const getSongInfo = async (message: Message, songUrl: string) => {
   if (!ytdl.validateURL(songUrl)) {
     send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('bro that URL is wack'),

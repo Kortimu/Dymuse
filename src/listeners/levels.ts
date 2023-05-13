@@ -1,6 +1,6 @@
-import { Events, Listener, PieceContext } from '@sapphire/framework';
+import { Events, Listener, type PieceContext } from '@sapphire/framework';
 import { send } from '@skyra/editable-commands';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { UserModel } from '../lib/schemas/userschema';
 import { GuildModel } from '../lib/schemas/guildschema';
 
@@ -79,7 +79,7 @@ const addXP = async (guildId: string, userId: string, xpToAdd: number, message: 
     // Level up pop-up
     send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF00FF')
           .setTitle('someone leveled up ayyyyyyy')
           .setDescription(

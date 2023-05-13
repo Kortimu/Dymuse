@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { UserModel } from '../../lib/schemas/userschema';
@@ -21,7 +21,7 @@ export class UserCommand extends BotCommand {
   public async messageRun(message: Message, args: Args) {
     // Sends loading message
     await sendLoadingMessage(message);
-    const infoEmbed = new MessageEmbed();
+    const infoEmbed = new EmbedBuilder();
     // Gets the specified user/member
     const targetMember = await args.pick('member').catch(() => message.member);
     if (targetMember === null) return;
@@ -77,7 +77,7 @@ export class UserCommand extends BotCommand {
           text: `ID: ${targetUser.id}`,
         });
       if (targetUser.avatarURL !== null) {
-        infoEmbed.setThumbnail(targetMember.displayAvatarURL({ dynamic: true }) as string);
+        infoEmbed.setThumbnail(targetMember.displayAvatarURL() as string);
       }
     }
 

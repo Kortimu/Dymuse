@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { UserModel } from '../../lib/schemas/userschema';
@@ -57,7 +57,7 @@ const addXP = async (guildId: string, userId: string, xpToAdd: number, message: 
   // Sends embed
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setTitle('Transaction was a success!')
         .setDescription(`You gave <@${userId}> ${xpToAdd} XP. Now they have **${xp}** XP!`),
     ],

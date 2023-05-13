@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 
@@ -19,7 +19,7 @@ export class UserCommand extends BotCommand {
     // Sends loading message
     await sendLoadingMessage(message);
 
-    const embed = new MessageEmbed();
+    const embed = new EmbedBuilder();
     // Show how far the user has gotten (might be a better way to do this)
     let stage = 0;
 
@@ -31,7 +31,7 @@ export class UserCommand extends BotCommand {
     // Inform the user for what needs to be done
     send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Embed Creation (1/2)')
           .setDescription('Write the title of the embed.'),
@@ -46,7 +46,7 @@ export class UserCommand extends BotCommand {
       stage = 1;
       send(message, {
         embeds: [
-          new MessageEmbed()
+          new EmbedBuilder()
             .setColor('#FFFF00')
             .setTitle('Embed Creation (2/2)')
             .setDescription('Write the description of the embed.'),
@@ -68,7 +68,7 @@ export class UserCommand extends BotCommand {
         // Congratulate the user
         send(message, {
           embeds: [
-            new MessageEmbed()
+            new EmbedBuilder()
               .setColor('#00FF00')
               .setTitle('Success!')
               .setDescription('An embed has been made.'),
@@ -84,7 +84,7 @@ export class UserCommand extends BotCommand {
           // ...bully the user with a 'embed fail' meme
           send(message, {
             embeds: [
-              new MessageEmbed()
+              new EmbedBuilder()
                 .setTitle('Embed creation time ended')
                 .setDescription('got tired of waiting lmao')
                 .setImage(
@@ -101,7 +101,7 @@ export class UserCommand extends BotCommand {
         // ...also bully the user
         send(message, {
           embeds: [
-            new MessageEmbed()
+            new EmbedBuilder()
               .setTitle('Got tired of waiting lmao')
               .setDescription('Better luck next time')
               .setImage(

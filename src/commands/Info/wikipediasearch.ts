@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import wikipedia from 'wikipedia';
@@ -23,7 +23,7 @@ export class UserCommand extends BotCommand {
     if (!searchTerm) {
       return send(message, {
         embeds: [
-          new MessageEmbed()
+          new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('Error')
             .setDescription('Very funny. If you want results, enter in an actual result.'),
@@ -35,12 +35,12 @@ export class UserCommand extends BotCommand {
 }
 
 async function searchWiki(message: Message, searchTerm: string) {
-  const resultEmbed = new MessageEmbed().setColor('#FF00FF').setFooter({
+  const resultEmbed = new EmbedBuilder().setColor('#FF00FF').setFooter({
     text: 'It may take a while to load all results.',
   });
   send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FFFF00')
         .setTitle('Searching...')
         .setDescription('Looking for results...'),
@@ -52,7 +52,7 @@ async function searchWiki(message: Message, searchTerm: string) {
   if (!wikiSearch.results) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription(`there is no result about \`${searchTerm}\` lol`),
@@ -89,7 +89,7 @@ function collectResponse(message: Message, options: any) {
     if (!resultPick || resultPick > options.length || resultPick < 1) {
       send(msg, {
         embeds: [
-          new MessageEmbed()
+          new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('Error')
             .setTitle(`Pick betweeen 1 and **${options.length}**, ya dunce`),
@@ -102,7 +102,7 @@ function collectResponse(message: Message, options: any) {
     const summary = await page.summary();
     send(msg, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF00FF')
           .setTitle(`Info about "${summary.title}"`)
           .setDescription(
@@ -126,7 +126,7 @@ function collectResponse(message: Message, options: any) {
   collector.on('end', () => {
     send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('I am not waiting that long for a response, bye'),

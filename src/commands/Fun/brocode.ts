@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage, pickRandom } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { broCode } from '../../lib/data/bro-code';
@@ -30,7 +30,7 @@ export class UserCommand extends BotCommand {
 }
 
 async function sendRule(option: string, message: Message) {
-  const ruleEmbed = new MessageEmbed().setColor('#FF00FF');
+  const ruleEmbed = new EmbedBuilder().setColor('#FF00FF');
   let text = '';
   // Turns the argument into a number
   const selectedOption = Number(option);
@@ -52,7 +52,7 @@ async function sendRule(option: string, message: Message) {
     });
     send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF00FF')
           .setTitle('Bro code sent')
           .setDescription('...to PMs. No need to clutter the channel.'),

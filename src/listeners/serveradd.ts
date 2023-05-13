@@ -1,5 +1,5 @@
-import { Events, Listener, PieceContext } from '@sapphire/framework';
-import { Guild, MessageEmbed } from 'discord.js';
+import { Events, Listener, type PieceContext } from '@sapphire/framework';
+import { Guild, EmbedBuilder } from 'discord.js';
 import { GuildModel } from '../lib/schemas/guildschema';
 
 export class UserEvent extends Listener<typeof Events.GuildCreate> {
@@ -18,7 +18,7 @@ export class UserEvent extends Listener<typeof Events.GuildCreate> {
 const helloMessage = async (guild: Guild) => {
   (await guild.fetchOwner()).send({
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle(`Dymuse has been invited to "${guild.name}"!`)
         .setDescription(
@@ -28,7 +28,7 @@ const helloMessage = async (guild: Guild) => {
   });
   guild.systemChannel?.send({
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle('Knock knock, Dymuse is here!')
         .setDescription('hello hi use ?help to see cool commands ok bye'),

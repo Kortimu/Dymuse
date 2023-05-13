@@ -1,4 +1,4 @@
-import { ListenerOptions, PieceContext, Listener, Store } from '@sapphire/framework';
+import { type ListenerOptions, type PieceContext, Listener, Store } from '@sapphire/framework';
 import { blue, gray, green, magenta, magentaBright, white, yellow } from 'colorette';
 import mongoose from 'mongoose';
 import 'dotenv/config';
@@ -60,9 +60,7 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
     const { logger } = this.container;
     logger.info(gray(`├─ ${yellow('Connecting')} to Mongo...`));
     await mongoose
-      .connect(process.env.MONGO_URI || '', {
-        keepAlive: true,
-      })
+      .connect(process.env.MONGO_URI || '')
       .then(() => {
         logger.info(gray(`└─ ${yellow('Connected')} to Mongo!`));
       })

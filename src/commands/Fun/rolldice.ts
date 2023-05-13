@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 
@@ -30,7 +30,7 @@ async function rollDice(message: Message, size: number) {
   if (size <= 0) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('What kind of dice are you trying to roll?!'),
@@ -44,7 +44,7 @@ async function rollDice(message: Message, size: number) {
   }
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle(`You rolled a ${size} side dice...`)
         .setDescription(`...and rolled a **${result}**`),

@@ -2,7 +2,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
 import { send } from '@sapphire/plugin-editable-commands';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 
 @ApplyOptions<CommandOptions>({
@@ -19,7 +19,7 @@ export class UserCommand extends BotCommand {
     // Sends a ping message back
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setTitle("Do I really have to say it? Can't you say it?")
           .addFields(
             {

@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { pickRandom, sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 
@@ -24,7 +24,7 @@ function flipCoin(message: Message) {
   // Flipping animation (aesthetic only)
   send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FFFF00')
         .setTitle('Flipping coin...')
         .setDescription('haha coin go brrr')
@@ -50,7 +50,7 @@ function sendResult(msg: Message) {
   }
   msg.edit({
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle('The coin landed on...')
         .setDescription(`...${result}`)

@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { queues } from './songplay';
@@ -25,7 +25,7 @@ export class UserCommand extends BotCommand {
     if (!serverQueue || serverQueue.songs.length < 1) {
       return send(message, {
         embeds: [
-          new MessageEmbed()
+          new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('Error')
             .setDescription(
@@ -44,15 +44,15 @@ export class UserCommand extends BotCommand {
 }
 
 const showQueue = async (message: Message, queueInfo: IServerMusicQueue) => {
-  const queueEmbed = new MessageEmbed();
+  const queueEmbed = new EmbedBuilder();
   let songNumber = 0;
   // For each song in guild queue, get simple info
   queueInfo.songs.forEach((song) => {
     songNumber += 1;
-    queueEmbed.addField(
-      `Video #${songNumber}`,
-      `**Title:** ${song.title}\n**Duration:** ${song.formattedDuration}`,
-    );
+    queueEmbed.addFields({
+      name: `Video #${songNumber}`,
+      value: `**Title:** ${song.title}\n**Duration:** ${song.formattedDuration}`,
+    });
   });
   return send(message, {
     embeds: [queueEmbed.setColor('#FF00FF').setTitle('Video Queue:')],

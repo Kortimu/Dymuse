@@ -2,7 +2,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
 import { send } from '@sapphire/plugin-editable-commands';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 
 @ApplyOptions<CommandOptions>({
@@ -26,7 +26,7 @@ export class UserCommand extends BotCommand {
 
     // Check if the user has specified a certain command/category
     const targetCommand = await args.pick('string').catch(() => undefined);
-    const helpEmbed = new MessageEmbed();
+    const helpEmbed = new EmbedBuilder();
     // Not mandatory, just a way to not repeat too much
     const commands = this.container.stores.get('commands');
 
@@ -91,7 +91,10 @@ export class UserCommand extends BotCommand {
           },
         );
         if (notes?.[0] !== '') {
-          helpEmbed.addField('Additional Notes', `${mappedNotes}`);
+          helpEmbed.addFields({
+            name: 'Additional Notes',
+            value: `${mappedNotes}`,
+          });
         }
         // Send said info
         return send(message, {
@@ -119,7 +122,10 @@ export class UserCommand extends BotCommand {
               text += `**?${cmd}** [${aliases}] **→** ${description}\n`;
             });
 
-          helpEmbed.addField(cat, text);
+          helpEmbed.addFields({
+            name: cat,
+            value: text,
+          });
         });
 
         return send(message, {
@@ -129,12 +135,10 @@ export class UserCommand extends BotCommand {
       }
       return send(message, {
         embeds: [
-          helpEmbed
-            .setColor('#FF0000')
-            .addField(
-              'Error',
-              `There is no command or category with the name **${targetCommand}**. To view all commands, type the help command with no additional words.`,
-            ),
+          helpEmbed.setColor('#FF0000').addFields({
+            name: 'Error',
+            value: `There is no command or category with the name **${targetCommand}**. To view all commands, type the help command with no additional words.`,
+          }),
         ],
       });
     }
@@ -152,7 +156,10 @@ export class UserCommand extends BotCommand {
           text += `**?${cmd}** [${aliases}] **→** ${description}\n`;
         });
 
-      helpEmbed.addField(cat, text);
+      helpEmbed.addFields({
+        name: cat,
+        value: text,
+      });
     });
 
     message.author.send({
@@ -162,7 +169,7 @@ export class UserCommand extends BotCommand {
     // Sends the embed of all commands
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF00FF')
           .setTitle('All commands sent')
           .setDescription('...to PMs. No need to clutter the chat.'),

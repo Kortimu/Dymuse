@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { queues } from './songplay';
@@ -30,7 +30,7 @@ const skip = async (message: Message) => {
   if (!serverQueue) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription(
@@ -55,7 +55,7 @@ const skipVote = async (serverQueue: IServerMusicQueue, message: Message) => {
   if (skipVoters < Math.ceil(0.5 * (serverQueue.voiceChannel.members.size - 1))) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FFFF00')
           .setTitle('Vote to skip?')
           .setDescription(
@@ -78,7 +78,7 @@ const skipSong = async (message: Message, serverQueue: IServerMusicQueue) => {
   if (!message.guild) {
     return send(message, {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('Buddy, this command is not in DMs'),
@@ -89,7 +89,7 @@ const skipSong = async (message: Message, serverQueue: IServerMusicQueue) => {
   skipVoters = 0;
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle('Song skipped')
         .setDescription('Democracy wins again, I guess'),

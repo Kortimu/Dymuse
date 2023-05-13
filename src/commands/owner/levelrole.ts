@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed, Role } from 'discord.js';
+import { Message, EmbedBuilder, Role } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { GuildModel } from '../../lib/schemas/guildschema';
@@ -82,7 +82,7 @@ const modifyLevelRole = async (role: Role, message: Message, level: number, targ
   // Send the damn response
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#00FF00')
         .setTitle('Success!')
         .setDescription(
@@ -95,7 +95,7 @@ const modifyLevelRole = async (role: Role, message: Message, level: number, targ
 const viewLevelRoles = async (message: Message) => {
   if (!message.guild) return;
   const guildId = message.guild.id;
-  const lRoleEmbed = new MessageEmbed();
+  const lRoleEmbed = new EmbedBuilder();
   let text = '';
   // Get the guild's settings
   const result = await GuildModel.findOne({

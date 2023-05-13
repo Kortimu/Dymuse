@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { curDur, queues } from './songplay';
@@ -29,7 +29,7 @@ export class UserCommand extends BotCommand {
     if (!serverQueue) {
       return send(message, {
         embeds: [
-          new MessageEmbed()
+          new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('Error')
             .setDescription(
@@ -52,7 +52,7 @@ const sendQueue = async (message: Message, song: ISong) => {
   // Returns additional information, previously stored when song was requested
   return send(message, {
     embeds: [
-      new MessageEmbed()
+      new EmbedBuilder()
         .setColor('#FF00FF')
         .setTitle('Currently playing song:')
         .setDescription(

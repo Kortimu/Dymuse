@@ -1,5 +1,5 @@
 import { send } from '@sapphire/plugin-editable-commands';
-import { Message, MessageEmbed } from 'discord.js';
+import { Message, EmbedBuilder } from 'discord.js';
 import { RandomLoadingMessage } from './constants';
 
 /**
@@ -20,7 +20,7 @@ export function pickRandom<T>(array: readonly T[]): T {
 export function sendLoadingMessage(message: Message): Promise<typeof message> {
   return send(message, {
     embeds: [
-      new MessageEmbed().setDescription(pickRandom(RandomLoadingMessage)).setColor('#FF0000'),
+      new EmbedBuilder().setDescription(pickRandom(RandomLoadingMessage)).setColor('#FF0000'),
     ],
   });
 }
