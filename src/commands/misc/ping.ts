@@ -1,41 +1,46 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import type { CommandOptions } from '@sapphire/framework';
+import type { CommandOptions, Command } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { send } from '@sapphire/plugin-editable-commands';
-import { Message, EmbedBuilder } from 'discord.js';
-import { sendLoadingMessage } from '../../lib/utils';
+import { EmbedBuilder } from 'discord.js';
+import { sendLoadingInteraction } from '../../lib/utils';
 
 @ApplyOptions<CommandOptions>({
-  description: 'ping pong',
+  description: 'A simple test command.',
   fullCategory: ['Misc'],
   aliases: ['p'],
-  detailedDescription: 'A simple ping command with a small twist.',
+  detailedDescription: 'A simple test command with some latency information and a dumb secret.',
 })
 export class UserCommand extends BotCommand {
-  public async messageRun(message: Message) {
-    // Sends loading message
-    const msg = await sendLoadingMessage(message);
+  public override registerApplicationCommands(registry: Command.Registry) {
+    registry.registerChatInputCommand((builder) => {
+      builder.setName(this.name).setDescription(this.description);
+    });
+  }
+
+  public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+    await sendLoadingInteraction(interaction);
 
     // Sends a ping message back
-    return send(message, {
+    return interaction.editReply({
       embeds: [
         new EmbedBuilder()
-          .setTitle("Do I really have to say it? Can't you say it?")
+          .setTitle('something something pong')
           .addFields(
             {
               name: 'Bot latency (very cringe):',
               value: `${Math.round(this.container.client.ws.ping)} ms`,
             },
-            {
-              name: 'Framework latency (equally boring):',
-              value: `${
-                (msg.editedTimestamp || msg.createdTimestamp) -
-                (message.editedTimestamp || message.createdTimestamp)
-              } ms`,
-            },
+            // {
+            //   name: 'Framework latency (equally boring):',
+            //   value: `${
+            //     (interaction.createdTimestamp) -
+            //     (loadInteraction.createdTimestamp)
+            //   } ms`,
+            // },
           )
           .setColor('#00FF00'),
       ],
     });
+    // TODO: Do a silly thing with "pong" (maybe check if "pong" was added after the command (e.g. /ping pong)?)
   }
 }

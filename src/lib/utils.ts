@@ -1,6 +1,7 @@
 import { send } from '@sapphire/plugin-editable-commands';
 import { Message, EmbedBuilder } from 'discord.js';
 import { RandomLoadingMessage } from './constants';
+import type { Command } from '@sapphire/framework';
 
 /**
  * Picks a random item from an array
@@ -14,11 +15,23 @@ export function pickRandom<T>(array: readonly T[]): T {
 }
 
 /**
- * Sends a loading message to the current channel
+ * Sends a loading message to the current channel (as a message)
  * @param message The message data for which to send the loading message
  */
 export function sendLoadingMessage(message: Message): Promise<typeof message> {
   return send(message, {
+    embeds: [
+      new EmbedBuilder().setDescription(pickRandom(RandomLoadingMessage)).setColor('#FF0000'),
+    ],
+  });
+}
+
+/**
+ * Sends a loading message to the current channel (as an interaction)
+ * @param interaction The interaction data for which to send the loading message
+ */
+export function sendLoadingInteraction(interaction: Command.ChatInputCommandInteraction) {
+  return interaction.reply({
     embeds: [
       new EmbedBuilder().setDescription(pickRandom(RandomLoadingMessage)).setColor('#FF0000'),
     ],
