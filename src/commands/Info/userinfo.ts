@@ -1,16 +1,15 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import type { Args, CommandOptions } from '@sapphire/framework';
+import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder } from 'discord.js';
-import { sendLoadingMessage } from '../../lib/utils';
-import { send } from '@sapphire/plugin-editable-commands';
+import { EmbedBuilder } from 'discord.js';
+import { sendLoadingInteraction } from '../../lib/utils';
 import { UserModel } from '../../lib/schemas/userschema';
 import { getNeededXP } from '../../listeners/levels';
 
 @ApplyOptions<CommandOptions>({
   description: 'Gives additional information about a user.',
   fullCategory: ['Info'],
-  aliases: ['i', 'useri', 'uinfo'],
+  aliases: ['ui', 'useri', 'uinfo'],
   detailedDescription:
     'A command that provides the user with additional information about a specific user, such as the creation date, join date and more.',
   syntax: '[user]',
@@ -18,72 +17,87 @@ import { getNeededXP } from '../../listeners/levels';
   notes: ['If no user is specified, information shown will be about the message author.'],
 })
 export class UserCommand extends BotCommand {
-  public async messageRun(message: Message, args: Args) {
-    // Sends loading message
-    await sendLoadingMessage(message);
-    const infoEmbed = new EmbedBuilder();
-    // Gets the specified user/member
-    const targetMember = await args.pick('member').catch(() => message.member);
-    if (targetMember === null) return;
-    const targetUser = targetMember.user;
-
-    // Find the member in question
-    const result = await UserModel.findOne({
-      guildId: targetMember.guild.id,
-      userId: targetUser.id,
+  public override registerApplicationCommands(registry: Command.Registry) {
+    registry.registerChatInputCommand((builder) => {
+      builder.setName(this.name)
+      .setDescription(this.description)
+      .addUserOption(option => 
+        option.setName('target')
+        .setDescription('The user to look up information about.')
+        .setRequired(true)),
+        { guildIds: ['864115119721676820'] };
     });
-    let xp = 0;
-    let level = 0;
+  }
+
+  public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+    await sendLoadingInteraction(interaction);
+
+    const infoEmbed = new EmbedBuilder()
+    let targetUser = interaction.options.getUser('target')
+
+    // If the user does not exist, default to the user who sent the slash command
+    if (!targetUser) {
+      targetUser = interaction.client.user
+    }
+
+    const result = await UserModel.findOne({
+      guildId: interaction.guild?.id,
+      userId: targetUser
+    })
+    console.log(result)
+
+    let userXp = 0
+    let userLevel = 0
 
     if (result) {
-      xp = result.xp;
-      level = result.level;
+      userXp = result.xp
+      userLevel = result.level
     }
 
-    // Show info about the user
-    if (targetMember.joinedAt !== null) {
-      infoEmbed
-        .addFields(
-          {
-            name: 'Username',
-            value: `${targetUser} - \`${targetUser.username}#${targetUser.discriminator}\``,
-          },
-          {
-            name: 'Progress',
-            value: `Level: **${level}**\nXP: ${xp}/${getNeededXP(level)} (${Math.round(
-              (xp / getNeededXP(level)) * 100,
-            )}%)`,
-          },
-          {
-            name: 'Account creation date',
-            value: `<t:${Math.floor(targetUser.createdAt.getTime() / 1000)}:f>\n(<t:${Math.floor(
-              targetUser.createdAt.getTime() / 1000,
-            )}:R>)`,
-            inline: true,
-          },
-          {
-            name: 'Join date',
-            value: `<t:${Math.floor(targetMember.joinedAt.getTime() / 1000)}:f>\n(<t:${Math.floor(
-              targetMember.joinedAt.getTime() / 1000,
-            )}:R>)`,
-            inline: true,
-          },
-          {
-            name: `Roles (${targetMember.roles.cache.size})`,
-            value: `${targetMember.roles.cache.map((role) => `${role}`).join('\n')}`,
-          },
-        )
-        .setFooter({
-          text: `ID: ${targetUser.id}`,
-        });
-      if (targetUser.avatarURL !== null) {
-        infoEmbed.setThumbnail(targetMember.displayAvatarURL() as string);
+    infoEmbed.addFields({
+        name: 'Username',
+        value: targetUser.username
+      }, {
+        name: 'Progress',
+        value: `Level: **${userLevel}**\nXP: ${userXp}/${getNeededXP(userLevel)} (${Math.round(
+          (userXp / getNeededXP(userLevel)) * 100,
+        )}%)`,
+      }, {
+        name: 'Account creation date',
+        value: `<t:${Math.floor(targetUser.createdAt.getTime() / 1000)}:f>\n(<t:${Math.floor(
+          targetUser.createdAt.getTime() / 1000,
+        )}:R>)`,
+        inline: true,
+      })
+      .setFooter({
+        text: `ID: ${targetUser?.id}`
+      })
+      .setThumbnail(targetUser.displayAvatarURL() as string)
+
+      if (interaction.guild !== null) {
+        const targetMember = interaction.guild.members.cache.get(targetUser.id)
+        if (!targetMember || targetMember.joinedAt === null) {
+          return
+        }
+
+        infoEmbed.addFields({
+          name: 'Join date',
+          value: `<t:${Math.floor(targetMember.joinedAt.getTime() / 1000)}:f>\n(<t:${Math.floor(
+            targetMember.joinedAt.getTime() / 1000,
+          )}:R>)`,
+          inline: true,
+        }, {
+          name: `Roles (${targetMember.roles.cache.size})`,
+          value: `${targetMember.roles.cache.map((role) => `${role}`).join('\n')}`,
+        })
       }
-    }
 
-    // Returns an embed with the info
-    return send(message, {
-      embeds: [infoEmbed.setColor('#FF00FF').setTitle(`Information about ${targetUser.username}:`)],
+    return interaction.editReply({
+      embeds: [
+        infoEmbed
+          .setTitle(`Info about ${targetUser.username}`)
+          .setColor('#00FF00'),
+      ],
     });
   }
 }
