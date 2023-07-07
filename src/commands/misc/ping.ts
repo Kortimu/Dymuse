@@ -13,7 +13,8 @@ import { sendLoadingInteraction } from '../../lib/utils';
 export class UserCommand extends BotCommand {
   public override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) => {
-      builder.setName(this.name).setDescription(this.description);
+      builder.setName(this.name).setDescription(this.description),
+        { guildIds: ['864115119721676820'] };
     });
   }
 
