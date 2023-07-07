@@ -7,7 +7,7 @@ import { sendLoadingMessage } from '../../lib/utils';
 
 @ApplyOptions<CommandOptions>({
   description: 'Lists all commands or details about a certain command/category.',
-  fullCategory: ['General'],
+  fullCategory: ['Info'],
   aliases: ['h'],
   detailedDescription:
     'A command that displays information about any command available to the user.\nThe commands shown *should* be only the ones the user has permissions to use.',

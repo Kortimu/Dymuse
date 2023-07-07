@@ -6,7 +6,7 @@ import { sendLoadingInteraction } from '../../lib/utils';
 
 @ApplyOptions<CommandOptions>({
   description: 'A simple test command.',
-  fullCategory: ['Misc'],
+  fullCategory: ['Info'],
   aliases: ['p'],
   detailedDescription: 'A simple test command with some latency information and a dumb secret.',
 })
