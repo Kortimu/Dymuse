@@ -1,10 +1,9 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import type { CommandOptions } from '@sapphire/framework';
+import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder } from 'discord.js';
-import { sendLoadingMessage } from '../../lib/utils';
-import { send } from '@sapphire/plugin-editable-commands';
-import { client } from '../../index';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
+import { sendLoadingInteraction } from '../../lib/utils';
+import { client } from '../..';
 import { formatSeconds } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
@@ -15,34 +14,47 @@ import { formatSeconds } from '../../lib/constants';
     'A command that provides the user with additional information about the bot, such as the creation date, features and more.',
 })
 export class UserCommand extends BotCommand {
-  public async messageRun(message: Message) {
-    // Sends loading message
-    await sendLoadingMessage(message);
-    // Gets bot's info
+  public override registerApplicationCommands(registry: Command.Registry) {
+    registry.registerChatInputCommand((builder) => {
+      builder.setName(this.name).setDescription(this.description),
+        { guildIds: ['864115119721676820'] };
+    });
+  }
+
+  public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+    await sendLoadingInteraction(interaction);
+
     const botId = client.id;
     if (!botId) {
       return;
     }
-    if (!message.client || !client.uptime) {
-      return;
-    }
-    const bot = message.client.users.cache.get(botId);
-    if (!bot) {
-      return;
-    }
-    const uptime = formatSeconds(Math.floor(client.uptime / 1000));
 
-    // Returns an embed with the info
-    return send(message, {
+    const bot = client.users.cache.get(botId);
+    if (!bot || !client.uptime) {
+      return;
+    }
+
+    const botUptime = formatSeconds(Math.floor(client.uptime / 1000));
+
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setLabel('🌐 Github Repository')
+        .setURL('https://www.github.com/Kortimu/Dymuse')
+        .setStyle(ButtonStyle.Link),
+    );
+
+    // Sends a response back
+    return interaction.editReply({
       embeds: [
         new EmbedBuilder()
-          .setColor('#FF00FF')
           .setTitle('Dymuse v3.0.0')
           .setDescription(
-            `${bot} is an entertainment/utility bot made by Kortimu with some slight tweaks from the usual Discord bot.\n\n**Bot uptime:** ${uptime}\n**Last update:** \`30 Dec 2021\` \n\nIf you want to contribute or just see the source code, [here is the link](https://github.com/Kortimu/Dymuse) to the Github repository.`,
+            `${bot} is a bot made by Kortimu to serve as a pretty neat thingamajigididoo.\n\nThe bot has been online for \`${botUptime}\`.\nThe last major update happened in \`December 27th 2021\`.\nThe last minor update happened in \`December 30th 2021\`.`,
           )
-          .setThumbnail(bot.avatarURL() || ''),
+          .setColor('#00FF00')
+          .setThumbnail(bot?.avatarURL()),
       ],
+      components: [row],
     });
   }
 }
