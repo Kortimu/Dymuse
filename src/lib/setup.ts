@@ -22,4 +22,4 @@ inspect.defaultOptions.depth = 1;
 colorette.createColors({ useColor: true });
 
 // Make Discord not store useless duplicates of the same command
-ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(RegisterBehavior.BulkOverwrite)
+ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(RegisterBehavior.BulkOverwrite);

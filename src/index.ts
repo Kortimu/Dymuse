@@ -20,7 +20,7 @@ export const client = new SapphireClient({
     'GuildMessageReactions',
     'DirectMessages',
     'DirectMessageReactions',
-    'MessageContent'
+    'MessageContent',
   ],
   presence: {
     status: 'online',
