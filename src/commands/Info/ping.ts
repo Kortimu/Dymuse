@@ -21,7 +21,6 @@ export class UserCommand extends BotCommand {
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
     await sendLoadingInteraction(interaction);
 
-    // Sends a ping message back
     return interaction.editReply({
       embeds: [
         new EmbedBuilder()

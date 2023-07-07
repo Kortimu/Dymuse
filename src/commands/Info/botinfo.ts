@@ -24,11 +24,11 @@ export class UserCommand extends BotCommand {
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
     await sendLoadingInteraction(interaction);
 
+    // Get the required bot information, check if it is available
     const botId = client.id;
     if (!botId) {
       return;
     }
-
     const bot = client.users.cache.get(botId);
     if (!bot || !client.uptime) {
       return;
@@ -43,7 +43,6 @@ export class UserCommand extends BotCommand {
         .setStyle(ButtonStyle.Link),
     );
 
-    // Sends a response back
     return interaction.editReply({
       embeds: [
         new EmbedBuilder()
