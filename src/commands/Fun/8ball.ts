@@ -1,10 +1,9 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import type { Args, CommandOptions } from '@sapphire/framework';
+import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder } from 'discord.js';
-import { pickRandom, sendLoadingMessage } from '../../lib/utils';
-import { answers } from '../../lib/data/8-ball';
-import { send } from '@sapphire/plugin-editable-commands';
+import { EmbedBuilder } from 'discord.js';
+import { pickRandom, sendLoadingInteraction } from '../../lib/utils';
+import { answers } from '../../lib/data/8ball-answers';
 
 @ApplyOptions<CommandOptions>({
   description: 'A typical 8-Ball.',
@@ -20,30 +19,46 @@ import { send } from '@sapphire/plugin-editable-commands';
   notes: ["Please don't take the answers as fact, the answer is LITERALLY random."],
 })
 export class UserCommand extends BotCommand {
-  public async messageRun(message: Message, args: Args) {
-    // Sends loading message
-    await sendLoadingMessage(message);
-    const question = await args.rest('string').catch(() => '');
-    answerQuestion(message, question);
+  public override registerApplicationCommands(registry: Command.Registry) {
+    registry.registerChatInputCommand((builder) => {
+      builder.setName(this.name).setDescription(this.description)
+      .addStringOption((option) => 
+        option
+          .setName('question')
+          .setDescription('The question to ask the all-knowing 8-ball.')
+          .setRequired(true)
+      ),
+        { guildIds: ['864115119721676820'] };
+    });
   }
-}
 
-// Picks a random response from 8-ball.ts. If nothing is specified, change text accordingly.
-async function answerQuestion(message: Message, question: string) {
-  const answerEmbed = new EmbedBuilder()
-    .setColor('#FF00FF')
-    .setTitle(`My answer to "${question}" is...`)
-    .setDescription(`**${pickRandom(answers)}**`)
-    .setFooter({
-      text: 'Even if you entered gibberish, I can still read your mind.',
-    });
-  if (question === '') {
-    answerEmbed.setTitle('Reading your mind, my answer is...').setFooter({
-      text: 'No need to hide the question - I read your mind to answer.',
+  public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+    await sendLoadingInteraction(interaction);
+
+    const question = interaction.options.get('question')
+
+    if (!question) {
+      return interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor('#ff00ff')
+            .setTitle('No question? Sure, I can read your mind anyways. The 8-ball says...')
+            .setDescription('Mate, you did not put in a question. ')
+        ]
+      })
+    }
+
+    return interaction.editReply({
+      embeds: [
+        new EmbedBuilder()
+          .setTitle(`My 8-ball says that the answer to "${question.value}" is...`)
+          .setDescription(`**${pickRandom(answers)}**`)
+          .setColor('#ff00ff')
+          .setThumbnail('https://canary.discord.com/assets/0cfd4882c0646d504900c90166d80cf8.svg')
+          .setFooter({
+            text: "Don't even try entering gibberish."
+          }),
+      ],
     });
   }
-  await send(message, {
-    embeds: [answerEmbed],
-  });
-  message.delete();
 }
