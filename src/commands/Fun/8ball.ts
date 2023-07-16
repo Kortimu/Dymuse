@@ -21,13 +21,15 @@ import { answers } from '../../lib/data/8ball-answers';
 export class UserCommand extends BotCommand {
   public override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) => {
-      builder.setName(this.name).setDescription(this.description)
-      .addStringOption((option) => 
-        option
-          .setName('question')
-          .setDescription('The question to ask the all-knowing 8-ball.')
-          .setRequired(true)
-      ),
+      builder
+        .setName(this.name)
+        .setDescription(this.description)
+        .addStringOption((option) =>
+          option
+            .setName('question')
+            .setDescription('The question to ask the all-knowing 8-ball.')
+            .setRequired(true),
+        ),
         { guildIds: ['864115119721676820'] };
     });
   }
@@ -35,7 +37,7 @@ export class UserCommand extends BotCommand {
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
     await sendLoadingInteraction(interaction);
 
-    const question = interaction.options.get('question')
+    const question = interaction.options.get('question');
 
     if (!question) {
       return interaction.editReply({
@@ -43,9 +45,9 @@ export class UserCommand extends BotCommand {
           new EmbedBuilder()
             .setColor('#ff00ff')
             .setTitle('No question? Sure, I can read your mind anyways. The 8-ball says...')
-            .setDescription('Mate, you did not put in a question. ')
-        ]
-      })
+            .setDescription('Mate, you did not put in a question. '),
+        ],
+      });
     }
 
     return interaction.editReply({
@@ -56,7 +58,7 @@ export class UserCommand extends BotCommand {
           .setColor('#ff00ff')
           .setThumbnail('https://canary.discord.com/assets/0cfd4882c0646d504900c90166d80cf8.svg')
           .setFooter({
-            text: "Don't even try entering gibberish."
+            text: "Don't even try entering gibberish.",
           }),
       ],
     });

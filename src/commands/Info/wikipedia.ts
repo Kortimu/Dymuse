@@ -1,7 +1,15 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from 'discord.js';
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
+  EmbedBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
+} from 'discord.js';
 import { sendLoadingInteraction } from '../../lib/utils';
 import wikipedia, { type wikiSearchResult } from 'wikipedia';
 
@@ -73,65 +81,75 @@ export class UserCommand extends BotCommand {
         .setStyle(ButtonStyle.Secondary),
     );
 
-    const wikiEmbed = await makeWikiEmbed(wikiResponse, searchTerms, 0)
+    const wikiEmbed = await makeWikiEmbed(wikiResponse, searchTerms, 0);
     const response = await interaction.editReply({
       embeds: [wikiEmbed],
-      components: [row]
-    })
+      components: [row],
+    });
 
     try {
       const buttonCollector = await response.awaitMessageComponent({
         filter: (collected) => collected.user.id === interaction.user.id,
-        time: 60 * 1000
-      })
-  
-      if(buttonCollector.customId === 'wiki-search') {
-        return advancedSearch(interaction, searchTerms)
+        time: 60 * 1000,
+      });
+
+      if (buttonCollector.customId === 'wiki-search') {
+        return advancedSearch(interaction, searchTerms);
       } else {
         return interaction.editReply({
           embeds: [
             new EmbedBuilder()
               .setColor('#ff0000')
               .setTitle('Error')
-              .setDescription('Some *real* wacky problem occured. Please annoy @kortimu over this ASAP!')
-          ]
-        })
+              .setDescription(
+                'Some *real* wacky problem occured. Please annoy @kortimu over this ASAP!',
+              ),
+          ],
+        });
       }
     } catch (e) {
       return interaction.editReply({
-        components: []
-      })
+        components: [],
+      });
     }
   }
 }
 
-const makeWikiEmbed = async (wikiResponse: wikiSearchResult, searchTerms: string, resultIndex: number) => {
+const makeWikiEmbed = async (
+  wikiResponse: wikiSearchResult,
+  searchTerms: string,
+  resultIndex: number,
+) => {
   // Get the relevant information from the Wikipedia response
   const page = await wikipedia.page(wikiResponse.results[resultIndex].title);
   const summary = await page.summary();
 
   // TODO: Check for special cases (no article, real short article, etc)
-  return new EmbedBuilder()
-    .setTitle(summary.title)
-    // Gets the first 300 letters from the Wiki article
-    .setDescription(
-      `${summary.extract.replace(
-        /^(.{300}[^\s]*).*/,
-        '$1',
-      )}...\n\n**Continue reading [here](${page.fullurl})**`,
-    )
-    .setColor('#00FF00')
-    .setThumbnail(
-      summary.thumbnail?.source ??
-        // Wikipedia logo
-        'https://en.wikipedia.org/static/images/project-logos/enwiki.png',
-    )
-    .setFooter({
-      text: `Search terms used: "${searchTerms}"`,
-    })
-}
+  return (
+    new EmbedBuilder()
+      .setTitle(summary.title)
+      // Gets the first 300 letters from the Wiki article
+      .setDescription(
+        `${summary.extract.replace(/^(.{300}[^\s]*).*/, '$1')}...\n\n**Continue reading [here](${
+          page.fullurl
+        })**`,
+      )
+      .setColor('#00FF00')
+      .setThumbnail(
+        summary.thumbnail?.source ??
+          // Wikipedia logo
+          'https://en.wikipedia.org/static/images/project-logos/enwiki.png',
+      )
+      .setFooter({
+        text: `Search terms used: "${searchTerms}"`,
+      })
+  );
+};
 
-const advancedSearch = async (interaction: Command.ChatInputCommandInteraction, searchTerms: string) => {
+const advancedSearch = async (
+  interaction: Command.ChatInputCommandInteraction,
+  searchTerms: string,
+) => {
   await interaction.editReply({
     embeds: [
       new EmbedBuilder()
@@ -139,7 +157,7 @@ const advancedSearch = async (interaction: Command.ChatInputCommandInteraction, 
         .setTitle('🔍 Searching...')
         .setDescription('Getting the first 10 results from the search terms...'),
     ],
-    components: []
+    components: [],
   });
 
   const wikiResponse = await wikipedia.search(searchTerms, { limit: 10, suggestion: false });
@@ -157,15 +175,17 @@ const advancedSearch = async (interaction: Command.ChatInputCommandInteraction, 
 
   let selectComponent = new StringSelectMenuBuilder()
     .setCustomId('wiki-search-select')
-    .setPlaceholder('Choose the result...')
+    .setPlaceholder('Choose the result...');
 
-  let text = ''
+  let text = '';
   for (let index = 0; index < wikiResponse.results.length; index++) {
-    const result = wikiResponse.results[index]
-    text += `#${index + 1} - **${result.title}**\n`
+    const result = wikiResponse.results[index];
+    text += `#${index + 1} - **${result.title}**\n`;
     selectComponent.addOptions(
-      new StringSelectMenuOptionBuilder().setLabel(`#${index + 1} - ${result.title}`).setValue((index).toString())
-    )
+      new StringSelectMenuOptionBuilder()
+        .setLabel(`#${index + 1} - ${result.title}`)
+        .setValue(index.toString()),
+    );
 
     interaction.editReply({
       embeds: [
@@ -175,9 +195,9 @@ const advancedSearch = async (interaction: Command.ChatInputCommandInteraction, 
           .setDescription(text)
           .setFooter({
             text: 'Fetching all of the results might take a while.',
-          })
-      ]
-    })
+          }),
+      ],
+    });
   }
 
   const selectMessage = await interaction.editReply({
@@ -190,33 +210,33 @@ const advancedSearch = async (interaction: Command.ChatInputCommandInteraction, 
           text: 'Fetching all of the results might take a while.',
         }),
     ],
-    components: [
-      new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectComponent)
-    ]
-  })
+    components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectComponent)],
+  });
 
   try {
     const selectCollector = await selectMessage.awaitMessageComponent({
       componentType: ComponentType.StringSelect,
       filter: (collected) => collected.user.id === interaction.user.id,
-      time: 60 * 1000
-    })
+      time: 60 * 1000,
+    });
     if (selectCollector.customId == 'wiki-search-select') {
-      const resultIndex = +selectCollector.values[0]
-      const wikiEmbed = await makeWikiEmbed(wikiResponse, searchTerms, resultIndex)
+      const resultIndex = +selectCollector.values[0];
+      const wikiEmbed = await makeWikiEmbed(wikiResponse, searchTerms, resultIndex);
       return await interaction.editReply({
         embeds: [wikiEmbed],
-        components: []
-      })
+        components: [],
+      });
     } else {
       return interaction.editReply({
         embeds: [
           new EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('Error')
-            .setDescription('Some *real* wacky problem occured. Please annoy @kortimu over this ASAP!')
-        ]
-      })
+            .setDescription(
+              'Some *real* wacky problem occured. Please annoy @kortimu over this ASAP!',
+            ),
+        ],
+      });
     }
   } catch (e) {
     return interaction.editReply({
@@ -224,8 +244,10 @@ const advancedSearch = async (interaction: Command.ChatInputCommandInteraction, 
         new EmbedBuilder()
           .setColor('#ff0000')
           .setTitle('Error')
-          .setDescription('Some *real* wacky problem occured. Please annoy @kortimu over this ASAP!')
-      ]
-    })
+          .setDescription(
+            'Some *real* wacky problem occured. Please annoy @kortimu over this ASAP!',
+          ),
+      ],
+    });
   }
-}
+};
