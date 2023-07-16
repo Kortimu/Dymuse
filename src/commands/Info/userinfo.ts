@@ -19,12 +19,15 @@ import { getNeededXP } from '../../listeners/levels';
 export class UserCommand extends BotCommand {
   public override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) => {
-      builder.setName(this.name)
-      .setDescription(this.description)
-      .addUserOption(option => 
-        option.setName('target')
-        .setDescription('The user to look up information about.')
-        .setRequired(true)),
+      builder
+        .setName(this.name)
+        .setDescription(this.description)
+        .addUserOption((option) =>
+          option
+            .setName('target')
+            .setDescription('The user to look up information about.')
+            .setRequired(true),
+        ),
         { guildIds: ['864115119721676820'] };
     });
   }
@@ -32,72 +35,76 @@ export class UserCommand extends BotCommand {
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
     await sendLoadingInteraction(interaction);
 
-    const infoEmbed = new EmbedBuilder()
-    let targetUser = interaction.options.getUser('target')
+    const infoEmbed = new EmbedBuilder();
+    let targetUser = interaction.options.getUser('target');
 
     // If the user does not exist, default to the user who sent the slash command
     if (!targetUser) {
-      targetUser = interaction.client.user
+      targetUser = interaction.client.user;
     }
 
     const result = await UserModel.findOne({
       guildId: interaction.guild?.id,
-      userId: targetUser
-    })
-    console.log(result)
+      userId: targetUser,
+    });
+    console.log(result);
 
-    let userXp = 0
-    let userLevel = 0
+    let userXp = 0;
+    let userLevel = 0;
 
     if (result) {
-      userXp = result.xp
-      userLevel = result.level
+      userXp = result.xp;
+      userLevel = result.level;
     }
 
-    infoEmbed.addFields({
-        name: 'Username',
-        value: targetUser.username
-      }, {
-        name: 'Progress',
-        value: `Level: **${userLevel}**\nXP: ${userXp}/${getNeededXP(userLevel)} (${Math.round(
-          (userXp / getNeededXP(userLevel)) * 100,
-        )}%)`,
-      }, {
-        name: 'Account creation date',
-        value: `<t:${Math.floor(targetUser.createdAt.getTime() / 1000)}:f>\n(<t:${Math.floor(
-          targetUser.createdAt.getTime() / 1000,
-        )}:R>)`,
-        inline: true,
-      })
+    infoEmbed
+      .addFields(
+        {
+          name: 'Username',
+          value: targetUser.username,
+        },
+        {
+          name: 'Progress',
+          value: `Level: **${userLevel}**\nXP: ${userXp}/${getNeededXP(userLevel)} (${Math.round(
+            (userXp / getNeededXP(userLevel)) * 100,
+          )}%)`,
+        },
+        {
+          name: 'Account creation date',
+          value: `<t:${Math.floor(targetUser.createdAt.getTime() / 1000)}:f>\n(<t:${Math.floor(
+            targetUser.createdAt.getTime() / 1000,
+          )}:R>)`,
+          inline: true,
+        },
+      )
       .setFooter({
-        text: `ID: ${targetUser?.id}`
+        text: `ID: ${targetUser?.id}`,
       })
-      .setThumbnail(targetUser.displayAvatarURL() as string)
+      .setThumbnail(targetUser.displayAvatarURL() as string);
 
-      if (interaction.guild !== null) {
-        const targetMember = interaction.guild.members.cache.get(targetUser.id)
-        if (!targetMember || targetMember.joinedAt === null) {
-          return
-        }
+    if (interaction.guild !== null) {
+      const targetMember = interaction.guild.members.cache.get(targetUser.id);
+      if (!targetMember || targetMember.joinedAt === null) {
+        return;
+      }
 
-        infoEmbed.addFields({
+      infoEmbed.addFields(
+        {
           name: 'Join date',
           value: `<t:${Math.floor(targetMember.joinedAt.getTime() / 1000)}:f>\n(<t:${Math.floor(
             targetMember.joinedAt.getTime() / 1000,
           )}:R>)`,
           inline: true,
-        }, {
+        },
+        {
           name: `Roles (${targetMember.roles.cache.size})`,
           value: `${targetMember.roles.cache.map((role) => `${role}`).join('\n')}`,
-        })
-      }
+        },
+      );
+    }
 
     return interaction.editReply({
-      embeds: [
-        infoEmbed
-          .setTitle(`Info about ${targetUser.username}`)
-          .setColor('#00FF00'),
-      ],
+      embeds: [infoEmbed.setTitle(`Info about ${targetUser.username}`).setColor('#00FF00')],
     });
   }
 }
