@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Guild, Message, EmbedBuilder, TextChannel, VoiceChannel } from 'discord.js';
+import { Guild, Message, TextChannel, VoiceChannel } from 'discord.js';
 import {
   AudioPlayerStatus,
   createAudioPlayer,
@@ -13,7 +13,7 @@ import {
 } from '@discordjs/voice';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
-import { formatSeconds } from '../../lib/constants';
+import { baseEmbed, errorEmbed, formatSeconds, loadingEmbed } from '../../lib/constants';
 import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
 import ytdl from 'ytdl-core';
 import ytsr from 'ytsr';
@@ -41,12 +41,9 @@ export class UserCommand extends BotCommand {
     if (!args) {
       send(message, {
         embeds: [
-          new EmbedBuilder()
-            .setColor('#FF0000')
-            .setTitle('Error')
-            .setDescription(
-              'How do you think I can find something with no link or search term? Reading your mind?!',
-            ),
+          errorEmbed.setDescription(
+            'How do you think I can find something with no link or search term? Reading your mind?!',
+          ),
         ],
       });
       return;
@@ -61,12 +58,7 @@ const play = async (message: Message, args: Args) => {
   }
   if (!message.member.voice.channel) {
     return send(message, {
-      embeds: [
-        new EmbedBuilder()
-          .setColor('#FF0000')
-          .setTitle('Error')
-          .setDescription('You need to be in a voice channel to use this, duh'),
-      ],
+      embeds: [errorEmbed.setDescription('You need to be in a voice channel to use this, duh')],
     });
   }
 
@@ -79,12 +71,7 @@ const play = async (message: Message, args: Args) => {
   }
   if (songInfo === null) {
     return send(message, {
-      embeds: [
-        new EmbedBuilder()
-          .setColor('#FF0000')
-          .setTitle('Error')
-          .setDescription('Am I expected to find something that does not exist?!'),
-      ],
+      embeds: [errorEmbed.setDescription('Am I expected to find something that does not exist?!')],
     });
   }
 
@@ -110,10 +97,7 @@ const play = async (message: Message, args: Args) => {
   // Found! (Embed)
   send(message, {
     embeds: [
-      new EmbedBuilder()
-        .setColor('#FF00FF')
-        .setTitle('Song found!')
-        .setDescription(`\`${info.title}\` is about to play...`),
+      baseEmbed.setTitle('Song found!').setDescription(`\`${info.title}\` is about to play...`),
     ],
   });
   if (!message.guild) {
@@ -143,8 +127,7 @@ const play = async (message: Message, args: Args) => {
   message.delete();
   return send(message, {
     embeds: [
-      new EmbedBuilder()
-        .setColor('#FF00FF')
+      baseEmbed
         .setTitle('Song added to queue!')
         .setDescription(
           `**Title:** ${info.title}\n**Length:** ${info.formattedDuration}\n**Channel:** ${info.channelName}`,
@@ -168,8 +151,7 @@ const getSongInfo = async (message: Message, args: Args) => {
     const result = `${songUrl} ${await args.rest('string').catch(() => '')}`;
     send(message, {
       embeds: [
-        new EmbedBuilder()
-          .setColor('#FFFF00')
+        loadingEmbed
           .setTitle('Searching...')
           .setDescription(`Searching \`${result}\` on Youtube...`),
       ],
@@ -315,8 +297,7 @@ const nextPreview = (song: ISong, channel: TextChannel) => {
   channel
     .send({
       embeds: [
-        new EmbedBuilder()
-          .setColor('#FFFF00')
+        loadingEmbed
           .setTitle('Coming up...')
           .setDescription(
             `**URL:** ${song.url}\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Channel:** ${song.channelName}`,
@@ -340,8 +321,7 @@ const songPreview = (song: ISong, channel: TextChannel) => {
   channel
     .send({
       embeds: [
-        new EmbedBuilder()
-          .setColor('#FF00FF')
+        baseEmbed
           .setTitle('Playing...')
           .setDescription(
             `**URL:** ${song.url}\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Channel:** ${song.channelName}`,
@@ -372,8 +352,7 @@ const emptyQueue = (
     musicQueue.delete(guildId);
     channel.send({
       embeds: [
-        new EmbedBuilder()
-          .setColor('#FF0000')
+        errorEmbed
           .setTitle('Music Stopped')
           .setDescription('Everyone left, not playing music alone'),
       ],
@@ -386,12 +365,7 @@ const emptyQueue = (
       connection.destroy();
       musicQueue.delete(guildId);
       channel.send({
-        embeds: [
-          new EmbedBuilder()
-            .setColor('#FF0000')
-            .setTitle('bye')
-            .setDescription('aight imma head out'),
-        ],
+        embeds: [errorEmbed.setTitle('bye').setDescription('aight imma head out')],
       });
     }
   }, 60 * 1000);

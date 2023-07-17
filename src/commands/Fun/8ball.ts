@@ -1,9 +1,9 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { EmbedBuilder } from 'discord.js';
 import { pickRandom, sendLoadingInteraction } from '../../lib/utils';
 import { answers } from '../../lib/data/8ball-answers';
+import { baseEmbed } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'A typical 8-Ball.',
@@ -42,8 +42,7 @@ export class UserCommand extends BotCommand {
     if (!question) {
       return interaction.editReply({
         embeds: [
-          new EmbedBuilder()
-            .setColor('#ff00ff')
+          baseEmbed
             .setTitle('No question? Sure, I can read your mind anyways. The 8-ball says...')
             .setDescription('Mate, you did not put in a question. '),
         ],
@@ -52,10 +51,9 @@ export class UserCommand extends BotCommand {
 
     return interaction.editReply({
       embeds: [
-        new EmbedBuilder()
+        baseEmbed
           .setTitle(`My 8-ball says that the answer to "${question.value}" is...`)
           .setDescription(`**${pickRandom(answers)}**`)
-          .setColor('#ff00ff')
           .setThumbnail('https://canary.discord.com/assets/0cfd4882c0646d504900c90166d80cf8.svg')
           .setFooter({
             text: "Don't even try entering gibberish.",

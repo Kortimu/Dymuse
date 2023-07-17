@@ -1,11 +1,12 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder } from 'discord.js';
+import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { queues } from './songplay';
 import type { IServerMusicQueue } from '../../types/interfaces/Bot';
+import { baseEmbed, errorEmbed } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Shows info about the video queue.',
@@ -25,12 +26,9 @@ export class UserCommand extends BotCommand {
     if (!serverQueue || serverQueue.songs.length < 1) {
       return send(message, {
         embeds: [
-          new EmbedBuilder()
-            .setColor('#FF0000')
-            .setTitle('Error')
-            .setDescription(
-              'You are not fooling me, there is no video queue. If this is entertainment for you, go touch grass.',
-            ),
+          errorEmbed.setDescription(
+            'You are not fooling me, there is no video queue. If this is entertainment for you, go touch grass.',
+          ),
         ],
       }).then((msg) => {
         message.delete();
@@ -44,7 +42,7 @@ export class UserCommand extends BotCommand {
 }
 
 const showQueue = async (message: Message, queueInfo: IServerMusicQueue) => {
-  const queueEmbed = new EmbedBuilder();
+  const queueEmbed = baseEmbed;
   let songNumber = 0;
   // For each song in guild queue, get simple info
   queueInfo.songs.forEach((song) => {

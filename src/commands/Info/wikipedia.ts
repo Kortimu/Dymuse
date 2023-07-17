@@ -6,12 +6,12 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
-  EmbedBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } from 'discord.js';
 import { sendLoadingInteraction } from '../../lib/utils';
 import wikipedia, { type wikiSearchResult } from 'wikipedia';
+import { baseEmbed, errorEmbed, loadingEmbed } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Show a Wikipedia page.',
@@ -43,21 +43,13 @@ export class UserCommand extends BotCommand {
     const searchTerms = interaction.options.getString('search');
     if (!searchTerms) {
       return interaction.editReply({
-        embeds: [
-          new EmbedBuilder()
-            .setTitle('Error')
-            .setDescription('No search terms were input!')
-            .setColor('#FF0000'),
-        ],
+        embeds: [errorEmbed.setDescription('No search terms were input!')],
       });
     }
 
     await interaction.editReply({
       embeds: [
-        new EmbedBuilder()
-          .setTitle('🔍 Searching...')
-          .setDescription('Looking for the best result...')
-          .setColor('#FFFF00'),
+        loadingEmbed.setTitle('🔍 Searching...').setDescription('Looking for the best result...'),
       ],
     });
 
@@ -66,10 +58,7 @@ export class UserCommand extends BotCommand {
     if (!wikiResponse.results) {
       return interaction.editReply({
         embeds: [
-          new EmbedBuilder()
-            .setTitle('Error')
-            .setDescription(`Nothing of value was found by searching \`${searchTerms}\`!`)
-            .setColor('#FF0000'),
+          errorEmbed.setDescription(`Nothing of value was found by searching \`${searchTerms}\`!`),
         ],
       });
     }
@@ -97,14 +86,7 @@ export class UserCommand extends BotCommand {
         return advancedSearch(interaction, searchTerms);
       } else {
         return interaction.editReply({
-          embeds: [
-            new EmbedBuilder()
-              .setColor('#ff0000')
-              .setTitle('Error')
-              .setDescription(
-                'Some *real* wacky problem occured. Please annoy @kortimu over this ASAP!',
-              ),
-          ],
+          embeds: [errorEmbed],
         });
       }
     } catch (e) {
@@ -126,7 +108,7 @@ const makeWikiEmbed = async (
 
   // TODO: Check for special cases (no article, real short article, etc)
   return (
-    new EmbedBuilder()
+    baseEmbed
       .setTitle(summary.title)
       // Gets the first 300 letters from the Wiki article
       .setDescription(
@@ -134,7 +116,6 @@ const makeWikiEmbed = async (
           page.fullurl
         })**`,
       )
-      .setColor('#00FF00')
       .setThumbnail(
         summary.thumbnail?.source ??
           // Wikipedia logo
@@ -152,8 +133,7 @@ const advancedSearch = async (
 ) => {
   await interaction.editReply({
     embeds: [
-      new EmbedBuilder()
-        .setColor('#FFFF00')
+      loadingEmbed
         .setTitle('🔍 Searching...')
         .setDescription('Getting the first 10 results from the search terms...'),
     ],
@@ -164,12 +144,7 @@ const advancedSearch = async (
 
   if (!wikiResponse.results) {
     return interaction.editReply({
-      embeds: [
-        new EmbedBuilder()
-          .setColor('#FF0000')
-          .setTitle('Error')
-          .setDescription(`No results from \`${searchTerms}\`.`),
-      ],
+      embeds: [errorEmbed.setDescription(`No results from \`${searchTerms}\`.`)],
     });
   }
 
@@ -189,26 +164,18 @@ const advancedSearch = async (
 
     interaction.editReply({
       embeds: [
-        new EmbedBuilder()
-          .setColor('#ffff00')
+        loadingEmbed
           .setTitle(`Pick from the ${wikiResponse.results.length} results:`)
-          .setDescription(text)
-          .setFooter({
-            text: 'Fetching all of the results might take a while.',
-          }),
+          .setDescription(text),
       ],
     });
   }
 
   const selectMessage = await interaction.editReply({
     embeds: [
-      new EmbedBuilder()
-        .setColor('#ffff00')
+      loadingEmbed
         .setTitle(`Pick from the ${wikiResponse.results.length} results:`)
-        .setDescription(text)
-        .setFooter({
-          text: 'Fetching all of the results might take a while.',
-        }),
+        .setDescription(text),
     ],
     components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectComponent)],
   });
@@ -228,26 +195,12 @@ const advancedSearch = async (
       });
     } else {
       return interaction.editReply({
-        embeds: [
-          new EmbedBuilder()
-            .setColor('#ff0000')
-            .setTitle('Error')
-            .setDescription(
-              'Some *real* wacky problem occured. Please annoy @kortimu over this ASAP!',
-            ),
-        ],
+        embeds: [errorEmbed],
       });
     }
   } catch (e) {
     return interaction.editReply({
-      embeds: [
-        new EmbedBuilder()
-          .setColor('#ff0000')
-          .setTitle('Error')
-          .setDescription(
-            'Some *real* wacky problem occured. Please annoy @kortimu over this ASAP!',
-          ),
-      ],
+      embeds: [errorEmbed],
     });
   }
 };

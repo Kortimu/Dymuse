@@ -1,10 +1,11 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder, Role } from 'discord.js';
+import { Message, Role } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { GuildModel } from '../../lib/schemas/guildschema';
+import { baseEmbed } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'A command for level role customization and viewing.',
@@ -82,8 +83,7 @@ const modifyLevelRole = async (role: Role, message: Message, level: number, targ
   // Send the damn response
   return send(message, {
     embeds: [
-      new EmbedBuilder()
-        .setColor('#00FF00')
+      baseEmbed
         .setTitle('Success!')
         .setDescription(
           `You **${targetName}ed** **<@&${roleId}>** with the level requirement of **${level}**!`,
@@ -95,7 +95,7 @@ const modifyLevelRole = async (role: Role, message: Message, level: number, targ
 const viewLevelRoles = async (message: Message) => {
   if (!message.guild) return;
   const guildId = message.guild.id;
-  const lRoleEmbed = new EmbedBuilder();
+  const lRoleEmbed = baseEmbed;
   let text = '';
   // Get the guild's settings
   const result = await GuildModel.findOne({
@@ -110,6 +110,6 @@ const viewLevelRoles = async (message: Message) => {
   }
   // Inform user action has been successful
   return send(message, {
-    embeds: [lRoleEmbed.setColor('#FF00FF').setTitle('All level roles:').setDescription(text)],
+    embeds: [lRoleEmbed.setTitle('All level roles:').setDescription(text)],
   });
 };

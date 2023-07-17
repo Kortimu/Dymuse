@@ -1,12 +1,12 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder } from 'discord.js';
+import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { curDur, queues } from './songplay';
 import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
-import { formatSeconds } from '../../lib/constants';
+import { baseEmbed, errorEmbed, formatSeconds } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Shows info about the currently playing video.',
@@ -29,12 +29,9 @@ export class UserCommand extends BotCommand {
     if (!serverQueue) {
       return send(message, {
         embeds: [
-          new EmbedBuilder()
-            .setColor('#FF0000')
-            .setTitle('Error')
-            .setDescription(
-              'You are not fooling me, there is no video queue. If this is entertainment for you, go touch grass.',
-            ),
+          errorEmbed.setDescription(
+            'You are not fooling me, there is no video queue. If this is entertainment for you, go touch grass.',
+          ),
         ],
       }).then((msg) => {
         message.delete();
@@ -52,8 +49,7 @@ const sendQueue = async (message: Message, song: ISong) => {
   // Returns additional information, previously stored when song was requested
   return send(message, {
     embeds: [
-      new EmbedBuilder()
-        .setColor('#FF00FF')
+      baseEmbed
         .setTitle('Currently playing song:')
         .setDescription(
           `**URL:** ${song.url}\n**Title:** ${song.title}\n**Views:** ${song.views}\n**Channel:** ${

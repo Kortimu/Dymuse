@@ -1,10 +1,11 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder } from 'discord.js';
+import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { supportArray } from '../../lib/data/support-messages';
+import { baseEmbed } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: '"Supports" the user emotionally.',
@@ -34,8 +35,7 @@ export class UserCommand extends BotCommand {
     // Sends the message in DMs
     targetUser.send({
       embeds: [
-        new EmbedBuilder()
-          .setColor('#FF00FF')
+        baseEmbed
           .setTitle('Emotional Support Incoming!')
           .setDescription(`${support}\n\nHope it helped, ${targetUser}! <3`),
       ],
@@ -43,8 +43,7 @@ export class UserCommand extends BotCommand {
     // Sends the message in the channel
     return send(message, {
       embeds: [
-        new EmbedBuilder()
-          .setColor('#FF00FF')
+        baseEmbed
           .setTitle('Emotional Support Incoming!')
           .setDescription(`I have sent something "helpful" in DMs to ${targetUser}.`),
       ],

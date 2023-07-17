@@ -1,9 +1,9 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions, Args } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder } from 'discord.js';
+import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
-import { formatSeconds } from '../../lib/constants';
+import { baseEmbed, errorEmbed, formatSeconds } from '../../lib/constants';
 import { send } from '@sapphire/plugin-editable-commands';
 import type { ISong } from '../../types/interfaces/Bot';
 import ytdl from 'ytdl-core';
@@ -34,7 +34,7 @@ const showInfo = async (message: Message, args: Args) => {
   if (songUrl === '') {
     return send(message, {
       embeds: [
-        new EmbedBuilder()
+        errorEmbed
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('What should I look for? EMPTY AIR?!'),
@@ -55,7 +55,7 @@ const showInfo = async (message: Message, args: Args) => {
   if (songInfo === null) {
     return send(message, {
       embeds: [
-        new EmbedBuilder()
+        errorEmbed
           .setColor('#FF0000')
           .setTitle('Error')
           .setDescription('Am I expected to find something that does not exist?!'),
@@ -90,8 +90,7 @@ const showInfo = async (message: Message, args: Args) => {
 
   return send(message, {
     embeds: [
-      new EmbedBuilder()
-        .setColor('#FF00FF')
+      baseEmbed
         .setTitle('Information about the video:')
         .setDescription(
           `**URL:** ${song.url}\n\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Published:** ${song.creationDate}\n\n**Views:** ${song.views}\n**Likes:** ${song.likes}\n\n**Channel:** ${song.channelName}\n**Subsribers:** ${song.subscribers}`,
@@ -108,12 +107,7 @@ const getSongInfo = async (message: Message, songUrl: string) => {
   // If URL is not valid
   if (!ytdl.validateURL(songUrl)) {
     send(message, {
-      embeds: [
-        new EmbedBuilder()
-          .setColor('#FF0000')
-          .setTitle('Error')
-          .setDescription('bro that URL is wack'),
-      ],
+      embeds: [errorEmbed.setDescription('bro that URL is wack')],
     }).then((msg) => {
       setTimeout(() => {
         msg.delete();

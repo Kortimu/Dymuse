@@ -1,10 +1,10 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { sendLoadingInteraction } from '../../lib/utils';
 import { client } from '../..';
-import { formatSeconds } from '../../lib/constants';
+import { baseEmbed, formatSeconds } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Gives additional information about the bot.',
@@ -45,12 +45,11 @@ export class UserCommand extends BotCommand {
 
     return interaction.editReply({
       embeds: [
-        new EmbedBuilder()
+        baseEmbed
           .setTitle('Dymuse v3.0.0')
           .setDescription(
             `${bot} is a bot made by Kortimu to serve as a pretty neat thingamajigididoo.\n\nThe bot has been online for \`${botUptime}\`.\nThe last major update happened in \`December 27th 2021\`.\nThe last minor update happened in \`December 30th 2021\`.`,
           )
-          .setColor('#00FF00')
           .setThumbnail(bot?.avatarURL()),
       ],
       components: [row],

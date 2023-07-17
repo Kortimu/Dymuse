@@ -1,9 +1,10 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder } from 'discord.js';
+import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
+import { baseEmbed } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'yes',
@@ -18,8 +19,7 @@ export class UserCommand extends BotCommand {
     // Returns an embed with the link
     return send(message, {
       embeds: [
-        new EmbedBuilder()
-          .setColor('#FF00FF')
+        baseEmbed
           .setTitle('oh wow')
           .setDescription(
             'You actually said it. Here is your reward: https://www.youtube.com/watch?v=dQw4w9WgXcQ',

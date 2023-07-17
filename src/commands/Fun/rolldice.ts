@@ -1,9 +1,10 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder } from 'discord.js';
+import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
+import { baseEmbed, errorEmbed } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Rolls a dice.',
@@ -29,12 +30,7 @@ async function rollDice(message: Message, size: number) {
   // Checks for non-existant dice
   if (size <= 0) {
     return send(message, {
-      embeds: [
-        new EmbedBuilder()
-          .setColor('#FF0000')
-          .setTitle('Error')
-          .setDescription('What kind of dice are you trying to roll?!'),
-      ],
+      embeds: [errorEmbed.setDescription('What kind of dice are you trying to roll?!')],
     }).then((msg) => {
       message.delete();
       setTimeout(() => {
@@ -44,8 +40,7 @@ async function rollDice(message: Message, size: number) {
   }
   return send(message, {
     embeds: [
-      new EmbedBuilder()
-        .setColor('#FF00FF')
+      baseEmbed
         .setTitle(`You rolled a ${size} side dice...`)
         .setDescription(`...and rolled a **${result}**`),
     ],

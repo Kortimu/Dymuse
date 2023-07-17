@@ -1,6 +1,7 @@
 import { Events, Listener, type PieceContext } from '@sapphire/framework';
-import { Guild, GuildMember, EmbedBuilder, TextChannel } from 'discord.js';
+import { Guild, GuildMember, TextChannel } from 'discord.js';
 import { GuildModel } from '../lib/schemas/guildschema';
+import { errorEmbed } from '../lib/constants';
 
 export class UserEvent extends Listener<typeof Events.GuildMemberRemove> {
   public constructor(context: PieceContext) {
@@ -32,12 +33,7 @@ const sendMessage = async (guild: Guild, member: GuildMember) => {
   if (channel) {
     // Sends embed
     channel.send({
-      embeds: [
-        new EmbedBuilder()
-          .setColor('#FF0000')
-          .setTitle('Someone has left')
-          .setDescription(`Bye bye ${member}`),
-      ],
+      embeds: [errorEmbed.setTitle('Someone has left').setDescription(`Bye bye ${member}`)],
     });
   }
 };

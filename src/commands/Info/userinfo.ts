@@ -1,10 +1,10 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { EmbedBuilder } from 'discord.js';
 import { sendLoadingInteraction } from '../../lib/utils';
 import { UserModel } from '../../lib/schemas/userschema';
 import { getNeededXP } from '../../listeners/levels';
+import { baseEmbed } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Gives additional information about a user.',
@@ -35,7 +35,7 @@ export class UserCommand extends BotCommand {
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
     await sendLoadingInteraction(interaction);
 
-    const infoEmbed = new EmbedBuilder();
+    const infoEmbed = baseEmbed;
     let targetUser = interaction.options.getUser('target');
 
     // If the user does not exist, default to the user who sent the slash command

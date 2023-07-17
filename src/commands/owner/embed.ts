@@ -1,9 +1,10 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder } from 'discord.js';
+import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
+import { baseEmbed, errorEmbed, loadingEmbed } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Allows the user to make an embed by themselves.',
@@ -19,7 +20,7 @@ export class UserCommand extends BotCommand {
     // Sends loading message
     await sendLoadingMessage(message);
 
-    const embed = new EmbedBuilder();
+    const embed = baseEmbed;
     // Show how far the user has gotten (might be a better way to do this)
     let stage = 0;
 
@@ -31,8 +32,7 @@ export class UserCommand extends BotCommand {
     // Inform the user for what needs to be done
     send(message, {
       embeds: [
-        new EmbedBuilder()
-          .setColor('#FF0000')
+        loadingEmbed
           .setTitle('Embed Creation (1/2)')
           .setDescription('Write the title of the embed.'),
       ],
@@ -46,8 +46,7 @@ export class UserCommand extends BotCommand {
       stage = 1;
       send(message, {
         embeds: [
-          new EmbedBuilder()
-            .setColor('#FFFF00')
+          loadingEmbed
             .setTitle('Embed Creation (2/2)')
             .setDescription('Write the description of the embed.'),
         ],
@@ -67,12 +66,7 @@ export class UserCommand extends BotCommand {
         message.channel.send({ embeds: [embed.setColor('#FF00FF')] });
         // Congratulate the user
         send(message, {
-          embeds: [
-            new EmbedBuilder()
-              .setColor('#00FF00')
-              .setTitle('Success!')
-              .setDescription('An embed has been made.'),
-          ],
+          embeds: [baseEmbed.setTitle('Success!').setDescription('An embed has been made.')],
         });
         setTimeout(() => {
           message.delete();
@@ -84,7 +78,7 @@ export class UserCommand extends BotCommand {
           // ...bully the user with a 'embed fail' meme
           send(message, {
             embeds: [
-              new EmbedBuilder()
+              errorEmbed
                 .setTitle('Embed creation time ended')
                 .setDescription('got tired of waiting lmao')
                 .setImage(
@@ -101,7 +95,7 @@ export class UserCommand extends BotCommand {
         // ...also bully the user
         send(message, {
           embeds: [
-            new EmbedBuilder()
+            errorEmbed
               .setTitle('Got tired of waiting lmao')
               .setDescription('Better luck next time')
               .setImage(

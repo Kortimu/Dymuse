@@ -1,11 +1,12 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message, EmbedBuilder } from 'discord.js';
+import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { queues } from './songplay';
 import type { IServerMusicQueue } from '../../types/interfaces/Bot';
+import { baseEmbed, errorEmbed } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Makes the music loop.',
@@ -29,12 +30,9 @@ const loop = async (message: Message, option: string) => {
   if (!serverQueue) {
     return send(message, {
       embeds: [
-        new EmbedBuilder()
-          .setColor('#FF0000')
-          .setTitle('Error')
-          .setDescription(
-            'To change the loop setting, music needs to be playing. Seriously, why would you change it when it is not even playing?!',
-          ),
+        errorEmbed.setDescription(
+          'To change the loop setting, music needs to be playing. Seriously, why would you change it when it is not even playing?!',
+        ),
       ],
     }).then((msg) => {
       message.delete();
@@ -57,8 +55,7 @@ const loop = async (message: Message, option: string) => {
   }
   return send(message, {
     embeds: [
-      new EmbedBuilder()
-        .setColor('#FF00FF')
+      baseEmbed
         .setTitle('Command successful successful successful successful')
         .setDescription(`Looping is set to \`${serverQueue.repeatMode}\`.`),
     ],
