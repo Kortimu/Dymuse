@@ -1,9 +1,8 @@
 import { Listener, Events, type PieceContext } from '@sapphire/framework';
-import { Client, TextChannel } from 'discord.js';
+import { Client, EmbedBuilder, TextChannel } from 'discord.js';
 import { GuildModel } from '../lib/schemas/guildschema';
 import { UserModel } from '../lib/schemas/userschema';
 import { getNeededXP } from './levels';
-import { baseEmbed } from '../lib/constants';
 
 export class UserEvent extends Listener<typeof Events.ClientReady> {
   public constructor(context: PieceContext) {
@@ -21,7 +20,7 @@ export class UserEvent extends Listener<typeof Events.ClientReady> {
 }
 
 async function fetchTopMembers(guildId: string) {
-  const leaderEmbed = baseEmbed.setTitle('User leaderboard:');
+  const leaderEmbed = new EmbedBuilder().setTitle('User leaderboard:').setColor('#FF00FF');
   // Find all users from the guild, and sort them
   const results = await UserModel.find({
     guildId,
