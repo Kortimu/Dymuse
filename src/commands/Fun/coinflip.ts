@@ -1,9 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import type { CommandOptions } from '@sapphire/framework';
+import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message } from 'discord.js';
-import { pickRandom, sendLoadingMessage } from '../../lib/utils';
-import { send } from '@sapphire/plugin-editable-commands';
+import { pickRandom, sendLoadingInteraction } from '../../lib/utils';
 import { baseEmbed, loadingEmbed } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
@@ -14,43 +12,45 @@ import { baseEmbed, loadingEmbed } from '../../lib/constants';
   notes: ['The art is temporary. When I figure out how to do a crown, I will remake it.'],
 })
 export class UserCommand extends BotCommand {
-  public async messageRun(message: Message) {
-    // Sends loading message
-    await sendLoadingMessage(message);
-    flipCoin(message);
+  public override registerApplicationCommands(registry: Command.Registry) {
+    registry.registerChatInputCommand((builder) => {
+      builder.setName(this.name).setDescription(this.description),
+        { guildIds: ['864115119721676820'] };
+    });
   }
-}
 
-function flipCoin(message: Message) {
-  // Flipping animation (aesthetic only)
-  send(message, {
-    embeds: [
-      loadingEmbed
-        .setTitle('Flipping coin...')
-        .setDescription('haha coin go brrr')
-        .setImage('https://cdn.discordapp.com/emojis/916815063673896960.gif?size=64'),
-    ],
-  }).then((msg) => {
-    setTimeout(() => {
-      sendResult(msg);
-      message.delete();
-    }, 1 * 1000);
-  });
-}
+  public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+    await sendLoadingInteraction(interaction);
 
-// Send either of the results, based on pickRandom()
-function sendResult(msg: Message) {
-  const results = ['heads', 'tails'];
-  const result = pickRandom(results);
-  let url = '';
-  if (result === results[0]) {
-    url = 'https://cdn.discordapp.com/emojis/917122876170174504.png?size=64';
-  } else {
-    url = 'https://cdn.discordapp.com/emojis/917122876153409626.png?size=64';
+    await interaction
+      .editReply({
+        embeds: [
+          loadingEmbed
+            .setTitle('Flipping coin...')
+            .setDescription('haha coin go brrr')
+            .setImage('https://cdn.discordapp.com/emojis/916815063673896960.gif?size=64'),
+        ],
+      })
+      .then(() => {
+        setTimeout(async () => {
+          const results = ['heads', 'tails'];
+          const result = pickRandom(results);
+          const resultEmbed = baseEmbed
+            .setTitle('The coin landed on...')
+            .setDescription(`...${result}`);
+          if (result === 'heads') {
+            resultEmbed.setImage(
+              'https://cdn.discordapp.com/emojis/917122876170174504.png?size=64',
+            );
+          } else {
+            resultEmbed.setImage(
+              'https://cdn.discordapp.com/emojis/917122876153409626.png?size=64',
+            );
+          }
+          return await interaction.editReply({
+            embeds: [resultEmbed],
+          });
+        }, 1.5 * 1000);
+      });
   }
-  msg.edit({
-    embeds: [
-      baseEmbed.setTitle('The coin landed on...').setDescription(`...${result}`).setImage(url),
-    ],
-  });
 }
