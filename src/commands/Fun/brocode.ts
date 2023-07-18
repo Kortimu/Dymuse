@@ -5,7 +5,7 @@ import { Message } from 'discord.js';
 import { sendLoadingMessage, pickRandom } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { broCode } from '../../lib/data/bro-code';
-import { baseEmbed } from '../../lib/constants';
+import { baseEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Sends specific or random Bro Code rules.',
@@ -31,7 +31,7 @@ export class UserCommand extends BotCommand {
 }
 
 async function sendRule(option: string, message: Message) {
-  const ruleEmbed = baseEmbed;
+  const ruleEmbed = baseEmbedFormat();
   let text = '';
   // Turns the argument into a number
   const selectedOption = Number(option);
@@ -53,7 +53,7 @@ async function sendRule(option: string, message: Message) {
     });
     send(message, {
       embeds: [
-        baseEmbed
+        baseEmbedFormat()
           .setTitle('Bro code sent')
           .setDescription('...to PMs. No need to clutter the channel.'),
       ],

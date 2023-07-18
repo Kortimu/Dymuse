@@ -5,7 +5,7 @@ import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { UserModel } from '../../lib/schemas/userschema';
-import { baseEmbed } from '../../lib/constants';
+import { baseEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Gives XP to a user.',
@@ -58,7 +58,7 @@ const addXP = async (guildId: string, userId: string, xpToAdd: number, message: 
   // Sends embed
   return send(message, {
     embeds: [
-      baseEmbed
+      baseEmbedFormat()
         .setTitle('Transaction was a success!')
         .setDescription(`You gave <@${userId}> ${xpToAdd} XP. Now they have **${xp}** XP!`),
     ],

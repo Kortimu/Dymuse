@@ -2,7 +2,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import type { CommandOptions, Command } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
 import { sendLoadingInteraction } from '../../lib/utils';
-import { baseEmbed } from '../../lib/constants';
+import { baseEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'A simple test command.',
@@ -23,7 +23,7 @@ export class UserCommand extends BotCommand {
 
     return interaction.editReply({
       embeds: [
-        baseEmbed
+        baseEmbedFormat()
           .setTitle('something something pong')
           .addFields(
             {

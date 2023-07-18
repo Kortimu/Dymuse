@@ -13,7 +13,7 @@ import {
 } from '@discordjs/voice';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
-import { baseEmbed, errorEmbed, formatSeconds, loadingEmbed } from '../../lib/constants';
+import { baseEmbedFormat, errorEmbedFormat, formatSeconds, loadEmbedFormat } from '../../lib/constants';
 import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
 import ytdl from 'ytdl-core';
 import ytsr from 'ytsr';
@@ -41,7 +41,7 @@ export class UserCommand extends BotCommand {
     if (!args) {
       send(message, {
         embeds: [
-          errorEmbed.setDescription(
+          errorEmbedFormat().setDescription(
             'How do you think I can find something with no link or search term? Reading your mind?!',
           ),
         ],
@@ -58,7 +58,7 @@ const play = async (message: Message, args: Args) => {
   }
   if (!message.member.voice.channel) {
     return send(message, {
-      embeds: [errorEmbed.setDescription('You need to be in a voice channel to use this, duh')],
+      embeds: [errorEmbedFormat().setDescription('You need to be in a voice channel to use this, duh')],
     });
   }
 
@@ -71,7 +71,7 @@ const play = async (message: Message, args: Args) => {
   }
   if (songInfo === null) {
     return send(message, {
-      embeds: [errorEmbed.setDescription('Am I expected to find something that does not exist?!')],
+      embeds: [errorEmbedFormat().setDescription('Am I expected to find something that does not exist?!')],
     });
   }
 
@@ -97,7 +97,7 @@ const play = async (message: Message, args: Args) => {
   // Found! (Embed)
   send(message, {
     embeds: [
-      baseEmbed.setTitle('Song found!').setDescription(`\`${info.title}\` is about to play...`),
+      baseEmbedFormat().setTitle('Song found!').setDescription(`\`${info.title}\` is about to play...`),
     ],
   });
   if (!message.guild) {
@@ -127,7 +127,7 @@ const play = async (message: Message, args: Args) => {
   message.delete();
   return send(message, {
     embeds: [
-      baseEmbed
+      baseEmbedFormat()
         .setTitle('Song added to queue!')
         .setDescription(
           `**Title:** ${info.title}\n**Length:** ${info.formattedDuration}\n**Channel:** ${info.channelName}`,
@@ -151,7 +151,7 @@ const getSongInfo = async (message: Message, args: Args) => {
     const result = `${songUrl} ${await args.rest('string').catch(() => '')}`;
     send(message, {
       embeds: [
-        loadingEmbed
+        loadEmbedFormat()
           .setTitle('Searching...')
           .setDescription(`Searching \`${result}\` on Youtube...`),
       ],
@@ -297,7 +297,7 @@ const nextPreview = (song: ISong, channel: TextChannel) => {
   channel
     .send({
       embeds: [
-        loadingEmbed
+        loadEmbedFormat()
           .setTitle('Coming up...')
           .setDescription(
             `**URL:** ${song.url}\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Channel:** ${song.channelName}`,
@@ -321,7 +321,7 @@ const songPreview = (song: ISong, channel: TextChannel) => {
   channel
     .send({
       embeds: [
-        baseEmbed
+        baseEmbedFormat()
           .setTitle('Playing...')
           .setDescription(
             `**URL:** ${song.url}\n**Title:** ${song.title}\n**Length:** ${song.formattedDuration}\n**Channel:** ${song.channelName}`,
@@ -352,7 +352,7 @@ const emptyQueue = (
     musicQueue.delete(guildId);
     channel.send({
       embeds: [
-        errorEmbed
+        errorEmbedFormat()
           .setTitle('Music Stopped')
           .setDescription('Everyone left, not playing music alone'),
       ],
@@ -365,7 +365,7 @@ const emptyQueue = (
       connection.destroy();
       musicQueue.delete(guildId);
       channel.send({
-        embeds: [errorEmbed.setTitle('bye').setDescription('aight imma head out')],
+        embeds: [errorEmbedFormat().setTitle('bye').setDescription('aight imma head out')],
       });
     }
   }, 60 * 1000);

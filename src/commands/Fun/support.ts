@@ -5,7 +5,7 @@ import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { supportArray } from '../../lib/data/support-messages';
-import { baseEmbed } from '../../lib/constants';
+import { baseEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: '"Supports" the user emotionally.',
@@ -35,7 +35,7 @@ export class UserCommand extends BotCommand {
     // Sends the message in DMs
     targetUser.send({
       embeds: [
-        baseEmbed
+        baseEmbedFormat()
           .setTitle('Emotional Support Incoming!')
           .setDescription(`${support}\n\nHope it helped, ${targetUser}! <3`),
       ],
@@ -43,7 +43,7 @@ export class UserCommand extends BotCommand {
     // Sends the message in the channel
     return send(message, {
       embeds: [
-        baseEmbed
+        baseEmbedFormat()
           .setTitle('Emotional Support Incoming!')
           .setDescription(`I have sent something "helpful" in DMs to ${targetUser}.`),
       ],

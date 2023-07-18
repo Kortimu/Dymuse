@@ -3,7 +3,7 @@ import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
 import { pickRandom, sendLoadingInteraction } from '../../lib/utils';
 import { answers } from '../../lib/data/8ball-answers';
-import { baseEmbed } from '../../lib/constants';
+import { baseEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'A typical 8-Ball.',
@@ -42,7 +42,7 @@ export class UserCommand extends BotCommand {
     if (!question) {
       return interaction.editReply({
         embeds: [
-          baseEmbed
+          baseEmbedFormat()
             .setTitle('No question? Sure, I can read your mind anyways. The 8-ball says...')
             .setDescription('Mate, you did not put in a question. '),
         ],
@@ -51,7 +51,7 @@ export class UserCommand extends BotCommand {
 
     return interaction.editReply({
       embeds: [
-        baseEmbed
+        baseEmbedFormat()
           .setTitle(`My 8-ball says that the answer to "${question.value}" is...`)
           .setDescription(`**${pickRandom(answers)}**`)
           .setThumbnail('https://canary.discord.com/assets/0cfd4882c0646d504900c90166d80cf8.svg')

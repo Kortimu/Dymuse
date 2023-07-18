@@ -1,7 +1,7 @@
 import { Events, Listener, type PieceContext } from '@sapphire/framework';
 import { Guild, GuildMember, TextChannel } from 'discord.js';
 import { GuildModel } from '../lib/schemas/guildschema';
-import { baseEmbed } from '../lib/constants';
+import { baseEmbedFormat } from '../lib/constants';
 
 export class UserEvent extends Listener<typeof Events.GuildMemberAdd> {
   public constructor(context: PieceContext) {
@@ -34,7 +34,7 @@ const sendMessage = async (guild: Guild, member: GuildMember) => {
     // Sends embed
     channel.send({
       embeds: [
-        baseEmbed
+        baseEmbedFormat()
           .setTitle('Someone has joined!')
           .setDescription(`Welcome ${member} to the server!`),
       ],

@@ -24,17 +24,21 @@ export const formatSeconds = (duration: number) => {
   return `\`${displayHours}${displayMinutes}m ${displaySeconds}s\``;
 };
 
-export const baseEmbed = new EmbedBuilder().setColor('#b441cc');
+export const baseEmbedFormat = () => {
+  return new EmbedBuilder().setColor('#b441cc')
+}
 
-export const errorEmbed = new EmbedBuilder()
+export const loadEmbedFormat = () => {
+  return new EmbedBuilder().setColor('#ffff00').setFooter({
+    text: 'Please await a response. It might take a while for everything to be sent out.',
+  });
+}
+
+export const errorEmbedFormat = () => {
+  return new EmbedBuilder()
   .setColor('#ff0000')
   .setTitle('Error!')
   .setDescription(
     'An oopsie owie has happened! If possible, annoy the developer (@kortimu) about this.',
   );
-
-export const loadingEmbed = new EmbedBuilder()
-  .setColor('#ffff00')
-  .setFooter({
-    text: 'Please await a response. It might take a while for everything to be sent out.',
-  });
+}

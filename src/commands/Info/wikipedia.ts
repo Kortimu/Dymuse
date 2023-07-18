@@ -11,7 +11,7 @@ import {
 } from 'discord.js';
 import { sendLoadingInteraction } from '../../lib/utils';
 import wikipedia, { type wikiSearchResult } from 'wikipedia';
-import { baseEmbed, errorEmbed, loadingEmbed } from '../../lib/constants';
+import { baseEmbedFormat, errorEmbedFormat, loadEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Show a Wikipedia page.',
@@ -43,13 +43,13 @@ export class UserCommand extends BotCommand {
     const searchTerms = interaction.options.getString('search');
     if (!searchTerms) {
       return interaction.editReply({
-        embeds: [errorEmbed.setDescription('No search terms were input!')],
+        embeds: [errorEmbedFormat().setDescription('No search terms were input!')],
       });
     }
 
     await interaction.editReply({
       embeds: [
-        loadingEmbed.setTitle('🔍 Searching...').setDescription('Looking for the best result...'),
+        loadEmbedFormat().setTitle('🔍 Searching...').setDescription('Looking for the best result...'),
       ],
     });
 
@@ -58,7 +58,7 @@ export class UserCommand extends BotCommand {
     if (!wikiResponse.results) {
       return interaction.editReply({
         embeds: [
-          errorEmbed.setDescription(`Nothing of value was found by searching \`${searchTerms}\`!`),
+          errorEmbedFormat().setDescription(`Nothing of value was found by searching \`${searchTerms}\`!`),
         ],
       });
     }
@@ -86,7 +86,7 @@ export class UserCommand extends BotCommand {
         return advancedSearch(interaction, searchTerms);
       } else {
         return interaction.editReply({
-          embeds: [errorEmbed],
+          embeds: [errorEmbedFormat()],
         });
       }
     } catch (e) {
@@ -108,7 +108,7 @@ const makeWikiEmbed = async (
 
   // TODO: Check for special cases (no article, real short article, etc)
   return (
-    baseEmbed
+    baseEmbedFormat()
       .setTitle(summary.title)
       // Gets the first 300 letters from the Wiki article
       .setDescription(
@@ -133,7 +133,7 @@ const advancedSearch = async (
 ) => {
   await interaction.editReply({
     embeds: [
-      loadingEmbed
+      loadEmbedFormat()
         .setTitle('🔍 Searching...')
         .setDescription('Getting the first 10 results from the search terms...'),
     ],
@@ -144,7 +144,7 @@ const advancedSearch = async (
 
   if (!wikiResponse.results) {
     return interaction.editReply({
-      embeds: [errorEmbed.setDescription(`No results from \`${searchTerms}\`.`)],
+      embeds: [errorEmbedFormat().setDescription(`No results from \`${searchTerms}\`.`)],
     });
   }
 
@@ -164,7 +164,7 @@ const advancedSearch = async (
 
     interaction.editReply({
       embeds: [
-        loadingEmbed
+        loadEmbedFormat()
           .setTitle(`Pick from the ${wikiResponse.results.length} results:`)
           .setDescription(text),
       ],
@@ -173,7 +173,7 @@ const advancedSearch = async (
 
   const selectMessage = await interaction.editReply({
     embeds: [
-      loadingEmbed
+      loadEmbedFormat()
         .setTitle(`Pick from the ${wikiResponse.results.length} results:`)
         .setDescription(text),
     ],
@@ -195,12 +195,12 @@ const advancedSearch = async (
       });
     } else {
       return interaction.editReply({
-        embeds: [errorEmbed],
+        embeds: [errorEmbedFormat()],
       });
     }
   } catch (e) {
     return interaction.editReply({
-      embeds: [errorEmbed],
+      embeds: [errorEmbedFormat()],
     });
   }
 };

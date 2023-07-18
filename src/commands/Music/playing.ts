@@ -6,7 +6,7 @@ import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { curDur, queues } from './songplay';
 import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
-import { baseEmbed, errorEmbed, formatSeconds } from '../../lib/constants';
+import { baseEmbedFormat, errorEmbedFormat, formatSeconds } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Shows info about the currently playing video.',
@@ -29,7 +29,7 @@ export class UserCommand extends BotCommand {
     if (!serverQueue) {
       return send(message, {
         embeds: [
-          errorEmbed.setDescription(
+          errorEmbedFormat().setDescription(
             'You are not fooling me, there is no video queue. If this is entertainment for you, go touch grass.',
           ),
         ],
@@ -49,7 +49,7 @@ const sendQueue = async (message: Message, song: ISong) => {
   // Returns additional information, previously stored when song was requested
   return send(message, {
     embeds: [
-      baseEmbed
+      baseEmbedFormat()
         .setTitle('Currently playing song:')
         .setDescription(
           `**URL:** ${song.url}\n**Title:** ${song.title}\n**Views:** ${song.views}\n**Channel:** ${

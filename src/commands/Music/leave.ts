@@ -6,7 +6,7 @@ import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { queues } from './songplay';
 import { getVoiceConnection } from '@discordjs/voice';
-import { baseEmbed, errorEmbed } from '../../lib/constants';
+import { baseEmbedFormat, errorEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Makes the bot leave the VC.',
@@ -30,7 +30,7 @@ const leave = async (message: Message) => {
   const connection = getVoiceConnection(message.guildId);
   if (!connection) {
     return send(message, {
-      embeds: [errorEmbed.setDescription('THE BOT IS NOT EVEN IN THE VC, WHY ARE YOU DOING THIS')],
+      embeds: [errorEmbedFormat().setDescription('THE BOT IS NOT EVEN IN THE VC, WHY ARE YOU DOING THIS')],
     }).then((msg) => {
       message.delete();
       setTimeout(() => {
@@ -42,7 +42,7 @@ const leave = async (message: Message) => {
   const serverQueue = musicQueue.get(message.guildId);
   if (message.member.voice.channel !== serverQueue.voiceChannel) {
     return send(message, {
-      embeds: [errorEmbed.setDescription('Nice try buddy, you need to join VC to do that.')],
+      embeds: [errorEmbedFormat().setDescription('Nice try buddy, you need to join VC to do that.')],
     }).then((msg) => {
       message.delete();
       setTimeout(() => {
@@ -55,7 +55,7 @@ const leave = async (message: Message) => {
   musicQueue.delete(message.guildId);
   return send(message, {
     embeds: [
-      baseEmbed.setTitle('Yeet').setDescription("Fine, guess I'll go. Not like I wanted to stay!"),
+      baseEmbedFormat().setTitle('Yeet').setDescription("Fine, guess I'll go. Not like I wanted to stay!"),
     ],
   }).then(() => {
     message.delete();

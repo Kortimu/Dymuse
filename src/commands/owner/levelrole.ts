@@ -5,7 +5,7 @@ import { Message, Role } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { GuildModel } from '../../lib/schemas/guildschema';
-import { baseEmbed } from '../../lib/constants';
+import { baseEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'A command for level role customization and viewing.',
@@ -83,7 +83,7 @@ const modifyLevelRole = async (role: Role, message: Message, level: number, targ
   // Send the damn response
   return send(message, {
     embeds: [
-      baseEmbed
+      baseEmbedFormat()
         .setTitle('Success!')
         .setDescription(
           `You **${targetName}ed** **<@&${roleId}>** with the level requirement of **${level}**!`,
@@ -95,7 +95,7 @@ const modifyLevelRole = async (role: Role, message: Message, level: number, targ
 const viewLevelRoles = async (message: Message) => {
   if (!message.guild) return;
   const guildId = message.guild.id;
-  const lRoleEmbed = baseEmbed;
+  const lRoleEmbed = baseEmbedFormat();
   let text = '';
   // Get the guild's settings
   const result = await GuildModel.findOne({

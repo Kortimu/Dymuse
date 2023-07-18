@@ -2,7 +2,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
 import { pickRandom, sendLoadingInteraction } from '../../lib/utils';
-import { baseEmbed, loadingEmbed } from '../../lib/constants';
+import { baseEmbedFormat, loadEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Flips a coin.',
@@ -25,7 +25,7 @@ export class UserCommand extends BotCommand {
     await interaction
       .editReply({
         embeds: [
-          loadingEmbed
+          loadEmbedFormat()
             .setTitle('Flipping coin...')
             .setDescription('haha coin go brrr')
             .setImage('https://cdn.discordapp.com/emojis/916815063673896960.gif?size=64'),
@@ -35,7 +35,7 @@ export class UserCommand extends BotCommand {
         setTimeout(async () => {
           const results = ['heads', 'tails'];
           const result = pickRandom(results);
-          const resultEmbed = baseEmbed
+          const resultEmbed = baseEmbedFormat()
             .setTitle('The coin landed on...')
             .setDescription(`...${result}`);
           if (result === 'heads') {

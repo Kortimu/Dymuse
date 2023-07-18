@@ -4,7 +4,7 @@ import BotCommand from '../../types/BotCommand';
 import { send } from '@sapphire/plugin-editable-commands';
 import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
-import { baseEmbed } from '../../lib/constants';
+import { baseEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Lists all commands or details about a certain command/category.',
@@ -27,7 +27,7 @@ export class UserCommand extends BotCommand {
 
     // Check if the user has specified a certain command/category
     const targetCommand = await args.pick('string').catch(() => undefined);
-    const helpEmbed = baseEmbed;
+    const helpEmbed = baseEmbedFormat();
     // Not mandatory, just a way to not repeat too much
     const commands = this.container.stores.get('commands');
 
@@ -170,7 +170,7 @@ export class UserCommand extends BotCommand {
     // Sends the embed of all commands
     return send(message, {
       embeds: [
-        baseEmbed
+        baseEmbedFormat()
           .setTitle('All commands sent')
           .setDescription('...to PMs. No need to clutter the chat.'),
       ],

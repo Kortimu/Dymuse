@@ -3,7 +3,7 @@ import { send } from '@skyra/editable-commands';
 import { Message } from 'discord.js';
 import { UserModel } from '../lib/schemas/userschema';
 import { GuildModel } from '../lib/schemas/guildschema';
-import { baseEmbed } from '../lib/constants';
+import { baseEmbedFormat } from '../lib/constants';
 
 export class UserEvent extends Listener<typeof Events.MessageCreate> {
   public constructor(context: PieceContext) {
@@ -80,7 +80,7 @@ const addXP = async (guildId: string, userId: string, xpToAdd: number, message: 
     // Level up pop-up
     send(message, {
       embeds: [
-        baseEmbed
+        baseEmbedFormat()
           .setTitle('someone leveled up ayyyyyyy')
           .setDescription(
             `<@${userId}> leveled up to level **${level}** with **${xp}** XP leftover. nice`,

@@ -4,7 +4,7 @@ import BotCommand from '../../types/BotCommand';
 import { Message } from 'discord.js';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
-import { baseEmbed, errorEmbed } from '../../lib/constants';
+import { baseEmbedFormat, errorEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Rolls a dice.',
@@ -30,7 +30,7 @@ async function rollDice(message: Message, size: number) {
   // Checks for non-existant dice
   if (size <= 0) {
     return send(message, {
-      embeds: [errorEmbed.setDescription('What kind of dice are you trying to roll?!')],
+      embeds: [errorEmbedFormat().setDescription('What kind of dice are you trying to roll?!')],
     }).then((msg) => {
       message.delete();
       setTimeout(() => {
@@ -40,7 +40,7 @@ async function rollDice(message: Message, size: number) {
   }
   return send(message, {
     embeds: [
-      baseEmbed
+      baseEmbedFormat()
         .setTitle(`You rolled a ${size} side dice...`)
         .setDescription(`...and rolled a **${result}**`),
     ],

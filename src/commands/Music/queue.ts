@@ -6,7 +6,7 @@ import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { queues } from './songplay';
 import type { IServerMusicQueue } from '../../types/interfaces/Bot';
-import { baseEmbed, errorEmbed } from '../../lib/constants';
+import { baseEmbedFormat, errorEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Shows info about the video queue.',
@@ -26,7 +26,7 @@ export class UserCommand extends BotCommand {
     if (!serverQueue || serverQueue.songs.length < 1) {
       return send(message, {
         embeds: [
-          errorEmbed.setDescription(
+          errorEmbedFormat().setDescription(
             'You are not fooling me, there is no video queue. If this is entertainment for you, go touch grass.',
           ),
         ],
@@ -42,7 +42,7 @@ export class UserCommand extends BotCommand {
 }
 
 const showQueue = async (message: Message, queueInfo: IServerMusicQueue) => {
-  const queueEmbed = baseEmbed;
+  const queueEmbed = baseEmbedFormat();
   let songNumber = 0;
   // For each song in guild queue, get simple info
   queueInfo.songs.forEach((song) => {

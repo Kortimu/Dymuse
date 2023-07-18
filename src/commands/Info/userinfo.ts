@@ -4,7 +4,7 @@ import BotCommand from '../../types/BotCommand';
 import { sendLoadingInteraction } from '../../lib/utils';
 import { UserModel } from '../../lib/schemas/userschema';
 import { getNeededXP } from '../../listeners/levels';
-import { baseEmbed } from '../../lib/constants';
+import { baseEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Gives additional information about a user.',
@@ -35,7 +35,7 @@ export class UserCommand extends BotCommand {
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
     await sendLoadingInteraction(interaction);
 
-    const infoEmbed = baseEmbed;
+    const infoEmbed = baseEmbedFormat();
     let targetUser = interaction.options.getUser('target');
 
     // If the user does not exist, default to the user who sent the slash command

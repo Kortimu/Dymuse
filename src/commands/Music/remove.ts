@@ -6,7 +6,7 @@ import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
 import { queues, playSong } from './songplay';
 import type { IServerMusicQueue } from '../../types/interfaces/Bot';
-import { baseEmbed, errorEmbed } from '../../lib/constants';
+import { baseEmbedFormat, errorEmbedFormat } from '../../lib/constants';
 
 @ApplyOptions<CommandOptions>({
   description: 'Removes a video from the queue.',
@@ -33,7 +33,7 @@ const remove = async (message: Message, number: number) => {
   const serverQueue: IServerMusicQueue = await queues.get(message.guildId);
   if (!serverQueue) {
     return send(message, {
-      embeds: [errorEmbed.setDescription('I am not good enough to remove something non-existant.')],
+      embeds: [errorEmbedFormat().setDescription('I am not good enough to remove something non-existant.')],
     }).then((msg) => {
       setTimeout(() => {
         msg.delete();
@@ -44,7 +44,7 @@ const remove = async (message: Message, number: number) => {
   if (number < 1 || number > serverQueue.songs.length) {
     return send(message, {
       embeds: [
-        errorEmbed.setDescription(
+        errorEmbedFormat().setDescription(
           'Just because you entered a number, does not mean I can remove it. Stop thinking I am so dumb, human.',
         ),
       ],
@@ -55,7 +55,7 @@ const remove = async (message: Message, number: number) => {
   removeSong(serverQueue, message, index);
   if (!message.guild) {
     return send(message, {
-      embeds: [errorEmbed.setDescription('This does not work in PMs, stop doing this!')],
+      embeds: [errorEmbedFormat().setDescription('This does not work in PMs, stop doing this!')],
     });
   }
   if (number === 1) {
@@ -68,7 +68,7 @@ const removeSong = async (serverQueue: IServerMusicQueue, message: Message, inde
   serverQueue.songs.splice(index, 1);
   return send(message, {
     embeds: [
-      baseEmbed
+      baseEmbedFormat()
         .setTitle('Song removed')
         .setDescription(`Song **#${index + 1}** removed from queue.`),
     ],
