@@ -80,7 +80,9 @@ const skipSong = async (message: Message, serverQueue: IServerMusicQueue) => {
   serverQueue.audioPlayer.stop(true);
   skipVoters = 0;
   return send(message, {
-    embeds: [baseEmbedFormat().setTitle('Song skipped').setDescription('Democracy wins again, I guess')],
+    embeds: [
+      baseEmbedFormat().setTitle('Song skipped').setDescription('Democracy wins again, I guess'),
+    ],
   }).then((msg) => {
     setTimeout(() => {
       msg.delete();

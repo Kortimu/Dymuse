@@ -13,7 +13,12 @@ import {
 } from '@discordjs/voice';
 import { sendLoadingMessage } from '../../lib/utils';
 import { send } from '@sapphire/plugin-editable-commands';
-import { baseEmbedFormat, errorEmbedFormat, formatSeconds, loadEmbedFormat } from '../../lib/constants';
+import {
+  baseEmbedFormat,
+  errorEmbedFormat,
+  formatSeconds,
+  loadEmbedFormat,
+} from '../../lib/constants';
 import type { IServerMusicQueue, ISong } from '../../types/interfaces/Bot';
 import ytdl from 'ytdl-core';
 import ytsr from 'ytsr';
@@ -58,7 +63,9 @@ const play = async (message: Message, args: Args) => {
   }
   if (!message.member.voice.channel) {
     return send(message, {
-      embeds: [errorEmbedFormat().setDescription('You need to be in a voice channel to use this, duh')],
+      embeds: [
+        errorEmbedFormat().setDescription('You need to be in a voice channel to use this, duh'),
+      ],
     });
   }
 
@@ -71,7 +78,9 @@ const play = async (message: Message, args: Args) => {
   }
   if (songInfo === null) {
     return send(message, {
-      embeds: [errorEmbedFormat().setDescription('Am I expected to find something that does not exist?!')],
+      embeds: [
+        errorEmbedFormat().setDescription('Am I expected to find something that does not exist?!'),
+      ],
     });
   }
 
@@ -97,7 +106,9 @@ const play = async (message: Message, args: Args) => {
   // Found! (Embed)
   send(message, {
     embeds: [
-      baseEmbedFormat().setTitle('Song found!').setDescription(`\`${info.title}\` is about to play...`),
+      baseEmbedFormat()
+        .setTitle('Song found!')
+        .setDescription(`\`${info.title}\` is about to play...`),
     ],
   });
   if (!message.guild) {

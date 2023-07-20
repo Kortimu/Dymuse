@@ -49,7 +49,9 @@ export class UserCommand extends BotCommand {
 
     await interaction.editReply({
       embeds: [
-        loadEmbedFormat().setTitle('🔍 Searching...').setDescription('Looking for the best result...'),
+        loadEmbedFormat()
+          .setTitle('🔍 Searching...')
+          .setDescription('Looking for the best result...'),
       ],
     });
 
@@ -58,7 +60,9 @@ export class UserCommand extends BotCommand {
     if (!wikiResponse.results) {
       return interaction.editReply({
         embeds: [
-          errorEmbedFormat().setDescription(`Nothing of value was found by searching \`${searchTerms}\`!`),
+          errorEmbedFormat().setDescription(
+            `Nothing of value was found by searching \`${searchTerms}\`!`,
+          ),
         ],
       });
     }

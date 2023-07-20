@@ -66,7 +66,9 @@ export class UserCommand extends BotCommand {
         message.channel.send({ embeds: [embed.setColor('#FF00FF')] });
         // Congratulate the user
         send(message, {
-          embeds: [baseEmbedFormat().setTitle('Success!').setDescription('An embed has been made.')],
+          embeds: [
+            baseEmbedFormat().setTitle('Success!').setDescription('An embed has been made.'),
+          ],
         });
         setTimeout(() => {
           message.delete();

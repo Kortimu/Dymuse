@@ -33,7 +33,9 @@ const remove = async (message: Message, number: number) => {
   const serverQueue: IServerMusicQueue = await queues.get(message.guildId);
   if (!serverQueue) {
     return send(message, {
-      embeds: [errorEmbedFormat().setDescription('I am not good enough to remove something non-existant.')],
+      embeds: [
+        errorEmbedFormat().setDescription('I am not good enough to remove something non-existant.'),
+      ],
     }).then((msg) => {
       setTimeout(() => {
         msg.delete();
