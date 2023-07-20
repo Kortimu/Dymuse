@@ -37,22 +37,12 @@ export class UserCommand extends BotCommand {
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
     await sendLoadingInteraction(interaction);
 
-    const question = interaction.options.get('question');
-
-    if (!question) {
-      return interaction.editReply({
-        embeds: [
-          baseEmbedFormat()
-            .setTitle('No question? Sure, I can read your mind anyways. The 8-ball says...')
-            .setDescription('Mate, you did not put in a question. '),
-        ],
-      });
-    }
+    const question = interaction.options.getString('question');
 
     return interaction.editReply({
       embeds: [
         baseEmbedFormat()
-          .setTitle(`My 8-ball says that the answer to "${question.value}" is...`)
+          .setTitle(`My 8-ball says that the answer to "${question}" is...`)
           .setDescription(`**${pickRandom(answers)}**`)
           .setThumbnail('https://canary.discord.com/assets/0cfd4882c0646d504900c90166d80cf8.svg')
           .setFooter({
