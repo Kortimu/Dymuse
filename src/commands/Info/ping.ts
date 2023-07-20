@@ -20,8 +20,10 @@ export class UserCommand extends BotCommand {
 
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
     await sendLoadingInteraction(interaction);
+    const message = interaction.options.data;
+    console.log(message);
 
-    return interaction.editReply({
+    const response = await interaction.editReply({
       embeds: [
         baseEmbedFormat()
           .setTitle('something something pong')
@@ -33,7 +35,7 @@ export class UserCommand extends BotCommand {
             // {
             //   name: 'Framework latency (equally boring):',
             //   value: `${
-            //     (interaction.createdTimestamp) -
+            //     (loadInteraction.createdTimestamp) -
             //     (loadInteraction.createdTimestamp)
             //   } ms`,
             // },
@@ -41,6 +43,26 @@ export class UserCommand extends BotCommand {
           .setColor('#00FF00'),
       ],
     });
-    // TODO: Do a silly thing with "pong" (maybe check if "pong" was added after the command (e.g. /ping pong)?)
+    try {
+      await response
+        .awaitReactions({
+          filter: (collected) => collected.emoji.name === '🏓',
+        })
+        .then((collected) => {
+          console.log(collected);
+          return interaction.editReply({
+            embeds: [
+              baseEmbedFormat()
+                .setTitle('WOAH! A RESPONSE... FROM YOU!!!')
+                .setDescription(
+                  'Look at you, actually caring about me. Not many speak to me, so for this wonderful occasion, [here is a cool video that will lighten your mood.](https://www.youtube.com/watch?v=dQw4w9WgXcQ)',
+                ),
+            ],
+          });
+        });
+    } catch (e) {
+      console.log(e);
+      return;
+    }
   }
 }
