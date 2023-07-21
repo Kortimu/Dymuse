@@ -1,11 +1,10 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import type { Args, CommandOptions } from '@sapphire/framework';
+import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message } from 'discord.js';
-import { sendLoadingMessage, pickRandom } from '../../lib/utils';
-import { send } from '@sapphire/plugin-editable-commands';
+import { sendLoadingInteraction } from '../../lib/utils';
 import { broCode } from '../../lib/data/bro-code';
 import { baseEmbedFormat } from '../../lib/constants';
+import { BroCodePaginatedMessage } from '../../lib/structures/BroCodePaginatedMessage';
 
 @ApplyOptions<CommandOptions>({
   description: 'Sends specific or random Bro Code rules.',
@@ -21,54 +20,35 @@ import { baseEmbedFormat } from '../../lib/constants';
   ],
 })
 export class UserCommand extends BotCommand {
-  public async messageRun(message: Message, args: Args) {
-    // Send loading message
-    await sendLoadingMessage(message);
-
-    const option = await args.pick('string').catch(() => '');
-    await sendRule(option, message);
-  }
-}
-
-async function sendRule(option: string, message: Message) {
-  const ruleEmbed = baseEmbedFormat();
-  let text = '';
-  // Turns the argument into a number
-  const selectedOption = Number(option);
-  const parsedOption = selectedOption - 1;
-  // Check if argument is between the first and last rule
-  if (parsedOption < broCode.length && parsedOption >= 0) {
-    return send(message, {
-      embeds: [
-        ruleEmbed.setTitle(`Rule #${selectedOption}`).setDescription(`${broCode[parsedOption]}`),
-      ],
+  public override registerApplicationCommands(registry: Command.Registry) {
+    registry.registerChatInputCommand((builder) => {
+      builder.setName(this.name).setDescription(this.description)
+      .addNumberOption((option) =>
+        option
+          .setName('rule')
+          .setDescription('The number of the rule to request. If left empty, a random rule will be chosen.')
+          .setMinValue(1)
+          .setMaxValue(broCode.length)
+        ),
+        { guildIds: ['864115119721676820'] };
     });
   }
-  // If specified, send all rules in PMs (less clutter)
-  if (option === 'all') {
-    let counter = 1;
+
+  public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+    await sendLoadingInteraction(interaction);
+    const paginator = new BroCodePaginatedMessage()
+
     broCode.forEach((rule) => {
-      text += `**Rule #${counter} -** ${rule}\n`;
-      counter += 1;
-    });
-    send(message, {
-      embeds: [
+      paginator.addPageEmbed(
         baseEmbedFormat()
-          .setTitle('Bro code sent')
-          .setDescription('...to PMs. No need to clutter the channel.'),
-      ],
-    });
-    return message.author.send({
-      embeds: [ruleEmbed.setTitle('The Bro Code').setDescription(text)],
-    });
+          .setTitle(`Rule #${broCode.indexOf(rule) + 1}`)
+          .setDescription(`${rule}`)
+      )
+    })
+
+    const ruleNumber = interaction.options.getNumber('rule') ?? Math.ceil(Math.random() * paginator.pages.length)
+    paginator.setIndex(Math.floor(ruleNumber) - 1)
+
+    paginator.run(interaction)
   }
-  // Pick a random rule otherwise
-  const randomRule = pickRandom(broCode);
-  return send(message, {
-    embeds: [
-      ruleEmbed
-        .setTitle(`Random rule: #${broCode.indexOf(randomRule) + 1}`)
-        .setDescription(randomRule),
-    ],
-  });
 }
