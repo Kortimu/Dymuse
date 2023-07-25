@@ -1,9 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import type { Args, CommandOptions } from '@sapphire/framework';
+import type { Command, CommandOptions } from '@sapphire/framework';
 import BotCommand from '../../types/BotCommand';
-import { Message } from 'discord.js';
-import { sendLoadingMessage } from '../../lib/utils';
-import { send } from '@sapphire/plugin-editable-commands';
+import { pickRandom, sendLoadingInteraction } from '../../lib/utils';
 import { supportArray } from '../../lib/data/support-messages';
 import { baseEmbedFormat } from '../../lib/constants';
 
@@ -13,7 +11,7 @@ import { baseEmbedFormat } from '../../lib/constants';
   aliases: ['es', 'emotionalsupport'],
   detailedDescription:
     'A command that sends a random "supportive" message to a user of your choosing in their PMs.',
-  cooldownDelay: 20000,
+  cooldownDelay: 300 * 1000,
   syntax: '[target user]',
   examples: ['support', 'es <@355005049849643008>'],
   notes: [
@@ -22,30 +20,45 @@ import { baseEmbedFormat } from '../../lib/constants';
   ],
 })
 export class UserCommand extends BotCommand {
-  public async messageRun(message: Message, args: Args) {
-    // Find user in the message
-    const targetUser = await args.pick('user').catch(() => message.author);
-    // Send loading message
-    await sendLoadingMessage(message);
-
-    // Randomly picks 1 option out of the array
-    const supportPick = Math.floor(Math.random() * supportArray.length);
-    const support = supportArray[supportPick];
-
-    // Sends the message in DMs
-    targetUser.send({
-      embeds: [
-        baseEmbedFormat()
-          .setTitle('Emotional Support Incoming!')
-          .setDescription(`${support}\n\nHope it helped, ${targetUser}! <3`),
-      ],
+  public override registerApplicationCommands(registry: Command.Registry) {
+    registry.registerChatInputCommand((builder) => {
+      builder
+        .setName(this.name)
+        .setDescription(this.description)
+        .addUserOption((option) =>
+          option
+            .setName('target')
+            .setDescription(
+              'A user you may wish to send support to. If left empty, you will be the target.',
+            )
+            .setRequired(false),
+        ),
+        { guildIds: ['864115119721676820'] };
     });
-    // Sends the message in the channel
-    return send(message, {
+  }
+
+  public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+    await sendLoadingInteraction(interaction);
+    const supportiveMessage = baseEmbedFormat()
+      .setTitle("Need some help? Here's a useful message!")
+      .setDescription(pickRandom(supportArray));
+
+    const target = interaction.options.getUser('target');
+    if (!target) {
+      return interaction.editReply({
+        embeds: [supportiveMessage],
+      });
+    }
+
+    supportiveMessage.setTitle("Need some help? No? Who cares, here's a useful message someone requested!");
+    await target.send({
+      embeds: [supportiveMessage],
+    });
+    return interaction.editReply({
       embeds: [
         baseEmbedFormat()
-          .setTitle('Emotional Support Incoming!')
-          .setDescription(`I have sent something "helpful" in DMs to ${targetUser}.`),
+          .setTitle('Message sent!')
+          .setDescription('The user is now enjoying one of the many wisdoms I have to offer.'),
       ],
     });
   }
