@@ -22,13 +22,17 @@ import { BroCodePaginatedMessage } from '../../lib/structures/BroCodePaginatedMe
 export class UserCommand extends BotCommand {
   public override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) => {
-      builder.setName(this.name).setDescription(this.description)
-      .addNumberOption((option) =>
-        option
-          .setName('rule')
-          .setDescription('The number of the rule to request. If left empty, a random rule will be chosen.')
-          .setMinValue(1)
-          .setMaxValue(broCode.length)
+      builder
+        .setName(this.name)
+        .setDescription(this.description)
+        .addNumberOption((option) =>
+          option
+            .setName('rule')
+            .setDescription(
+              'The number of the rule to request. If left empty, a random rule will be chosen.',
+            )
+            .setMinValue(1)
+            .setMaxValue(broCode.length),
         ),
         { guildIds: ['864115119721676820'] };
     });
@@ -36,19 +40,20 @@ export class UserCommand extends BotCommand {
 
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
     await sendLoadingInteraction(interaction);
-    const paginator = new BroCodePaginatedMessage()
+    const paginator = new BroCodePaginatedMessage();
 
     broCode.forEach((rule) => {
       paginator.addPageEmbed(
         baseEmbedFormat()
           .setTitle(`Rule #${broCode.indexOf(rule) + 1}`)
-          .setDescription(`${rule}`)
-      )
-    })
+          .setDescription(`${rule}`),
+      );
+    });
 
-    const ruleNumber = interaction.options.getNumber('rule') ?? Math.ceil(Math.random() * paginator.pages.length)
-    paginator.setIndex(Math.floor(ruleNumber) - 1)
+    const ruleNumber =
+      interaction.options.getNumber('rule') ?? Math.ceil(Math.random() * paginator.pages.length);
+    paginator.setIndex(Math.floor(ruleNumber) - 1);
 
-    paginator.run(interaction)
+    paginator.run(interaction);
   }
 }

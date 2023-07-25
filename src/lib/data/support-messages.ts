@@ -1,7 +1,7 @@
 export const supportArray = [
   "If you ever feel useless, remember that `Faster Darts` exists. It is so useless, you probably didn't even get the reference.",
   'If life ever beats you down, just remember that no one cares.',
-  "Sometimes the solution to your problems IS violence. At the very least it makes arguments go faster.",
+  'Sometimes the solution to your problems IS violence. At the very least it makes arguments go faster.',
   'I ate a banana today, and it definitely tasted worse than your feet.',
   'If you think your life is meaningless, remember that Aqua Man has a BOAT.\n\nLet that sink in (heh) - **A GOD DAMN BOAT.**',
   'Others think you are useless? Trust me, the Glare has it much worse.',
@@ -13,7 +13,7 @@ export const supportArray = [
   "Listen, it's hard to think of supportive messages. Can you just *imagine* I said something very inspirational just now? Thanks.",
   'I heard touching grass helps. You will enjoy life, I will have 1 less user to respond to. Win-win!',
   'Violence is not always the answer. Sometimes you need EXTREME VIOLENCE!',
-  "You are NOT ugly. You are just *really good* at making people faint on the spot. Look at that, you have a superpower!",
+  'You are NOT ugly. You are just *really good* at making people faint on the spot. Look at that, you have a superpower!',
   'Are you planning to jump off a building? Take a parachute to slow your descent. Safety first!',
   'hello this is very original easter egg share this with 5 people or i will do nothing',
   'Violence is DEFINITELY the answer. It works in Bloons, so why would it *not* work in real life?',
