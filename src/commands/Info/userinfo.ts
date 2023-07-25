@@ -33,7 +33,7 @@ export class UserCommand extends BotCommand {
   }
 
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-    await sendLoadingInteraction(interaction);
+    await sendLoadingInteraction(interaction, false);
 
     const infoEmbed = baseEmbedFormat();
     let targetUser = interaction.options.getUser('target');

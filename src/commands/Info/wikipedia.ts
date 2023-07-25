@@ -38,7 +38,7 @@ export class UserCommand extends BotCommand {
   }
 
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-    await sendLoadingInteraction(interaction);
+    await sendLoadingInteraction(interaction, false);
 
     const searchTerms = interaction.options.getString('search');
     if (!searchTerms) {
@@ -88,11 +88,10 @@ export class UserCommand extends BotCommand {
 
       if (buttonCollector.customId === 'wiki-search') {
         return advancedSearch(interaction, searchTerms);
-      } else {
-        return interaction.editReply({
-          embeds: [errorEmbedFormat()],
-        });
       }
+      return interaction.editReply({
+        embeds: [errorEmbedFormat()],
+      });
     } catch (e) {
       return interaction.editReply({
         components: [],
@@ -152,7 +151,7 @@ const advancedSearch = async (
     });
   }
 
-  let selectComponent = new StringSelectMenuBuilder()
+  const selectComponent = new StringSelectMenuBuilder()
     .setCustomId('wiki-search-select')
     .setPlaceholder('Choose the result...');
 
@@ -190,18 +189,17 @@ const advancedSearch = async (
       filter: (collected) => collected.user.id === interaction.user.id,
       time: 60 * 1000,
     });
-    if (selectCollector.customId == 'wiki-search-select') {
-      const resultIndex = +selectCollector.values[0];
+    if (selectCollector.customId === 'wiki-search-select') {
+      const resultIndex = Number(selectCollector.values[0]);
       const wikiEmbed = await makeWikiEmbed(wikiResponse, searchTerms, resultIndex);
       return await interaction.editReply({
         embeds: [wikiEmbed],
         components: [],
       });
-    } else {
-      return interaction.editReply({
-        embeds: [errorEmbedFormat()],
-      });
     }
+    return interaction.editReply({
+      embeds: [errorEmbedFormat()],
+    });
   } catch (e) {
     return interaction.editReply({
       embeds: [errorEmbedFormat()],

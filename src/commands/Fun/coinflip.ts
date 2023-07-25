@@ -20,7 +20,7 @@ export class UserCommand extends BotCommand {
   }
 
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-    await sendLoadingInteraction(interaction);
+    await sendLoadingInteraction(interaction, false);
 
     await interaction
       .editReply({
@@ -47,7 +47,7 @@ export class UserCommand extends BotCommand {
               'https://cdn.discordapp.com/emojis/917122876153409626.png?size=64',
             );
           }
-          return await interaction.editReply({
+          return interaction.editReply({
             embeds: [resultEmbed],
           });
         }, 1.5 * 1000);

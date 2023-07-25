@@ -20,11 +20,9 @@ export const client = new SapphireClient({
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.DirectMessages,
     GatewayIntentBits.DirectMessageReactions,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.MessageContent,
   ],
-  partials: [
-    Partials.Channel
-  ],
+  partials: [Partials.Channel],
   presence: {
     status: 'online',
     activities: [

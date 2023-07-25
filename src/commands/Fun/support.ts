@@ -38,7 +38,7 @@ export class UserCommand extends BotCommand {
   }
 
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-    await sendLoadingInteraction(interaction);
+    await sendLoadingInteraction(interaction, true);
     const supportiveMessage = baseEmbedFormat()
       .setTitle("Need some help? Here's a useful message!")
       .setDescription(pickRandom(supportArray));
@@ -50,7 +50,9 @@ export class UserCommand extends BotCommand {
       });
     }
 
-    supportiveMessage.setTitle("Need some help? No? Who cares, here's a useful message someone requested!");
+    supportiveMessage.setTitle(
+      "Need some help? No? Who cares, here's a useful message someone requested!",
+    );
     await target.send({
       embeds: [supportiveMessage],
     });
