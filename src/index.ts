@@ -1,4 +1,4 @@
-import { ActivityType } from 'discord.js';
+import { ActivityType, GatewayIntentBits, Partials } from 'discord.js';
 import './lib/setup';
 import { LogLevel, SapphireClient } from '@sapphire/framework';
 
@@ -11,16 +11,19 @@ export const client = new SapphireClient({
   },
   shards: 'auto',
   intents: [
-    'Guilds',
-    'GuildMembers',
-    'GuildBans',
-    'GuildEmojisAndStickers',
-    'GuildVoiceStates',
-    'GuildMessages',
-    'GuildMessageReactions',
-    'DirectMessages',
-    'DirectMessageReactions',
-    'MessageContent',
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildModeration,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.DirectMessageReactions,
+    GatewayIntentBits.MessageContent
+  ],
+  partials: [
+    Partials.Channel
   ],
   presence: {
     status: 'online',
