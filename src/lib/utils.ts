@@ -30,9 +30,7 @@ export function sendLoadingMessage(message: Message): Promise<typeof message> {
  * Sends a loading message to the current channel (as an interaction)
  * @param interaction The interaction data for which to send the loading message
  */
-export function sendLoadingInteraction(
-  interaction: Command.ChatInputCommandInteraction,
-) {
+export function sendLoadingInteraction(interaction: Command.ChatInputCommandInteraction) {
   return interaction.reply({
     embeds: [
       new EmbedBuilder().setDescription(pickRandom(RandomLoadingMessage)).setColor('#FF0000'),
