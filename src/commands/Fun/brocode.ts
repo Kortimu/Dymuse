@@ -39,7 +39,7 @@ export class UserCommand extends BotCommand {
   }
 
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-    await sendLoadingInteraction(interaction, false);
+    await sendLoadingInteraction(interaction);
     const paginator = new BroCodePaginatedMessage();
 
     broCode.forEach((rule) => {

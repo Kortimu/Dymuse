@@ -32,12 +32,10 @@ export function sendLoadingMessage(message: Message): Promise<typeof message> {
  */
 export function sendLoadingInteraction(
   interaction: Command.ChatInputCommandInteraction,
-  ephemeral: boolean,
 ) {
   return interaction.reply({
     embeds: [
       new EmbedBuilder().setDescription(pickRandom(RandomLoadingMessage)).setColor('#FF0000'),
     ],
-    ephemeral,
   });
 }

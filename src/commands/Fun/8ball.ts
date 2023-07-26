@@ -35,7 +35,7 @@ export class UserCommand extends BotCommand {
   }
 
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-    await sendLoadingInteraction(interaction, false);
+    await sendLoadingInteraction(interaction);
 
     const question = interaction.options.getString('question');
 

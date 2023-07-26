@@ -19,7 +19,7 @@ export class UserCommand extends BotCommand {
   }
 
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-    const loadInteraction = await sendLoadingInteraction(interaction, false);
+    const loadInteraction = await sendLoadingInteraction(interaction);
     const message = await interaction.fetchReply();
 
     const response = await interaction.editReply({

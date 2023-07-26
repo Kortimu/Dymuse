@@ -38,7 +38,7 @@ export class UserCommand extends BotCommand {
   }
 
   public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-    await sendLoadingInteraction(interaction, true);
+    await sendLoadingInteraction(interaction);
     const supportiveMessage = baseEmbedFormat()
       .setTitle("Need some help? Here's a useful message!")
       .setDescription(pickRandom(supportArray));
